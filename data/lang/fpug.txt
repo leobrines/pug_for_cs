@@ -1,0 +1,211 @@
+[en]
+UNASSIGNED = Sin asignar
+
+TERRORISTS = Terroristas
+CTS = Anti-Terroristas
+SPECTATORS = Espectadores
+
+TERRORIST = Terrorista
+CT = Anti-Terrorista
+SPECTATOR = Espectador
+
+PUG_GAME_CANCELED_ABSENCE = Juego cancelado por ausencia de jugadores en el equipo %s.
+PUG_GAME_FORCED = %s forzo el juego
+PUG_GAME_INTERMISSION = %d segundos de descanso para comenzar el proximo tiempo
+
+PUG_GAMEOVER_WON = Juego finalizado! Los %s ganaron: %i-%i
+PUG_GAMEOVER_TIED = Juego finalizado! Empate: %i-%i
+PUG_SCORE_TIED = La puntuacion esta empatada: %i-%i
+PUG_SCORE_WINNING = Los %s estan ganando: %i-%i
+
+PUG_TEAM_CHANGING = Cambiando equipos.
+PUG_TEAM_MONEY = Dinero del equipo:
+
+PUG_TEAMS_NOT_CHANGE = No puedes cambiar de equipo mientras el juego esta en progreso.
+PUG_TEAMS_SAMET = Ya estas en este equipo.
+PUG_TEAMS_SPECTATORS = Los espectadores no estan disponibles.
+PUG_TEAMS_AUTO = La seleccion automatica no esta disponible.
+PUG_TEAMS_FULL = El equipo %s esta full.
+PUG_TEAMS_ONCAPTAIN = No puedes cambiar de equipo mientras la votacion de capitanes esta en progreso.
+
+PUG_STARTING_FIRSTHALF = Comenzando el primer tiempo.
+PUG_STARTING_SECONDHALF = Comanzando el segundo tiempo.
+PUG_STARTING_OVERTIME = Comenzando el tiempo extra.
+
+PUG_MAP_CURRENT = Se jugara el mapa actual.
+PUG_MAP_CHANGE = Cambiando mapa a %s...
+
+PUG_WINNER_CHOOSEN = Se escogio %s.
+
+PUG_READY = %s esta listo.
+PUG_NOTREADY = %s no esta listo.
+
+PUG_PLAYERS_READY = Jugadores listos
+PUG_PLAYERS_NOTREADY = Jugadores no listos
+PUG_PLAYERS_MISSING = Faltan %d jugadores
+PUG_PLAYERS_MISSING2 = Falta %d jugador
+
+PUG_ACTION_NOTALLOWED = Accion no permitida en este momento.
+PUG_ACTION_NOTACCESS = No tienes acceso a este comando.
+PUG_WEAPON_NOTALLOWED = Este item no esta permitido.
+
+PUG_DMG_TITLE = ========== DMG ==========
+PUG_DMG_INFO = Jugador: %s | Dmg: %i | Tiros: %i
+PUG_DMG_DIDNTHURT = No heriste a nadie esta ronda.
+
+PUG_HP_TITLE = ========== HP ==========
+PUG_HP_INFO = Jugador: %s | Vida: %i
+PUG_HP_DIDNTLIVE = No hay nadie vivo.
+
+PUG_MONEY_TITLE = ========== MONEY ==========
+PUG_MONEY_INFO = $%i | %s
+
+PUG_BALANCING_TEAMS = Balanceando los equipos.
+PUG_RANDOMIZING_TEAMS = Randomizando los equipos.
+PUG_CAPTAINS_ARE = Los capitanes son: %s %s - %s %s
+PUG_CAPTAINS_PLAY = Se jugara una ronda a cuchillo entre los capitanes
+PUG_CAPTAINS_AWARD = El ganador sera el primero en escoger y seleccionara el bando a empezar.
+PUG_CAPTAIN_NEW = El nuevo capitan para los %s es %s
+PUG_CAPTAIN_PLAYERS_REQUIRED = Se necesitan al menos %i jugadores para activar el modo capitan.
+PUG_CAPTAIN_CHOOSE = %s escogio %s
+PUG_CAPTAIN_AUTOCHOOSE = %s escogio %s automaticamente
+PUG_CAPTAIN_SIDE = %s empezara en el bando %s
+
+PUG_ADMIN_SELECTED = %s ha sido seleccionado como el moderador para este equipo y tiene la habilidad de .votekick
+
+PUG_VOTEKICK_SPECTATORS = Los espectadores no pueden kickear.
+PUG_VOTEKICK_SPECIFY = Necesitas especificar un jugador.
+PUG_VOTEKICK_UNAVAILABLE = No es un objetivo disponible.
+PUG_VOTEKICK_MAXVOTES = Solo puedes iniciar 3 votaciones.
+PUG_VOTEKICK_STARTED = %s empezo votacion para kickar a %s. Razon: %s
+PUG_VOTEKICK_TIE = Fallo la votacion (empate de votos).
+PUG_VOTEKICK_FAILED = Fallo la votacion (sin votos).
+PUG_VOTEKICK_INSUFFICIENT = Fallo la votacion (votos insuficientes).
+PUG_VOTEKICK_KICKED = %s kickeado. Votos: %d.
+PUG_VOTEKICK_NOTKICKED = Fallo la votacion para kickear a %s. Votos: %d.
+PUG_VOTEKICK_TITLE = Votekick: %s (Razon: %s)
+PUG_VOTEKICK_NOREASON = Sin razon
+
+PUG_VOTING_MAP = Votacion de mapa
+PUG_VOTING_MAPCURRENT = Jugar este mapa
+PUG_VOTING_TEAM = Votacion de equipos
+PUG_VOTING_BALANCED = Balanceado
+PUG_VOTING_NOTSORTED = Equipos iguales
+PUG_VOTING_CAPTAINS = Capitanes
+PUG_VOTING_RANDOM = Aleatorio
+PUG_NOVOTES = Sin votos
+
+PUG_AFKKICKER_CVAR = Cvar pug_afktime %i tiene un valor muy bajo. El valor minimo es %i.
+PUG_AFKKICKER_WARN = Tienes %i segundos para moverte o seras kickeado por AFK.
+PUG_AFKKICKER_KICK = %s fue kickeado por estar AFK por mas de %i segundos.
+PUG_AFKKICKER_KICK2 = Fuiste kickeado por estar AFK por mas de %i segundos
+
+PUG_FORCE_GAME = Admin %s forzo el inicio del juego
+PUG_FORCE_CANCEL = Admin %s cancelo el juego
+PUG_CHANGE_TO_MANUAL = Admin %s cambio el servidor a modo: Manual
+PUG_CHANGE_TO_AUTO = Admin %s cambio el servidor a modo: Automatico
+
+PUG_MODE_MANUAL = Modo del servidor: manual
+PUG_MODE_AUTO = Modo del servidor: automatico
+
+PUG_PAUSE_SPECTATORS = Los espectadores no pueden pausar el juego.
+PUG_PAUSE_START = El equipo %L inicio una votacion para pausar el juego.
+PUG_PAUSE_NEXT_ROUND = El partido se pausara en la proxima ronda.
+PUG_PAUSE_FAILED = La votacion para pausar la proxima ronda fallo!
+
+PUG_SPEC_DONT_SAY = Solo los admins pueden escribir en el say de espectador.
+
+[es]
+UNASSIGNED = Unassigned
+TERRORISTS = Terrorists
+CTS = Counter-Terrorists
+SPECTATORS = Spectators
+
+TERRORIST = Terrorist
+CT = Counter-Terrorist
+SPECTATOR = Spectator
+
+PUG_GAME_CANCELED_ABSENCE = Game canceled due to absence of players in the %s team.
+PUG_GAME_FORCED = %s forced the game.
+PUG_GAME_INTERMISSION = %d secounds rest to start the next half.
+
+PUG_GAMEOVER_WON = Match over! %s won: %i-%i
+PUG_GAMEOVER_TIED = Match over! Game tied %i-%i
+PUG_SCORE_TIED = Score is tied: %i-%i
+PUG_SCORE_WINNING = %s are winning: %i-%i
+
+PUG_TEAM_CHANGING = Changing teams.
+PUG_TEAM_MONEY = Team money
+
+PUG_TEAMS_NOT_CHANGE = Cannot switch when the game is started.
+PUG_TEAMS_SAMET = You are already on this team.
+PUG_TEAMS_SPECTATORS = Spectators are not allowed.
+PUG_TEAMS_AUTO = Auto-Select is not allowed.
+PUG_TEAMS_FULL = The %s team is full.
+PUG_TEAMS_ONCAPTAIN = Cannot make a team change while the captain voting is in progress.
+
+PUG_STARTING_FIRSTHALF = Starting first half.
+PUG_STARTING_SECONDHALF = Starting second half.
+PUG_STARTING_OVERTIME = Starting overtime.
+
+PUG_MAP_CURRENT = The current map will be played.
+PUG_MAP_CHANGE = Changing map to %s...
+
+PUG_WINNER_CHOOSEN = Was choosen %s.
+
+PUG_READY = %s is now ready.
+PUG_NOTREADY = %s is now ready.
+
+PUG_PLAYERS_READY = Players ready
+PUG_PLAYERS_NOTREADY = Players not ready
+PUG_PLAYERS_MISSING = Missing %d players
+PUG_PLAYERS_MISSING = Missing %d player
+
+PUG_ACTION_NOTALLOWED = Action not allowed at this time.
+PUG_ACTION_NOTACCESS = You don't have access to this command.
+PUG_WEAPON_NOTALLOWED = This weapon is not allowed.
+
+PUG_DMG_TITLE = ========== DMG ==========
+PUG_DMG_INFO = Player: %s | Dmg: %i | Hits: %i
+PUG_DMG_DIDNTHURT = You didn't hurt anyone in this round.
+
+PUG_HP_TITLE = ========== HP ==========
+PUG_HP_INFO = Player: %s | Health: %i
+PUG_HP_DIDNTLIVE = No one live.
+
+PUG_BALANCING_TEAMS = Balancing teams.
+PUG_RANDOMIZING_TEAMS = Randomizing teams.
+PUG_CAPTAINS_ARE = The captains are: %s %s - %s %s
+PUG_CAPTAIN_NEW = The new captain for %s is %s
+PUG_CAPTAIN_PLAYERS_REQUIRED = At least %i players are required to activate captain mode.
+PUG_CAPTAIN_CHOOSE = %s chose %s
+PUG_CAPTAIN_AUTOCHOOSE = %s chose %s automatically.
+
+PUG_ADMIN_SELECTED = %s has been selected as the pug moderator for this team and has the ability to .votekick players.
+
+PUG_VOTEKICK_SPECTATORS = The spectators cant kick
+PUG_VOTEKICK_SPECIFY = You must specify a player
+PUG_VOTEKICK_UNAVAILABLE = That is not an objective available.
+PUG_VOTEKICK_MAXVOTES = You can only start 3 votes
+PUG_VOTEKICK_STARTED = %s started voting to kick %s. Reason: %s
+PUG_VOTEKICK_TIE = Failed voting (tie of votes).
+PUG_VOTEKICK_FAILED = Failed voting (no votes).
+PUG_VOTEKICK_INSUFFICIENT = Failed voting (insufficient votes).
+PUG_VOTEKICK_KICKED = %s kicked. Votes: %d.
+PUG_VOTEKICK_NOTKICKED = Failed voting to kick %s. Votes: %d.
+PUG_VOTEKICK_TITLE = Votekick: %s (Reason: %s)
+PUG_VOTEKICK_NOREASON = No reason
+
+PUG_VOTING_MAP = Map Voting
+PUG_VOTING_MAPCURRENT = Play this map
+PUG_VOTING_TEAM = Team Voting
+PUG_VOTING_BALANCED = Balanced
+PUG_VOTING_NOTSORTED = Same teams
+PUG_VOTING_CAPTAINS = Captains
+PUG_VOTING_RANDOM = Random
+PUG_NOVOTES = No votes
+
+PUG_AFKKICKER_CVAR = Cvar pug_afktime %i is too low. Minimum value is %i.
+PUG_AFKKICKER_WARN = You have %i seconds to move or you will be kicked for being AFK.
+PUG_AFKKICKER_KICK = %s was kicked for being AFK longer than %i seconds.
+PUG_AFKKICKER_KICK2 = You were kicked for being AFK longer than %i seconds.
