@@ -1,4 +1,5 @@
 [es]
+
 UNASSIGNED = Sin asignar
 
 TERRORISTS = Terroristas
@@ -116,6 +117,7 @@ PUG_PAUSE_FAILED = La votacion para pausar la proxima ronda fallo!
 PUG_SPEC_DONT_SAY = Solo los admins pueden escribir en el say de espectador.
 
 [en]
+
 UNASSIGNED = Unassigned
 TERRORISTS = Terrorists
 CTS = Counter-Terrorists
