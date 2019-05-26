@@ -296,8 +296,8 @@ public plugin_init()
 	register_message(gMsgScoreInfo, "fnScoreInfo")
 
 	// Events
-	register_event("Money", "fnMoney", "b")
-	register_event("Damage", "fnOnDamage", "b", "2!0", "3=0", "4!0")
+	register_event("Money", "money_handler", "b")
+	register_event("Damage", "damage_handler", "b", "2!0", "3=0", "4!0")
 
 	// DISPLAY MONEY
 	register_event("HLTV", "event_new_round", "a", "1=0", "2=0");
@@ -664,7 +664,7 @@ public fnScoreInfo(m, s, id)
 
 public player_give_money (id, amount) set_member(id, m_iAccount, amount);
 
-public fnMoney (const id)
+public money_handler (const id)
 {
 	if (!fnIsPugAlive())
 	{
@@ -675,7 +675,7 @@ public fnMoney (const id)
 	return PLUGIN_CONTINUE;
 }
 
-public fnOnDamage (iVictim)
+public damage_handler (iVictim)
 {
 	static iAttacker; iAttacker = get_user_attacker(iVictim)
 	static iDamage; iDamage = read_data(2)
