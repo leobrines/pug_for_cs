@@ -154,62 +154,18 @@ new g_iOldAngles[33][3]
 new g_iAfkTime[33]
 new bool:g_bSpawned[33] = {true, ...}
 
-// DISPLAY MONEY
-
-//#include <engine>
-
-#define DISPLAY_MONEY	1
-#define DISPLAY_WEAPONS	1
-#define DISPLAY_DOLLARSIGN	1
-#define DISPLAY_ARROW	0
-
-#if DISPLAY_MONEY
-#define NUMBER_OF_SPRITES	5
-new userSpr[MAX_PLAYERS+1][NUMBER_OF_SPRITES];
-new tmpstr[6];
-new value[2];
-#endif
-
-#if DISPLAY_WEAPONS
-#define NUMBER_OF_WEAPTYPES	7
-new const Float:Pistols[6] = {1.0, 10.0, 11.0, 16.0, 17.0, 26.0};
-new const Float:Rifles[18] = {3.0, 5.0, 7.0, 8.0, 12.0, 13.0, 14.0, 15.0, 18.0, 19.0, 20.0, 21.0, 22.0, 23.0, 24.0, 27.0, 28.0, 30.0};
-new userWeap[MAX_PLAYERS+1][NUMBER_OF_WEAPTYPES];
-new weapons;
-#endif
-
-#if DISPLAY_DOLLARSIGN
-new userDSign[33];
-#endif
-
-#if DISPLAY_ARROW
-new userArrow[33];
-#endif
-
-new bool:NewRound;
-new Float:userOrig[MAX_PLAYERS+1][3];
-new iPlayers[32], count;
-
 #define TASK_DISPLAY_INFO 4563
 
 public plugin_precache(){
-	#if DISPLAY_MONEY
 	precache_model("sprites/10000.spr");
 	precache_model("sprites/1000.spr");
 	precache_model("sprites/100.spr");
 	precache_model("sprites/10.spr");
 	precache_model("sprites/1.spr");
-	#endif
-	#if DISPLAY_WEAPONS
 	precache_model("sprites/weap.spr");
 	precache_model("sprites/weap2.spr");
-	#endif
-	#if DISPLAY_DOLLARSIGN
 	precache_model("sprites/cash.spr");
-	#endif
-	#if DISPLAY_ARROW
 	precache_model("sprites/arrow.spr");
-	#endif
 }
 
 // --------------------- AMX Forwards ---------------------
@@ -651,49 +607,6 @@ public HandleMenu_ChooseTeam(const id, MenuChooseTeam:iNewTeam)
 			fnReady(id)
 		}
 	}
-	
-	
-	/*
-	if (iNewTeam == MenuChoose_Spec)
-	{
-		if (!get_pcvar_num(g_pAllowSpec) && !access(id, PUG_CMD_LVL))
-		{
-			chat_print(id, "%L", LANG_SERVER, "PUG_TEAMS_SPECTATORS");
-			fnNotReady(id)
-
-			SetHookChainReturn(ATYPE_INTEGER, 0)
-			return HC_BREAK
-		}
-	}
-	else if (iNewTeam == MenuChoose_AutoSelect)
-	{
-		chat_print(id, "%L", LANG_SERVER, "PUG_TEAMS_AUTO");
-
-		SetHookChainReturn(ATYPE_INTEGER, 0)
-		return HC_BREAK
-	}
-	
-	if (getPlayersTeam(TeamName:iNewTeam) >= get_pcvar_num(g_pPlayers) / 2)
-	{
-		if (is_user_bot(id))
-		{
-			SetHookChainReturn(ATYPE_INTEGER, 0)
-			return HC_BREAK
-		}
-
-		if (getPlayersTeam(TeamName:iNewTeam, false) >= (get_pcvar_num(g_pPlayers) / 2))
-		{
-			chat_print(id, "%L", LANG_SERVER, "PUG_TEAMS_FULL", g_szTeams[TeamName:iNewTeam]);
-
-			SetHookChainReturn(ATYPE_INTEGER, 0)
-			return HC_BREAK
-		}
-	}
-
-	if (MenuChoose_T <= iNewTeam <= MenuChoose_CT)
-		fnReady(id)
-	
-	*/
 			
 	set_task(5.0, "fnIntroduce", id, _, _, "a", 1) 
 	
@@ -786,7 +699,6 @@ public PugWarmup()
 	DisableHookChain(g_hPlayerPostThink)
 
 	fnRemoveHudMoney()
-	//fnRemoveEnts()
 
 	fnExec(g_pWarmup)
 }
@@ -2308,233 +2220,9 @@ public event_new_round()
 			}
 			case 3:
 			{
-				NewRound = true;
-				fnRemoveEnts();
-
-				set_task(0.2, "display_info", TASK_DISPLAY_INFO, _, _, "b");
-				set_task(get_pcvar_float(g_pFreezeTime), "fnRemoveEnts", _, _, _, "a", 1);
 			}
 		}
 	}
-}
-
-public fnRemoveEnts()
-{
-	if (!task_exists(TASK_DISPLAY_INFO))
-		return
-
-	remove_task(TASK_DISPLAY_INFO);
-
-	for(new i; i<33; i++)
-	{
-		#if DISPLAY_MONEY
-		for(new e; e < NUMBER_OF_SPRITES; e++)
-			if (userSpr[i][e])
-				rg_remove_entity(userSpr[i][e])
-		#endif
-		#if DISPLAY_WEAPONS
-		for(new e; e < NUMBER_OF_WEAPTYPES; e++)
-			if (userWeap[i][e])
-				rg_remove_entity(userWeap[i][e])
-		#endif
-		#if DISPLAY_DOLLARSIGN
-
-		if(userDSign[i])
-			rg_remove_entity(userDSign[i])
-		#endif
-		#if DISPLAY_ARROW
-
-		if(userArrow[i])
-			rg_remove_entity(userArrow[i])
-		#endif
-	}
-
-	return
-}
-
-public display_info ()
-{
-	if (!fnIsPugAlive())
-		return
-
-	if (NewRound)
-		get_players(iPlayers, count, "ah");
-
-	for(new c; c<count; c++)
-	{
-		if(!is_user_alive(iPlayers[c]) || !is_user_connected(iPlayers[c]) || get_member(iPlayers[c], m_iTeam) == TEAM_SPECTATOR)
-		{
-			if(!NewRound){
-				#if DISPLAY_MONEY
-				drawsprite(userSpr[iPlayers[c]][4], iPlayers[c], "sprites/10000.spr", 1.0, 34.0, 0, 0, 255, 0);
-				drawsprite(userSpr[iPlayers[c]][3], iPlayers[c], "sprites/1000.spr", 1.0, 34.0, 0, 0, 255, 0);
-				drawsprite(userSpr[iPlayers[c]][2], iPlayers[c], "sprites/100.spr", 1.0, 34.0, 0, 0, 255, 0);
-				drawsprite(userSpr[iPlayers[c]][1], iPlayers[c], "sprites/10.spr", 1.0, 34.0, 0, 0, 255, 0);
-				drawsprite(userSpr[iPlayers[c]][0], iPlayers[c], "sprites/1.spr", 1.0, 34.0, 0, 0, 255, 0);
-				#endif
-				#if DISPLAY_DOLLARSIGN
-				drawsprite(userDSign[iPlayers[c]], iPlayers[c], "sprites/cash.spr", 1.0, 34.0, 0, 0, 255, 0);
-				#endif
-				#if DISPLAY_ARROW
-				drawsprite(userArrow[iPlayers[c]], iPlayers[c], "sprites/arrow.spr", 1.0, 34.0, 0, 255, 255, 0);
-				#endif
-				#if DISPLAY_WEAPONS
-				drawsprite(userWeap[iPlayers[c]][0], iPlayers[c], "sprites/weap.spr", Pistols[0], 50.0, 0, 255, 255, 0);
-				drawsprite(userWeap[iPlayers[c]][1], iPlayers[c], "sprites/weap.spr", Rifles[0], 50.0, 0, 255, 255, 0);
-				drawsprite(userWeap[iPlayers[c]][2], iPlayers[c], "sprites/weap.spr", 4.0, 50.0, 0, 255, 255, 255);
-				drawsprite(userWeap[iPlayers[c]][3], iPlayers[c], "sprites/weap.spr", 25.0, 50.0, 0, 255, 255, 255);
-				drawsprite(userWeap[iPlayers[c]][4], iPlayers[c], "sprites/weap.spr", 9.0, 50.0, 0, 255, 255, 255);
-				drawsprite(userWeap[iPlayers[c]][5], iPlayers[c], "sprites/weap2.spr", 1.0, 50.0, 0, 0, 0, 255);
-				drawsprite(userWeap[iPlayers[c]][6], iPlayers[c], "sprites/weap2.spr", 3.0, 50.0, 0, 0, 0, 255);
-				#endif
-			}
-
-			continue;
-		}
-
-		if (NewRound)
-		{
-			#if DISPLAY_MONEY
-			for(new i; i<NUMBER_OF_SPRITES; i++)
-				userSpr[iPlayers[c]][i]=rg_create_entity("env_sprite");
-				//userSpr[iPlayers[c]][i]=create_entity("env_sprite");
-			#endif
-			#if DISPLAY_WEAPONS
-			for(new i; i<NUMBER_OF_WEAPTYPES; i++)
-				userWeap[iPlayers[c]][i]=rg_create_entity("env_sprite");
-			#endif
-			#if DISPLAY_DOLLARSIGN
-			userDSign[iPlayers[c]]=rg_create_entity("env_sprite");
-			#endif
-			#if DISPLAY_ARROW
-			userArrow[iPlayers[c]]=rg_create_entity("env_sprite");
-			#endif
-		}
-	
-		#if DISPLAY_MONEY
-		for (new x; x < NUMBER_OF_SPRITES; x++)
-		{
-			arrayset(tmpstr, 0, sizeof tmpstr);
-			num_to_str(get_member(iPlayers[c], m_iAccount), tmpstr, charsmax(tmpstr))
-			value[0]=tmpstr[x];
-			value[1]=0;
-			
-			if(!tmpstr[x])
-			{
-				switch(x)
-				{
-					case 0: drawsprite(userSpr[iPlayers[c]][4], iPlayers[c], "sprites/10000.spr", 1.0, 34.0, 0, 0, 255, 0);
-					case 1: drawsprite(userSpr[iPlayers[c]][3], iPlayers[c], "sprites/1000.spr", 1.0, 34.0, 0, 0, 255, 0);
-					case 2: drawsprite(userSpr[iPlayers[c]][2], iPlayers[c], "sprites/100.spr", 1.0, 34.0, 0, 0, 255, 0);
-					case 3: drawsprite(userSpr[iPlayers[c]][1], iPlayers[c], "sprites/10.spr", 1.0, 34.0, 0, 0, 255, 0);
-					case 4: drawsprite(userSpr[iPlayers[c]][0], iPlayers[c], "sprites/1.spr", 1.0, 34.0, 0, 0, 255, 0);
-				}
-				
-				continue;
-			}
-				
-			switch(x)
-			{
-				case 0: drawsprite(userSpr[iPlayers[c]][4], iPlayers[c], "sprites/10000.spr", floatstr(value), 34.0, 255, 0, 255, 0);
-				case 1: drawsprite(userSpr[iPlayers[c]][3], iPlayers[c], "sprites/1000.spr", floatstr(value), 34.0, 255, 0, 255, 0);
-				case 2: drawsprite(userSpr[iPlayers[c]][2], iPlayers[c], "sprites/100.spr", floatstr(value), 34.0, 255, 0, 255, 0);
-				case 3: drawsprite(userSpr[iPlayers[c]][1], iPlayers[c], "sprites/10.spr", floatstr(value), 34.0, 255, 0, 255, 0);
-				case 4: drawsprite(userSpr[iPlayers[c]][0], iPlayers[c], "sprites/1.spr", floatstr(value), 34.0, 255, 0, 255, 0);
-			}
-		}
-		#endif
-		#if DISPLAY_DOLLARSIGN
-		drawsprite(userDSign[iPlayers[c]], iPlayers[c], "sprites/cash.spr", 1.0, 34.0, 255, 0, 255, 0);
-		#endif
-		#if DISPLAY_ARROW
-		drawsprite(userArrow[iPlayers[c]], iPlayers[c], "sprites/arrow.spr", 1.0, 34.0, 255, 255, 255, 0);
-		#endif
-		#if DISPLAY_WEAPONS
-		weapons = get_entvar(iPlayers[c], var_weapons);
-		
-		for(new i; i < sizeof Pistols; i++)
-		{
-			if(weapons & 1<<floatround(Pistols[i]))
-			{
-				drawsprite(userWeap[iPlayers[c]][0], iPlayers[c], "sprites/weap.spr", Pistols[i], 50.0, 255, 255, 255, 0);
-				goto jmp1;
-			}
-		}
-
-		drawsprite(userWeap[iPlayers[c]][0], iPlayers[c], "sprites/weap.spr", Pistols[0], 50.0, 0, 255, 255, 0);
-
-		jmp1:
-
-		for(new i; i < sizeof Rifles; i++)
-		{
-			if(weapons & 1<<floatround(Rifles[i]))
-			{
-				drawsprite(userWeap[iPlayers[c]][1], iPlayers[c], "sprites/weap.spr", Rifles[i], 50.0, 255, 255, 255, 0);
-				goto jmp2;
-			}
-		}
-
-		drawsprite(userWeap[iPlayers[c]][1], iPlayers[c], "sprites/weap.spr", Rifles[0], 50.0, 0, 255, 255, 0);
-
-		jmp2:
-		
-		if(weapons & 1<<CSW_HEGRENADE)
-			drawsprite(userWeap[iPlayers[c]][2], iPlayers[c], "sprites/weap.spr", 4.0, 50.0, 255, 255, 255, 255);
-		else
-			drawsprite(userWeap[iPlayers[c]][2], iPlayers[c], "sprites/weap.spr", 4.0, 50.0, 0, 255, 255, 255);
-		
-		if(weapons & 1<<CSW_FLASHBANG)
-			drawsprite(userWeap[iPlayers[c]][3], iPlayers[c], "sprites/weap.spr", 25.0, 50.0, 255, 255, 255, 255);
-		else
-			drawsprite(userWeap[iPlayers[c]][3], iPlayers[c], "sprites/weap.spr", 25.0, 50.0, 0, 255, 255, 255);
-		
-		if(weapons & 1<<CSW_SMOKEGRENADE)
-			drawsprite(userWeap[iPlayers[c]][4], iPlayers[c], "sprites/weap.spr", 9.0, 50.0, 255, 255, 255, 255);
-		else
-			drawsprite(userWeap[iPlayers[c]][4], iPlayers[c], "sprites/weap.spr", 9.0, 50.0, 0, 255, 255, 255);
-
-		new ArmorType:armor
-		rg_get_user_armor(iPlayers[c], armor);
-
-		if (armor == ARMOR_VESTHELM)
-			drawsprite(userWeap[iPlayers[c]][5], iPlayers[c], "sprites/weap2.spr", 2.0, 50.0, 255, 0, 0, 255);
-		else if(armor == ARMOR_KEVLAR)
-			drawsprite(userWeap[iPlayers[c]][5], iPlayers[c], "sprites/weap2.spr", 1.0, 50.0, 255, 0, 0, 255);
-		else
-			drawsprite(userWeap[iPlayers[c]][5], iPlayers[c], "sprites/weap2.spr", 1.0, 50.0, 0, 0, 0, 255);
-
-		
-		if(weapons & 1<<CSW_C4)
-			drawsprite(userWeap[iPlayers[c]][6], iPlayers[c], "sprites/weap2.spr", 3.0, 50.0, 255, 0, 0, 255);
-		else if(get_member(iPlayers[c], m_bHasDefuser))
-			drawsprite(userWeap[iPlayers[c]][6], iPlayers[c], "sprites/weap2.spr", 4.0, 50.0, 255, 0, 0, 255);
-		else
-			drawsprite(userWeap[iPlayers[c]][6], iPlayers[c], "sprites/weap2.spr", 3.0, 50.0, 0, 0, 0, 255);
-
-		#endif
-	}
-
-	NewRound = false;
-}
-
-public drawsprite(ent, player, str[], Float:frame, Float:offset, render, r, g, b)
-{
-//		if(!is_user_alive(player) || !is_user_connected(player) || get_member(player, m_iTeam) == TEAM_SPECTATOR)
-//			return;
-
-	if (NewRound)
-	{
-		engfunc(EngFunc_SetModel, ent, str);
-		set_entvar(ent, var_movetype, MOVETYPE_NOCLIP);
-		set_entvar(ent, var_framerate, 1.0)
-		set_entvar(ent, var_scale, 0.3)
-	}
-
-	set_entvar(ent, var_frame, frame)
-	rg_set_rendering(ent, kRenderFxNone, r, g, b, kRenderTransAdd, render)
-	get_entvar(player, var_origin, userOrig[player]);
-	userOrig[player][2] += offset;
-	set_entvar(ent, var_origin, userOrig[player]);
 }
 
 // --------------------- Stocks ---------------------
