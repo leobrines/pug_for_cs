@@ -1,6 +1,20 @@
 #include <amxmodx>
 #include <reapi>
 #include <colorchat>
+#include <fakemeta>
+
+#if AMXX_VERSION_NUM >= 183
+	#define client_disconnect client_disconnected
+	#define strbreak argbreak
+#else
+	#define MAX_PLAYERS 32
+	#define MAX_NAME_LENGTH 32
+	#define MENU_TIMEOUT -4
+#endif
+
+#include <competitive_reapi>
+#include <competitive_cvars>
+#include <competitive_equipmentspr>
 
 enum _:PUGSTATE
 {

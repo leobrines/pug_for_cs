@@ -1,43 +1,41 @@
-#include <amxmodx>
-
 // Cfg files
-new g_pWarmup
-new g_pPugMode
-new g_pHalftime
-new g_pOvertime
-new g_pFinished
+stock g_pWarmup
+stock g_pPugMode
+stock g_pHalftime
+stock g_pOvertime
+stock g_pFinished
 
 // Pug configuration
-new g_pPugTag
-new g_pPugOwner
-new g_pGameName
-new g_pPlayers
-new g_pBlockShield
-new g_pBlockNvgs
-new g_pBlockGrenades
-new g_pBlockLastMaps
-new g_pRoundsMax
-new g_pRoundsOT
-new g_pVoteDelay
-new g_pVoteMap
-new g_pVoteMapReady
-new g_pVoteTeam
-new g_pAllowTie
-new g_pDelayEnd
-new g_pLastMap
-new g_pLastMap2
-new g_pIntermissionTime
-new g_pAbsencePlayers
-new g_pVoteTime
-new g_pVoteKickPerc
-new g_pAfkTime
-new g_pManual
-new g_pShowMoney
-new g_pAllowSoundMsg
+stock g_pPugTag
+stock g_pPugOwner
+stock g_pGameName
+stock g_pPlayers
+stock g_pBlockShield
+stock g_pBlockNvgs
+stock g_pBlockGrenades
+stock g_pBlockLastMaps
+stock g_pRoundsMax
+stock g_pRoundsOT
+stock g_pVoteDelay
+stock g_pVoteMap
+stock g_pVoteMapReady
+stock g_pVoteTeam
+stock g_pAllowTie
+stock g_pDelayEnd
+stock g_pLastMap
+stock g_pLastMap2
+stock g_pIntermissionTime
+stock g_pAbsencePlayers
+stock g_pVoteTime
+stock g_pVoteKickPerc
+stock g_pAfkTime
+stock g_pManual
+stock g_pShowMoney
+stock g_pAllowSoundMsg
 
-new g_pAllowSpec
-new g_pMapCycle
-new g_pFreezeTime
+stock g_pAllowSpec
+stock g_pMapCycle
+stock g_pFreezeTime
 
 public create_pcvars () {
 	g_pWarmup	= register_cvar("pug_config_warmup", "warmup.rc");
@@ -76,5 +74,4 @@ public create_pcvars () {
 	g_pAllowSpec = get_cvar_pointer("allow_spectators")
 	g_pMapCycle = get_cvar_pointer("mapcyclefile");
 	g_pFreezeTime = get_cvar_pointer("mp_freezetime");
-
 }

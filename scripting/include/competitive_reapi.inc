@@ -1,7 +1,4 @@
-#include <reapi>
-#include <fakemeta>
-
-new Float:color[3]
+stock Float:color[3]
 
 stock rg_remove_entity (const ent)
 {
