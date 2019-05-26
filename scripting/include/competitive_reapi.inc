@@ -1,20 +1,36 @@
 #include <reapi>
+#include <fakemeta>
 
-stock rg_remove_entity(index)
+new Float:color[3]
+
+stock rg_remove_entity (const ent)
 {
-	set_entvar(index, var_flags, get_entvar(index, var_flags) | FL_KILLME);
-	//set_entvar(index, var_nextthink, get_gametime() );
+	if (!is_entity(ent))
+		return;
+
+	engfunc(EngFunc_RemoveEntity, ent);
 }
 
-stock rg_set_rendering(ent, fx=kRenderFxNone, r=255, g=255, b=255, render=kRenderNormal, amount=16) 
+stock rg_set_rendering (const ent, const fx=kRenderFxNone, r,g,b, render=kRenderNormal, amount=16) 
 {
-	static Float:dest[3]
-	dest[0] = float(r)
-	dest[1] = float(g)
-	dest[2] = float(b)
+	if (!is_entity(ent))
+		return;
+
+	color[0] = float(r);
+	color[1] = float(g);
+	color[2] = float(b);
 
 	set_entvar(ent, var_renderfx, fx)
-	set_entvar(ent, var_rendercolor, dest)
+	set_entvar(ent, var_rendercolor, color)
 	set_entvar(ent, var_rendermode, render)
 	set_entvar(ent, var_renderamt, float(amount)) 
-}  
+}
+
+public bool:is_user_playing (const id) {
+	if ( is_user_alive(id) &&
+		is_user_connected(id) &&
+		(get_member(id, m_iTeam) != TEAM_SPECTATOR))
+		return true;
+
+	return false;
+}
