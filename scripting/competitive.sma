@@ -124,6 +124,8 @@ public plugin_init()
 	#else
 	g_iMaxClients = get_maxplayers()
 	#endif
+	
+	init_cvars();
 
 	// AFK Kicker
 	set_task(float(CHECK_FREQ), "fnCheckPlayers", _, _, _, "b")
@@ -191,12 +193,12 @@ public plugin_init()
 
 public plugin_cfg()
 {
-	fnGetLastMaps()
+	get_lastmaps(g_sLastMaps);
 
 	server_cmd("exec pugconfig.cfg")
 
 	new GameName[32];
-	get_pcvar_string(g_pGameName, GameName, charsmax(GameName));
+	get_game_description(GameName, charsmax(GameName));
 	set_member_game(m_GameDesc, GameName);
 
 	// fnUpdateServerName();
@@ -247,7 +249,7 @@ public client_disconnect(id)
 		if (fnIsPugAlive())
 		{
 			new iCount = getPlayersTeam(iTeam, false) - 1
-			new iAbsencePlayers = get_pcvar_num(g_pAbsencePlayers)
+			new iAbsencePlayers = get_max_absence_players();
 
 			if (iAbsencePlayers && iCount <= iAbsencePlayers)
 			{
@@ -271,7 +273,7 @@ public client_disconnect(id)
 
 public CSGameRules_OnRoundFreezeEnd()
 {	
-	set_pcvar_num(g_pFreezeTime, 15)
+	set_freezetime(15);
 	fnResetDmg();
 	return HC_CONTINUE;
 }
@@ -309,19 +311,19 @@ public CSGameRules_PlayerSpawn(const id)
 
 public CBasePlayer_HasRestrictItem(const id, const ItemID:item, const ItemRestType:type)
 {
-	if (item == ITEM_SHIELDGUN && type == ITEM_TYPE_BUYING && get_pcvar_num(g_pBlockShield))
+	if (item == ITEM_SHIELDGUN && type == ITEM_TYPE_BUYING && is_shield_blocked())
 	{
 		chat_print(id, "%L", LANG_SERVER, "PUG_WEAPON_NOTALLOWED")
 		SetHookChainReturn(ATYPE_INTEGER, 1);
 		return HC_SUPERCEDE;
 	}
-	else if (item == ITEM_NVG && type == ITEM_TYPE_BUYING  && get_pcvar_num(g_pBlockNvgs))
+	else if (item == ITEM_NVG && type == ITEM_TYPE_BUYING  && is_nvg_blocked())
 	{
 		chat_print(id, "%L", LANG_SERVER, "PUG_WEAPON_NOTALLOWED")
 		SetHookChainReturn(ATYPE_INTEGER, 1);
 		return HC_SUPERCEDE;
 	}
-	else if ((item == ITEM_FLASHBANG || item == ITEM_HEGRENADE || item == ITEM_SMOKEGRENADE) && !fnIsPugAlive() && get_pcvar_num(g_pBlockGrenades))
+	else if ((item == ITEM_FLASHBANG || item == ITEM_HEGRENADE || item == ITEM_SMOKEGRENADE) && !fnIsPugAlive() && are_grenades_blocked())
 	{	
 		SetHookChainReturn(ATYPE_INTEGER, 1);
 		return HC_SUPERCEDE;
@@ -393,7 +395,7 @@ public RoundEnd(WinStatus:status, ScenarioEventEndRound:event, Float:tmDelay)
 
 		if (g_iStage == STAGE_FIRSTHALF)
 		{
-			if (g_iRound == (get_pcvar_num(g_pRoundsMax)/2))
+			if (g_iRound == get_maxrounds()/2)
 				PugHalftime();
 
 			else
@@ -402,22 +404,17 @@ public RoundEnd(WinStatus:status, ScenarioEventEndRound:event, Float:tmDelay)
 		}
 		else if (g_iStage == STAGE_SECONDHALF)
 		{
-			new iMaxRounds = (get_pcvar_num(g_pRoundsMax)/2)
+			new iMaxRounds = (get_maxrounds()/2)
 
-			if (g_iRoundCT > iMaxRounds)
+			if (g_iRoundCT > iMaxRounds) {
 				PugFinished(WINSTATUS_CTS)
-
-			else if (g_iRoundTT > iMaxRounds)
+			} else if (g_iRoundTT > iMaxRounds) {
 				PugFinished(WINSTATUS_TERRORISTS)
-
-			else if (g_iRoundTT == iMaxRounds && g_iRoundCT == iMaxRounds)
-			{
-				if (get_pcvar_num(g_pAllowTie))
+			} else if (g_iRoundTT == iMaxRounds && g_iRoundCT == iMaxRounds) {
+				if (is_tie_allowed())
 					PugFinished(WINSTATUS_DRAW)
-
 				else
 					PugHalftime()
-
 			}
 
 			else
@@ -425,8 +422,8 @@ public RoundEnd(WinStatus:status, ScenarioEventEndRound:event, Float:tmDelay)
 		}
 		else if (g_iStage == STAGE_OVERTIME)
 		{
-			new iMaxRounds = (get_pcvar_num(g_pRoundsMax)/2)
-			new iRoundsOT = (get_pcvar_num(g_pRoundsOT)/2)
+			new iMaxRounds = (get_maxrounds()/2)
+			new iRoundsOT = (get_overtime_rounds()/2)
 
 			if (g_iRoundCT > (iMaxRounds+iRoundsOT))
 				PugFinished(WINSTATUS_CTS)
@@ -474,7 +471,7 @@ public HandleMenu_ChooseTeam(const id, MenuChooseTeam:iNewTeam)
 	{
 		case MenuChoose_Spec:
 		{
-			if (!get_pcvar_num(g_pAllowSpec) && !access(id, PUG_CMD_LVL))
+			if (!is_spectator_allowed() && !access(id, PUG_CMD_LVL))
 			{
 				chat_print(id, "%L", LANG_SERVER, "PUG_TEAMS_SPECTATORS");
 				fnNotReady(id)
@@ -492,7 +489,7 @@ public HandleMenu_ChooseTeam(const id, MenuChooseTeam:iNewTeam)
 		}
 		case MenuChoose_T,  MenuChoose_CT:
 		{
-			if (getPlayersTeam(TeamName:iNewTeam) >= get_pcvar_num(g_pPlayers)/2 )
+			if (getPlayersTeam(TeamName:iNewTeam) >= get_pug_maxplayers()/2 )
 			{
 				if (is_user_bot(id))
 				{
@@ -500,7 +497,7 @@ public HandleMenu_ChooseTeam(const id, MenuChooseTeam:iNewTeam)
 					return HC_BREAK
 				}
 
-				if (getPlayersTeam(TeamName:iNewTeam, false) >= get_pcvar_num(g_pPlayers)/2 )
+				if (getPlayersTeam(TeamName:iNewTeam, false) >= get_pug_maxplayers()/2 )
 				{
 					chat_print(id, "%L", LANG_SERVER, "PUG_TEAMS_FULL", g_szTeams[TeamName:iNewTeam]);
 
@@ -597,7 +594,7 @@ public PugWarmup ()
 	fnResetScores()
 	fnResetFrags()
 
-	if (g_iReadyCount < get_pcvar_num(g_pPlayers))
+	if (g_iReadyCount < get_pug_maxplayers())
 		set_task(1.0, "fnKeepReady", TASK_HUD_READY, _, _, "b")
 
 	fnPregameHooks()
@@ -607,7 +604,7 @@ public PugWarmup ()
 
 	fnRemoveHudMoney()
 
-	fnExec(g_pWarmup)
+	exec_warmup();
 }
 
 public PugStart () {
@@ -623,7 +620,7 @@ public PugFirstHalf(){
 
 	// fnTeamsRandomize()
 
-	fnExec(g_pPugMode)
+	exec_pugmode();
 
 	fnPugHooks()
 	chat_print(0, "%L", LANG_SERVER, "PUG_STARTING_FIRSTHALF")
@@ -632,18 +629,18 @@ public PugFirstHalf(){
 public PugHalftime(){
 	g_iStage = STAGE_HALFTIME
 
-	fnExec(g_pHalftime)
+	exec_halftime();
 
 	EnableHookChain(g_hPlayerPostThink)
 	fnPregameHooks()
 
-	chat_print(0, "%L", LANG_SERVER, "PUG_GAME_INTERMISSION", get_pcvar_num(g_pIntermissionTime))
+	chat_print(0, "%L", LANG_SERVER, "PUG_GAME_INTERMISSION", get_halftime())
 
-	if (g_iRound < get_pcvar_num(g_pRoundsMax))
-		set_task(get_pcvar_float(g_pIntermissionTime), "PugSecondHalf", _, _, _, "a", 1);
+	if (g_iRound < get_maxrounds())
+		set_task(float(get_halftime()), "PugSecondHalf", _, _, _, "a", 1);
 
 	else
-		set_task(get_pcvar_float(g_pIntermissionTime), "PugOvertime", _, _, _, "a", 1);
+		set_task(float(get_halftime()), "PugOvertime", _, _, _, "a", 1);
 }
 
 public PugSecondHalf(){
@@ -655,7 +652,7 @@ public PugSecondHalf(){
 	fnChangeTeams()
 
 	chat_print(0, "%L", LANG_SERVER, "PUG_STARTING_SECONDHALF")
-	fnExec(g_pPugMode)
+	exec_pugmode();
 }
 
 public PugOvertime()
@@ -668,16 +665,17 @@ public PugOvertime()
 	fnChangeTeams()
 
 	chat_print(0, "%L", LANG_SERVER, "PUG_STARTING_OVERTIME")
-	fnExec(g_pOvertime)
+	exec_overtime();
 }
 
 public PugFinished(WinStatus:status)
 {
 	g_iStage = STAGE_FINISHED
 	
-	set_task(get_pcvar_float(g_pDelayEnd), "PugWarmup", _, _, _, "a", 1); 
+	set_task(float(get_endtime()), "PugWarmup", _, _, _, "a", 1); 
 
-	fnExec(g_pFinished)
+	exec_finished();
+
 	EnableHookChain(g_hPlayerPostThink)
 	// fnUpdateLastMaps()
 
@@ -703,26 +701,23 @@ public fnNextVote()
 	{
 		case 1:
 		{
-			if (get_pcvar_num(g_pVoteMap) == 1 && get_pcvar_num(g_pVoteMapReady) == 0)
+			if (is_votemap_allowed() && !is_votemap_ready()) {
 				fnStartVoteMap()
-
-			else
-			{
-				set_pcvar_num(g_pVoteMapReady, 0)
+			} else {
+				set_votemap_ready(false);
 				fnNextVote();
 			}
 		}
 		case 2:
 		{
-			if (get_pcvar_num(g_pVoteTeam) == 1)
+			if (is_voteteam_allowed())
 				fnStartVoteTeam()
-
 			else
 				fnNextVote();
 		}
-		default :
+		default:
 		{
-			set_pcvar_num(g_pVoteMapReady, 0)
+			set_votemap_ready(false);
 			fnStartingGame()
 		}
 	}
@@ -738,7 +733,7 @@ public fnStartingGame()
 		}
 		case STAGE_HALFTIME:
 		{
-			if (g_iRound < get_pcvar_num(g_pRoundsMax))
+			if (g_iRound < get_maxrounds())
 				PugSecondHalf();
 			else
 				PugOvertime();
@@ -763,7 +758,7 @@ public fnStartVoteMap()
 	}
 
 	set_task(0.0, "fnVoteListMap", TASK_HUD_VOTE, _, _, "b")
-	set_task(get_pcvar_float(g_pVoteDelay), "fnVoteMapEnd", _, _, _, "a", 1)
+	set_task(float(get_votedelay()), "fnVoteMapEnd", _, _, _, "a", 1)
 }
 
 public fnVoteListMap()
@@ -803,7 +798,8 @@ public fnMapMenuHandle(const id, iMenu, iItem)
 
 public fnVoteMapEnd()
 {
-	set_pcvar_num(g_pVoteMapReady, 1)
+	set_votemap_ready(true);
+
 	remove_task(TASK_HUD_VOTE)
 
 	// Cancelar menu
@@ -876,7 +872,7 @@ public fnStartVoteTeam()
 	}
 
 	set_task(0.2, "fnVoteListTeam", TASK_HUD_VOTE, _, _, "b")
-	set_task(get_pcvar_float(g_pVoteDelay), "fnVoteTeamEnd", _, _, _, "a", 1)
+	set_task(float(get_votedelay()), "fnVoteTeamEnd", _, _, _, "a", 1)
 }
 
 public fnVoteListTeam()
@@ -1036,13 +1032,13 @@ public fnCheckAfkTime(id)
 	if (!fnIsPugAlive())
 		return;
 
-	new iMaxAfkTime = get_pcvar_num(g_pAfkTime)
+	new iMaxAfkTime = get_afktime();
 
 	if (iMaxAfkTime < MIN_AFK_TIME)
 	{
 		log_amx("%L", LANG_SERVER, "PUG_AFKKICKER_CVAR", iMaxAfkTime, MIN_AFK_TIME)
 		iMaxAfkTime = MIN_AFK_TIME
-		set_pcvar_num(g_pAfkTime, MIN_AFK_TIME)
+		set_afktime(MIN_AFK_TIME);
 	}
 
 	if (iMaxAfkTime-WARNING_TIME <= g_iAfkTime[id] < iMaxAfkTime)
@@ -1149,7 +1145,7 @@ public fnLoadMaps(const sPatch[])
 				copy(g_sMapNames[g_iMapCount], charsmax(g_sMapNames[]), sMap);
 				num_to_str(g_iMapCount, iNum, charsmax(iNum));
 
-				if ( get_pcvar_num(g_pBlockLastMaps) && (equali(sMap, g_sLastMaps[0]) || equali(sMap, g_sLastMaps[1])) )
+				if ( is_lastmaps_blocked() && (equali(sMap, g_sLastMaps[0]) || equali(sMap, g_sLastMaps[1])) )
 				{
 					new text[32]
 					formatex(text, charsmax(text), "\d%i. %s", g_iMapCount+1, sMap)
@@ -1277,28 +1273,13 @@ public bool:fnCheckCommand (const id, szArgs[192])
 
 public fnSendMessage(id, Colors:color, msg[192])
 {
-	if ( get_pcvar_num(g_pAllowSoundMsg) )
+	if (is_msgsound_allowed())
 		client_cmd(id, "spk buttons/lightswitch2")
 
 	message_begin(MSG_ONE_UNRELIABLE, get_user_msgid("SayText"), _, id);
 	write_byte(color ? (_:color) : 33);
 	write_string(msg);
 	message_end();
-}
-
-public fnExec(hConvar)
-{
-	new szFile[MAX_NAME_LENGTH];
-	get_pcvar_string(hConvar, szFile, charsmax(szFile));
-	
-	if (szFile[0] != '^0')
-	{
-		new szDir[128];
-		getConfigsDir(szDir, charsmax(szDir));
-		format(szDir, charsmax(szDir), "%s/%s", szDir, szFile);
-		
-		server_cmd("exec %s", szDir);
-	}
 }
 
 public fnReady(const id)
@@ -1387,7 +1368,7 @@ public fnManualON (id) {
 	get_user_name(id, sName, charsmax(sName))
 	chat_print(0, "%L", LANG_SERVER, "PUG_CHANGE_TO_MANUAL", sName);
 
-	set_pcvar_num(g_pManual, 1)
+	set_server_manual();
 	
 	return PLUGIN_HANDLED;
 }
@@ -1403,7 +1384,7 @@ public fnManualOFF (id) {
 	get_user_name(id, sName, charsmax(sName))
 	chat_print(0, "%L", LANG_SERVER, "PUG_CHANGE_TO_AUTO", sName);
 
-	set_pcvar_num(g_pManual, 0)
+	set_server_auto();
 	
 	return PLUGIN_HANDLED;
 }
@@ -1416,7 +1397,7 @@ public fnMode (id)
 		return;
 	}
 
-	if (get_pcvar_num(g_pManual))
+	if (is_server_manual())
 		chat_print(0, "%L", LANG_SERVER, "PUG_MODE_MANUAL");
 	else
 		chat_print(0, "%L", LANG_SERVER, "PUG_MODE_AUTO");
@@ -1426,7 +1407,7 @@ public fnCheckReady()
 {
 	if (g_iStage == STAGE_WARMUP)
 	{
-		if (g_iReadyCount == get_pcvar_num(g_pPlayers) && !get_pcvar_num(g_pManual) )
+		if (g_iReadyCount == get_pug_maxplayers() && !is_server_manual() )
 		{
 			fnDisplayReady(0.0)		
 			remove_task(TASK_HUD_READY)
@@ -1442,11 +1423,11 @@ public fnCheckReady()
 
 public fnDisplayReady(Float:fHoldTime)
 {
-	if ( !get_pcvar_num(g_pManual) )
+	if ( !is_server_manual() )
 	{
 		set_hudmessage(0, 255, 0, 0.8, 0.07, 0, 0.0, fHoldTime, 0.0, 0.0, 1)
 
-		new iNeed = get_pcvar_num(g_pPlayers) - g_iReadyCount
+		new iNeed = get_pug_maxplayers() - g_iReadyCount
 
 		if (iNeed > 1)
 			show_hudmessage(0, "%L", LANG_SERVER, "PUG_PLAYERS_MISSING", iNeed)
@@ -1693,9 +1674,9 @@ public fnShowScore()
 public fnPostConfig()
 {
 	// Format some string
-	get_pcvar_string(g_pPugTag, TAG, charsmax(TAG))
-	get_mapname(g_sCurrentMap, charsmax(g_sCurrentMap))
-	get_cvar_string("amx_language", g_sLang, charsmax(g_sLang))
+	get_prefix(TAG, charsmax(TAG));
+	get_currentmap(g_sCurrentMap, charsmax(g_sCurrentMap));
+	get_serverlang(g_sLang, charsmax(g_sLang));
 
 	format(TAG, charsmax(TAG), "!t%s!y", TAG)
 
@@ -1722,7 +1703,7 @@ public fnPostConfig()
 
 	if (!fnLoadMaps(sPatch))
 	{
-		get_pcvar_string(g_pMapCycle, sPatch, charsmax(sPatch));
+		get_mapcycle_file(sPatch, charsmax(sPatch));
 		fnLoadMaps(sPatch);
 	}
 }
@@ -1732,7 +1713,7 @@ public fnIntroduce(const id)
 	if (equali(g_sLang, "es"))
 	{
 		new sOwner[256]
-		get_pcvar_string(g_pPugOwner, sOwner, charsmax(sOwner))
+		get_owner(sOwner, charsmax(sOwner));
 	
 		if (!equali(sOwner, ""))
 			chat_print(id, "Lider del servidor: !t%s", sOwner);
@@ -1740,7 +1721,7 @@ public fnIntroduce(const id)
 	else
 	{
 		new sOwner[256]
-		get_pcvar_string(g_pPugOwner, sOwner, charsmax(sOwner))
+		get_owner(sOwner, charsmax(sOwner));
 	
 		if (!equali(sOwner, ""))
 			chat_print(id, "Server leader: !t%s", sOwner);
@@ -1800,9 +1781,10 @@ public fnVoteKick(const id, level, cid)
 
 public fnVoteKickStart()
 {
-	if (pug_voting)
-	{
-		set_task(get_pcvar_float(g_pVoteTime), "fnVoteKickStart", 100 + pug_votekick_menu);
+	new Float:votekick_time = float(get_votekick_time());
+
+	if (pug_voting) {
+		set_task(votekick_time, "fnVoteKickStart", 100 + pug_votekick_menu);
 		return;
 	}
 
@@ -1816,7 +1798,7 @@ public fnVoteKickStart()
 	menu_setprop(pug_votekick_menu, MPROP_TITLE, votename);
 	displayMenuToAll(pug_votekick_menu);
 
-	set_task(get_pcvar_float(g_pVoteTime), "fnVoteKickEnd", 100 + pug_votekick_menu);
+	set_task(votekick_time, "fnVoteKickEnd", 100 + pug_votekick_menu);
 
 	return;
 }
@@ -1865,7 +1847,7 @@ public fnVoteKickCount()
 		return PLUGIN_HANDLED;
 	}
 
-	new Float: tmp = float(get_playersnum()) * get_pcvar_float(g_pVoteKickPerc);
+	new Float: tmp = float(get_playersnum()) * float(get_votekick_percentage());
 	if ( pug_votekick_votes[winner] < floatround(tmp, floatround_floor) )
 	{
 		chat_print(0, "%L", LANG_SERVER, "PUG_VOTEKICK_INSUFFICIENT");
@@ -1926,7 +1908,7 @@ public fnStartVotePause(id)
 
 	}
 
-	set_task(get_pcvar_float(g_pVoteDelay), "fnVotePauseEnd", _:iTeam, _, _, "a", 1)
+	set_task(float(get_votedelay()), "fnVotePauseEnd", _:iTeam, _, _, "a", 1)
 }
 
 public fnPauseMenuHandle(const id, iMenu, iItem)
@@ -1973,7 +1955,7 @@ public fnVotePauseEnd(TeamName:iTeam)
 		case 0:
 		{
 			chat_print(0, "%L", LANG_SERVER, "PUG_PAUSE_NEXT_ROUND")
-			set_pcvar_num(g_pFreezeTime, 45)
+			set_freezetime(45);
 		}
 
 		case 1:
@@ -1987,20 +1969,13 @@ public fnVotePauseEnd(TeamName:iTeam)
 	}
 }
 
-public fnGetLastMaps()
-{
-	get_pcvar_string(g_pLastMap, g_sLastMaps[0], charsmax(g_sLastMaps[]))
-	get_pcvar_string(g_pLastMap2, g_sLastMaps[1], charsmax(g_sLastMaps[]))
-}
-
 public fnUpdateLastMaps()
 {
 	// Update last maps
 	formatex(g_sLastMaps[1], charsmax(g_sLastMaps[]), "%s", g_sLastMaps[0])
 	formatex(g_sLastMaps[0], charsmax(g_sLastMaps[]), "%s", g_sCurrentMap)
 
-	set_pcvar_string(g_pLastMap, g_sLastMaps[0])
-	set_pcvar_string(g_pLastMap2, g_sLastMaps[1])
+	set_lastmaps(g_sLastMaps);
 }	
 
 public fnMute(const id, level, cid)
@@ -2099,7 +2074,7 @@ public event_new_round()
 {
 	if (fnIsPugAlive())
 	{
-		new showMoneyMode = get_pcvar_num(g_pShowMoney)
+		new showMoneyMode = get_showmoney_mode();
 
 		switch (showMoneyMode)
 		{
@@ -2123,7 +2098,7 @@ public event_new_round()
 				remove_task(TASK_DISPLAY_INFO);
 
 				set_task(0.2, "fnHudMoney", TASK_DISPLAY_INFO, _, _, "b")
-				set_task(get_pcvar_float(g_pFreezeTime), "fnRemoveHudMoney", _, _, _, "a", 1)     // Give the player time to drop to the floor when spawning
+				set_task(float(get_freezetime()), "fnRemoveHudMoney", _, _, _, "a", 1)     // Give the player time to drop to the floor when spawning
 			}
 			case 3:
 			{
