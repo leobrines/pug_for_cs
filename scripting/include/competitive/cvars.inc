@@ -76,8 +76,11 @@ stock init_cvars () {
 	g_pFreezeTime = get_cvar_pointer("mp_freezetime");
 }
 
-stock get_game_description (gameName[], size)
-	get_pcvar_string(g_pGameName, gameName, size);                                                                             
+stock update_game_description () {
+	new gameName[32];
+	get_pcvar_string(g_pGameName, gameName, charsmax(gameName));                                                                             
+	set_member_game(m_GameDesc, gameName);
+}
 
 stock get_mapcycle_file (file[], size)
 	get_pcvar_string(g_pMapCycle, file, size);

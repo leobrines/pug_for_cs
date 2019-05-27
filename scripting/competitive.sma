@@ -197,9 +197,7 @@ public plugin_cfg()
 
 	server_cmd("exec pugconfig.cfg")
 
-	new GameName[32];
-	get_game_description(GameName, charsmax(GameName));
-	set_member_game(m_GameDesc, GameName);
+	update_game_description();
 
 	// fnUpdateServerName();
 }
@@ -510,7 +508,7 @@ public HandleMenu_ChooseTeam(const id, MenuChooseTeam:iNewTeam)
 		}
 	}
 			
-	set_task(5.0, "fnIntroduce", id, _, _, "a", 1) 
+	set_task(5.0, "show_owners", id, _, _, "a", 1) 
 	
 	return HC_CONTINUE;
 }
@@ -1708,22 +1706,15 @@ public fnPostConfig()
 	}
 }
 
-public fnIntroduce(const id)
+public show_owners(const id)
 {
-	if (equali(g_sLang, "es"))
-	{
-		new sOwner[256]
-		get_owner(sOwner, charsmax(sOwner));
-	
-		if (!equali(sOwner, ""))
+	new sOwner[256]
+	get_owner(sOwner, charsmax(sOwner));
+
+	if (!equali(sOwner, "")) {
+		if (equali(g_sLang, "es"))
 			chat_print(id, "Lider del servidor: !t%s", sOwner);
-	}
-	else
-	{
-		new sOwner[256]
-		get_owner(sOwner, charsmax(sOwner));
-	
-		if (!equali(sOwner, ""))
+		else
 			chat_print(id, "Server leader: !t%s", sOwner);
 	}
 }
