@@ -53,7 +53,7 @@ stock create_sprites () {
 	}
 }
 
-stock display_sprites () {
+public display_sprites () {
 	new id;
 	get_players(players, count, "ah");
 
@@ -69,7 +69,7 @@ stock display_sprites () {
 	isNewRound = false;
 }
 
-stock remove_sprites(){
+public remove_sprites () {
 	remove_task(DISPLAY_ENTS_TASK);
 
 	for (new id; id < MAX_PLAYERS+1; id++)
