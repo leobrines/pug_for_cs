@@ -1,4 +1,14 @@
-// DISPLAY 
+#if !defined _amxmodx_included
+	#include <amxmodx>
+#endif
+
+#if !defined _fakemeta_included
+	#include <fakemeta>
+#endif
+
+#if !defined _reapi_included
+	#include <reapi>
+#endif
 
 #define DISPLAY_ENTS_TASK 4563
 stock bool:isNewRound;
@@ -20,16 +30,21 @@ stock const Float:rifles[18] = {3.0,5.0,7.0,8.0,12.0,13.0,14.0,15.0,18.0,19.0,20
 stock weapon_sprites[33][NUMBER_OF_WEAPTYPES];
 stock ArmorType:armor, weapons;
 
+stock models[] = {
+	"sprites/10000.spr",
+	"sprites/1000.spr",
+	"sprites/100.spr",
+	"sprites/10.spr",
+	"sprites/1.spr",
+	"sprites/weap.spr",
+	"sprites/weap2.spr",
+	"sprites/cash.spr",
+	"sprites/arrow.spr"
+};
+
 stock precache_equipment_models () {
-	precache_model("sprites/10000.spr");
-	precache_model("sprites/1000.spr");
-	precache_model("sprites/100.spr");
-	precache_model("sprites/10.spr");
-	precache_model("sprites/1.spr");
-	precache_model("sprites/weap.spr");
-	precache_model("sprites/weap2.spr");
-	precache_model("sprites/cash.spr");
-	precache_model("sprites/arrow.spr");
+	for (new i; i < sizeof(models); i++)
+		precache_model(models[i]);
 }
 
 stock show_team_equipment () {
@@ -231,4 +246,29 @@ stock drawspr (const ent, player_id, str[], Float:frame, Float:offset, amount, r
 	pev(player_id, pev_origin, playerOrigin[player_id]);
 	playerOrigin[player_id][2] += offset;
 	set_pev(ent, pev_origin, playerOrigin[player_id]);
+}
+
+stock Float:color[3]
+
+stock rg_remove_entity (const ent)
+{
+	if (!is_entity(ent))
+		return;
+
+	engfunc(EngFunc_RemoveEntity, ent);
+}
+
+stock rg_set_rendering (const ent, const fx=kRenderFxNone, r,g,b, render=kRenderNormal, amount=16) 
+{
+	if (!is_entity(ent))
+		return;
+
+	color[0] = float(r);
+	color[1] = float(g);
+	color[2] = float(b);
+
+	set_entvar(ent, var_renderfx, fx)
+	set_entvar(ent, var_rendercolor, color)
+	set_entvar(ent, var_rendermode, render)
+	set_entvar(ent, var_renderamt, float(amount)) 
 }

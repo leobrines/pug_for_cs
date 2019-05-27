@@ -1,7 +1,10 @@
-#include <amxmodx>
-#include <reapi>
-#include <colorchat>
-#include <fakemeta>
+#if !defined _amxmodx_included
+	#include <amxmodx>
+#endif
+
+#if !defined _reapi_included
+	#include <reapi>
+#endif
 
 #if AMXX_VERSION_NUM >= 183
 	#define client_disconnect client_disconnected
@@ -11,10 +14,6 @@
 	#define MAX_NAME_LENGTH 32
 	#define MENU_TIMEOUT -4
 #endif
-
-#include <competitive_reapi>
-#include <competitive_cvars>
-#include <competitive_equipmentspr>
 
 enum _:PUGSTATE
 {
@@ -56,7 +55,6 @@ stock getPlayersTeam (TeamName:team, bool:includeBots=true)
 
 		if (get_member(playerID, m_iTeam) == team)
 			amountPlayersInTeam++;
-
 	}
 
 	return amountPlayersInTeam;
@@ -81,4 +79,13 @@ stock chat_print (const playerID, const message[], any:...)
 		client_print_color(playerID, print_team_grey, "%s", msgFormated);
 	else
 		client_print_color(playerID, print_team_grey, "%s %s", TAG, msgFormated);
+}
+
+public bool:is_user_playing (const id) {
+	if ( is_user_alive(id) &&
+		is_user_connected(id) &&
+		(get_member(id, m_iTeam) != TEAM_SPECTATOR))
+		return true;
+
+	return false;
 }

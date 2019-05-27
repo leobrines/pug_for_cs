@@ -1,7 +1,7 @@
 #include <amxmodx>
 #include <reapi>
 #include <amxmisc>
-#include <competitive_utils>
+#include <competitive/index>
 
 #define PLUGIN "CS Pug Mod"
 #define VERSION "3.82"

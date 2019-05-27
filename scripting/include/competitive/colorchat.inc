@@ -1,3 +1,7 @@
+#if !defined _amxmodx_included
+  #include <amxmodx>
+#endif
+
 enum Colors
 {
 		print_team_grey = 33, 

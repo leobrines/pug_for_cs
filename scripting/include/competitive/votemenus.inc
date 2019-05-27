@@ -1,6 +1,3 @@
-#include <amxmodx>
-#include <reapi>
-
 stock pug_voted[33];
 stock menu_temp_id[33];
 
