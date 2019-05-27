@@ -69,10 +69,11 @@ pug_manual				"0" // Habilita el modo manual (solo admines podrian iniciar el mo
 pug_show_money			"1" // 0 = Deshabilita; 1 = Mostrar dinero por chat; 2 = Mostrar dinero en hud; 3 = Mostrar dinero arriba de los jugadores<br>
 pug_allow_soundmsg		"1" // Habilita/Deshabilita el sonido hecho por los mensajes del say<br>
 
-## Cosas por agregar
-- Añadir ronda a cuchillo
+## Cosas por hacer
+- Añadir ronda a cuchillo y configurar por cvar
 - Que los espectadores entren automaticamente por orden de llegada
 - Bloquear modo espectador, solo para admins
+- Refactorizar todo el codigo por modulos (includes)
 
 ## Inspirado en los siguientes plugins
 
