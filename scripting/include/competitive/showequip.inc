@@ -42,7 +42,7 @@ stock models[] = {
 	"sprites/arrow.spr"
 };
 
-stock precache_equipment_models () {
+stock precache_showequip_sprites () {
 	for (new i; i < sizeof(models); i++)
 		precache_model(models[i]);
 }

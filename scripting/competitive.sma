@@ -107,7 +107,7 @@ new bool:g_bSpawned[33] = {true, ...}
 #define TASK_DISPLAY_INFO 4563
 
 public plugin_precache () {
-	precache_equipment_models();
+	precache_showequip_sprites();
 }
 
 // --------------------- AMX Forwards ---------------------
