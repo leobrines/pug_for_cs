@@ -176,11 +176,16 @@ stock exec_file (hConvar) {
 
 	if (szFile[0] != '^0') {
 		new szDir[128];
-		getConfigsDir(szDir, charsmax(szDir));
+		get_configdir(szDir, charsmax(szDir));
 		format(szDir, charsmax(szDir), "%s/%s", szDir, szFile);
 
 		server_cmd("exec %s", szDir);
 	}
+}
+
+stock get_configdir (dir[], size) {
+	get_localinfo("amxx_configsdir", dir, size);
+	format(dir, size, "%s/pug", dir);
 }
 
 stock set_server_manual ()

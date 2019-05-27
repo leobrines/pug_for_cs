@@ -30,12 +30,6 @@ enum _:PUGSTATE
 
 stock TAG[32]
 
-stock getConfigsDir (szPatch[], iLen)
-{
-	get_localinfo("amxx_configsdir", szPatch, iLen);
-	format(szPatch, iLen, "%s/pug", szPatch);
-}
-
 stock registerCommand (const szCommand[], const szFunction[], iFlags = 0, const szInfo[] = "")
 {
 	new szBuffer[16];

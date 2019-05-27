@@ -1698,7 +1698,7 @@ public fnPostConfig()
 
 	// Get maps allowed
 	new sPatch[40];
-	getConfigsDir(sPatch, charsmax(sPatch));
+	get_configdir(sPatch, charsmax(sPatch));
 	format(sPatch, charsmax(sPatch), "%s/maps.ini", sPatch);
 
 	if (!fnLoadMaps(sPatch))
