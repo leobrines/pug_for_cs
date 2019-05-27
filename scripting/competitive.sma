@@ -115,7 +115,7 @@ public plugin_precache () {
 public plugin_init()
 {
 	register_plugin(PLUGIN, VERSION, AUTHOR);
-	register_dictionary("fpug.txt");
+	register_dictionary("competitive.txt");
 
 	g_iStage = STAGE_DEAD
 
