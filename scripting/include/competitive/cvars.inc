@@ -1,43 +1,43 @@
+#include <amxmodx>
+
 // Cfg files
-stock g_pWarmup
-stock g_pPugMode
-stock g_pHalftime
-stock g_pOvertime
-stock g_pFinished
+static g_pWarmup
+static g_pPugMode
+static g_pHalftime
+static g_pOvertime
+static g_pFinished
 
 // Pug configuration
-stock g_pPugTag
-stock g_pPugOwner
-stock g_pGameName
-stock g_pPlayers
-stock g_pBlockShield
-stock g_pBlockNvgs
-stock g_pBlockGrenades
-stock g_pBlockLastMaps
-stock g_pRoundsMax
-stock g_pRoundsOT
-stock g_pVoteDelay
-stock g_pVoteMap
-stock g_pVoteMapReady
-stock g_pVoteTeam
-stock g_pAllowTie
-stock g_pDelayEnd
-stock g_pLastMap
-stock g_pLastMap2
-stock g_pIntermissionTime
-stock g_pAbsencePlayers
-stock g_pVoteTime
-stock g_pVoteKickPerc
-stock g_pAfkTime
-stock g_pManual
-stock g_pShowMoney
-stock g_pAllowSoundMsg
+static g_pPugTag
+static g_pPugOwner
+static g_pGameName
+static g_pPlayers
+static g_pBlockShield
+static g_pBlockNvgs
+static g_pBlockGrenades
+static g_pBlockLastMaps
+static g_pRoundsMax
+static g_pRoundsOT
+static g_pVoteDelay
+static g_pVoteMap
+static g_pVoteMapReady
+static g_pVoteTeam
+static g_pAllowTie
+static g_pDelayEnd
+static g_pLastMap
+static g_pLastMap2
+static g_pIntermissionTime
+static g_pAbsencePlayers
+static g_pAfkTime
+static g_pManual
+static g_pShowMoney
+static g_pAllowSoundMsg
 
-stock g_pAllowSpec
-stock g_pMapCycle
-stock g_pFreezeTime
+static g_pAllowSpec
+static g_pMapCycle
+static g_pFreezeTime
 
-stock init_cvars () {
+stock cvars_init () {
 	g_pWarmup	= register_cvar("pug_config_warmup", "warmup.rc");
 	g_pPugMode = register_cvar("pug_config_pugmode", "pugmode.rc");
 	g_pHalftime = register_cvar("pug_config_halftime", "halftime.rc");
@@ -64,8 +64,6 @@ stock init_cvars () {
 	g_pLastMap2 = register_cvar("pug_last_map2", ""); // Esta cvar solo la controla el plugin, no los .rc
 	g_pIntermissionTime = register_cvar("pug_intermission_time", "15")
 	g_pAbsencePlayers = register_cvar("pug_absence_players", "2")
-	g_pVoteTime = register_cvar("pug_vote_delay", "10");
-	g_pVoteKickPerc = register_cvar("pug_votekick_percent", "0.7");
 	g_pAfkTime = register_cvar("pug_afktime", "90");
 	g_pManual = register_cvar("pug_manual", "0");
 	g_pShowMoney = register_cvar("pug_show_money", "3");
@@ -96,12 +94,6 @@ stock get_afktime ()
 
 stock set_afktime (time)
 	return set_pcvar_num(g_pAfkTime, time);
-
-stock get_votekick_time ()
-	return get_pcvar_num(g_pVoteTime);
-
-stock get_votekick_percentage ()
-	return get_pcvar_num(g_pVoteKickPerc);
 
 stock get_max_absence_players ()
 	return get_pcvar_num(g_pAbsencePlayers);
