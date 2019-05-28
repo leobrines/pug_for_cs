@@ -1,6 +1,10 @@
-#if !defined _amxmodx_included
-  #include <amxmodx>
+#if defined _colorchat_included
+  #endinput
 #endif
+
+#define _colorchat_included
+
+#include <amxmodx>
 
 enum Colors
 {

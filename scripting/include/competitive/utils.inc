@@ -1,10 +1,12 @@
-#if !defined _amxmodx_included
-	#include <amxmodx>
+#if defined _utils_included
+  #endinput
 #endif
 
-#if !defined _reapi_included
-	#include <reapi>
-#endif
+#define _utils_included
+
+#include <amxmodx>
+#include <reapi>
+
 
 #if AMXX_VERSION_NUM >= 183
 	#define client_disconnect client_disconnected
@@ -89,3 +91,9 @@ public bool:is_user_playing (const id) {
 
 	return false;
 }
+
+public bool:is_spectator (id) 
+	return get_member(id, m_iTeam) == TEAM_SPECTATOR ? true : false;
+
+public bool:is_player (id)
+	return TEAM_TERRORIST <= get_member(id, m_iTeam) <= TEAM_CT ? true : false;
