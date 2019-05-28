@@ -30,7 +30,7 @@ stock const Float:rifles[18] = {3.0,5.0,7.0,8.0,12.0,13.0,14.0,15.0,18.0,19.0,20
 stock weapon_sprites[33][NUMBER_OF_WEAPTYPES];
 stock ArmorType:armor, weapons;
 
-stock models[] = {
+new const models[][] = {
 	"sprites/10000.spr",
 	"sprites/1000.spr",
 	"sprites/100.spr",
@@ -43,7 +43,7 @@ stock models[] = {
 };
 
 stock precache_showequip_sprites () {
-	for (new i; i < sizeof(models); i++)
+	for (new i=0; i < sizeof models; i++)
 		precache_model(models[i]);
 }
 
