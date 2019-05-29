@@ -1,3 +1,5 @@
+// Thanks to Kiske https://forums.alliedmods.net/showthread.php?t=177310
+
 #if defined _chooseteam_included
   #endinput
 #endif
