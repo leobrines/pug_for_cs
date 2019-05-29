@@ -14,4 +14,5 @@
 // Modules
 #include <competitive/showequip>
 #include <competitive/votekick>
+#include <competitive/chooseteam>
 
