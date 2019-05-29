@@ -36,6 +36,48 @@ static create_menu () {
 	menu_setprop(menu, MPROP_EXIT, MEXIT_NEVER);
 }
 
+public start_votekick (const id, level, cid) {
+	if (!validate_cmd(id, level, cid))
+		return;
+
+	target = find_target(id);
+
+	if (!validate_target(target))
+		return;
+
+	set_names(id, target);
+	set_reason();
+	set_menu_title();
+	reset_votes();
+
+	votekick_limiter[id]++;
+
+	display_menu_all(menu);
+
+	new const Float:votedelay = _get_votedelay();
+	set_task(votedelay, "finish_votekick", _, _, _, "a", 1);
+
+	chat_print(0, "%L", LANG_SERVER, "PUG_VOTEKICK_STARTED",
+				admin_name, target_name, reason);
+}
+
+public finish_votekick () {
+	cancel_menu();
+	verify_votes();
+}
+
+public votekick_menu_handler (const id, menu, item) {
+	if (item == MENU_EXIT)
+		return PLUGIN_HANDLED;
+
+	votes[item]++;
+
+	if (valid_votes())
+		finish_votekick();
+
+	return PLUGIN_HANDLED;
+}
+
 static Float:_get_votedelay ()
 	return get_pcvar_float(vote_delay);
 
@@ -90,56 +132,10 @@ static set_reason () {
 static reset_votes ()
 	arrayset(votes, 0, 2);
 
-public start_votekick (const id, level, cid) {
-	if (!validate_cmd(id, level, cid))
-		return;
-
-	target = find_target(id);
-
-	if (!validate_target(target))
-		return;
-
-	set_names(id, target);
-	set_reason();
-	set_menu_title();
-	reset_votes();
-
-	votekick_limiter[id]++;
-
-	display_menu_all(menu);
-
-	new const Float:votedelay = _get_votedelay();
-	set_task(votedelay, "finish_votekick", _, _, _, "a", 1);
-
-	chat_print(0, "%L", LANG_SERVER, "PUG_VOTEKICK_STARTED",
-				admin_name, target_name, reason);
-}
-
 static set_menu_title () {
 	static votename[100];
 	formatex(votename, charsmax(votename), "%L", LANG_SERVER, "PUG_VOTEKICK_TITLE", target_name, reason);
 	menu_setprop(menu, MPROP_TITLE, votename);
-}
-
-public finish_votekick () {
-	cancel_menu();
-	verify_votes();
-}
-
-public votekick_menu_handler (const id, menu, item) {
-	if (item == MENU_EXIT)
-		return PLUGIN_HANDLED;
-
-	//static access, callback;
-	//static cmd[3], name[32], cmdname[32];
-	//menu_item_getinfo(menu, item, access, cmd, 2, cmdname, 31, callback);
-
-	votes[item]++;
-
-	if (valid_votes())
-		finish_votekick();
-
-	return PLUGIN_HANDLED;
 }
 
 static verify_votes () {
