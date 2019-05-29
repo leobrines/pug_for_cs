@@ -163,6 +163,6 @@ stock client_set_team (const id, TeamName:team) {
 	}
 
 	rg_join_team(id, new_team);
-	//rg_round_respawn(id);
+	rg_round_respawn(id);
 	fnReady(id);
 }
