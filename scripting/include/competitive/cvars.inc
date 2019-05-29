@@ -28,7 +28,6 @@ static g_pLastMap
 static g_pLastMap2
 static g_pIntermissionTime
 static g_pAbsencePlayers
-static g_pAfkTime
 static g_pManual
 static g_pShowMoney
 static g_pAllowSoundMsg
@@ -64,7 +63,6 @@ stock cvars_init () {
 	g_pLastMap2 = register_cvar("pug_last_map2", ""); // Esta cvar solo la controla el plugin, no los .rc
 	g_pIntermissionTime = register_cvar("pug_intermission_time", "15")
 	g_pAbsencePlayers = register_cvar("pug_absence_players", "2")
-	g_pAfkTime = register_cvar("pug_afktime", "90");
 	g_pManual = register_cvar("pug_manual", "0");
 	g_pShowMoney = register_cvar("pug_show_money", "3");
 	g_pAllowSoundMsg = register_cvar("pug_allow_soundmsg", "1");
@@ -88,12 +86,6 @@ stock get_pug_maxplayers ()
 
 stock get_owner (owner[], size)
 	get_pcvar_string(g_pPugOwner, owner, size);
-
-stock get_afktime ()
-	return get_pcvar_num(g_pAfkTime);
-
-stock set_afktime (time)
-	return set_pcvar_num(g_pAfkTime, time);
 
 stock get_max_absence_players ()
 	return get_pcvar_num(g_pAbsencePlayers);

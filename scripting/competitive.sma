@@ -63,7 +63,6 @@ new HookChain:g_hDeadPlayerWeapons
 new HookChain:g_hGiveC4
 new HookChain:g_hPlayerPostThink
 new HookChain:g_hRoundFreezeEnd
-new HookChain:g_hPlayerSpawn
 new HookChain:g_hPlayerKilled
 new HookChain:g_hHasRestrictItem
 new HookChain:g_hRoundEnd
@@ -73,15 +72,6 @@ new HookChain:g_hChooseTeam
 // Team names
 new const g_szTeams[TeamName][MAX_NAME_LENGTH]
 new const g_szTeams2[TeamName][MAX_NAME_LENGTH]
-
-// AFK kicker
-#define MIN_AFK_TIME 30		// I use this incase stupid admins accidentally set mp_afktime to something silly.
-#define WARNING_TIME 15		// Start warning the user this many seconds before they are about to be kicked.
-#define CHECK_FREQ 5		// This is also the warning message frequency.
-
-new g_iOldAngles[33][3]
-new g_iAfkTime[33]
-new bool:g_bSpawned[33] = {true, ...}
 
 #define TASK_DISPLAY_INFO 4563
 
@@ -110,9 +100,6 @@ public plugin_init()
 	votekick_init();
 	chooseteam_init();
 
-	// AFK Kicker
-	set_task(float(CHECK_FREQ), "fnCheckPlayers", _, _, _, "b")
-
 	// Commands
 	register_clcmd("say", "fnHookSay")
 	register_clcmd("say_team", "fnHookSayTeam")
@@ -139,7 +126,6 @@ public plugin_init()
 	//g_hTakeDamage = RegisterHookChain(RG_CBasePlayer_TakeDamage, "CBasePlayer_TakeDamage")
 
 	g_hPlayerPostThink = RegisterHookChain(RG_CBasePlayer_PostThink, "CBasePlayer_PostThink")
-	g_hPlayerSpawn = RegisterHookChain(RG_CSGameRules_PlayerSpawn, "CSGameRules_PlayerSpawn")
 	g_hHasRestrictItem = RegisterHookChain(RG_CBasePlayer_HasRestrictItem, "CBasePlayer_HasRestrictItem")
 	g_hRoundEnd = RegisterHookChain(RG_RoundEnd, "RoundEnd")
 	//g_hChooseTeam = RegisterHookChain(RG_HandleMenu_ChooseTeam, "HandleMenu_ChooseTeam")
@@ -159,8 +145,6 @@ public plugin_init()
 	// Events
 	register_event("Money", "money_handler", "b")
 	register_event("Damage", "damage_handler", "b", "2!0", "3=0", "4!0")
-
-	// DISPLAY MONEY
 	register_event("HLTV", "event_new_round", "a", "1=0", "2=0");
 
 	set_task(5.0, "PugWarmup", _, _, _, "a", 1)
@@ -193,7 +177,6 @@ public plugin_pause()
 	DisableHookChain(g_hGiveC4)
 	DisableHookChain(g_hPlayerPostThink)
 	DisableHookChain(g_hRoundFreezeEnd)
-	DisableHookChain(g_hPlayerSpawn)
 	DisableHookChain(g_hPlayerKilled)
 	DisableHookChain(g_hHasRestrictItem)
 	DisableHookChain(g_hRoundEnd)
@@ -205,7 +188,6 @@ public client_putinserver(id)
 	g_iFrags[id] = 0
 	g_iDeaths[id] = 0
 	arrayset(g_bMuted[id], false, sizeof(g_bMuted))
-	g_iAfkTime[id] = 0
 
 	#if AMXX_VERSION_NUM < 183
 	set_task(0.2, "chatcolor_send_teaminfo", id);
@@ -268,18 +250,6 @@ public CSGameRules_PlayerKilled(const victim, const killer, const inflictor)
 		g_iDeaths[victim]++
 
 		fnDamageAuto(victim)
-	}
-}
-
-public CSGameRules_PlayerSpawn(const id)
-{
-	if (is_user_alive(id) && is_user_connected(id))
-	{
-		g_bSpawned[id] = false
-
-		new sid[1]
-		sid[0] = id
-		set_task(0.75, "fnDelayedSpawn", _, sid, 1)     // Give the player time to drop to the floor when spawning
 	}
 }
 
@@ -974,68 +944,6 @@ public fnTeamsRandomize()
 			}
 		}
 	}
-}
-
-// --------------------- AFK kicker ---------------------
-
-public fnCheckPlayers() { 
-	for (new i = 1; i <= g_iMaxClients; i++) { 
-		if (is_user_alive(i) && is_user_connected(i) && !is_user_bot(i) && !is_user_hltv(i) && g_bSpawned[i])
-		{ 
-			new newangle[3] 
-			get_user_origin(i, newangle) 
-
-			if ( newangle[0] == g_iOldAngles[i][0] && newangle[1] == g_iOldAngles[i][1] && newangle[2] == g_iOldAngles[i][2] )
-			{ 
-				g_iAfkTime[i] += CHECK_FREQ
-				fnCheckAfkTime(i)
-			}
-			else
-			{
-				g_iOldAngles[i][0] = newangle[0]
-				g_iOldAngles[i][1] = newangle[1]
-				g_iOldAngles[i][2] = newangle[2]
-				g_iAfkTime[i] = 0
-			}
-		}
-	}
-}
-
-public fnCheckAfkTime(id)
-{
-	if (!game_is_live())
-		return;
-
-	new iMaxAfkTime = get_afktime();
-
-	if (iMaxAfkTime < MIN_AFK_TIME)
-	{
-		log_amx("%L", LANG_SERVER, "PUG_AFKKICKER_CVAR", iMaxAfkTime, MIN_AFK_TIME)
-		iMaxAfkTime = MIN_AFK_TIME
-		set_afktime(MIN_AFK_TIME);
-	}
-
-	if (iMaxAfkTime-WARNING_TIME <= g_iAfkTime[id] < iMaxAfkTime)
-	{
-		new timeleft = iMaxAfkTime - g_iAfkTime[id]
-		chat_print(id, "%L", LANG_SERVER, "PUG_AFKKICKER_WARN", timeleft)
-	}
-	else if (g_iAfkTime[id] > iMaxAfkTime)
-	{
-		new szName[32]
-		get_user_name(id, szName, 31)
-		chat_print(0, "%L", LANG_SERVER, "PUG_AFKKICKER_KICK", szName, iMaxAfkTime)
-		log_amx("%s was kicked for being AFK longer than %i seconds", szName, iMaxAfkTime)
-		server_cmd("kick #%d ^"%L^"", get_user_userid(id), LANG_SERVER, "PUG_AFKKICKER_KICK2", iMaxAfkTime)
-	}
-}
-
-public fnDelayedSpawn(sid[])
-{
-	new id = sid[0];
-
-	get_user_origin(id, g_iOldAngles[id]);
-	g_bSpawned[id] = true;
 }
 
 public fnHudMoney()
@@ -1918,7 +1826,7 @@ public event_new_round()
 				remove_task(TASK_DISPLAY_INFO);
 
 				set_task(0.2, "fnHudMoney", TASK_DISPLAY_INFO, _, _, "b")
-				set_task(float(get_freezetime()), "fnRemoveHudMoney", _, _, _, "a", 1)     // Give the player time to drop to the floor when spawning
+				set_task(float(get_freezetime()), "fnRemoveHudMoney", _, _, _, "a", 1)
 			}
 			case 3:
 			{
