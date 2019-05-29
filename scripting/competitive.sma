@@ -13,13 +13,6 @@
 
 #define MAX_MAPS 7
 #define MAX_BYTES 192
-#define PUG_CMD_LVL	ADMIN_LEVEL_A
-#define PUG_MOD_LVL	ADMIN_LEVEL_H
-
-new g_iStage
-new g_sCurrentMap[32]
-new g_iMaxClients
-new g_sLang[3]
 
 // Ready System
 new g_iReadyCount
@@ -77,20 +70,6 @@ new HookChain:g_hRoundEnd
 new HookChain:g_hChooseTeam
 // new HookChain:g_hTakeDamage
 
-// Votekick
-new UserID;
-new g_szlimitador[33];
-
-new pug_votekick_votes[3];
-new pug_votekick_name[32];
-new pug_votekick_reason[50];
-
-new pug_voting = 0;
-new pug_votekick_menu;
-
-stock pug_voted[33];
-stock pug_menu_tmp_id[33];
-
 // Team names
 new const g_szTeams[TeamName][MAX_NAME_LENGTH]
 new const g_szTeams2[TeamName][MAX_NAME_LENGTH]
@@ -125,16 +104,14 @@ public plugin_init()
 	g_iMaxClients = get_maxplayers()
 	#endif
 	
-	init_cvars();
+	utils_init();
+	
+	cvars_init();
+	votekick_init();
+	chooseteam_init();
 
 	// AFK Kicker
 	set_task(float(CHECK_FREQ), "fnCheckPlayers", _, _, _, "b")
-
-	// Votekick
-	pug_votekick_menu = menu_create("Votekick:", "fnVoteKickHandle");
-	menu_additem(pug_votekick_menu, "Si", "1");
-	menu_additem(pug_votekick_menu, "No", "2");
-	menu_setprop(pug_votekick_menu, MPROP_EXIT, MEXIT_NEVER);
 
 	// Commands
 	register_clcmd("say", "fnHookSay")
@@ -151,7 +128,6 @@ public plugin_init()
 	registerCommand("hp", "fnHp", ADMIN_ALL)
 	registerCommand("mute", "fnMute", ADMIN_ALL)
 	registerCommand("unmute", "fnUnmute", ADMIN_ALL)
-	registerCommand("votekick", "fnVoteKick", ADMIN_ALL, "<name or #userid> <reason> Starts a votekick");
 	registerCommand("pause", "fnStartVotePause", ADMIN_ALL)
 	registerCommand("money", "fnShowMoney", ADMIN_ALL)
 
@@ -166,7 +142,7 @@ public plugin_init()
 	g_hPlayerSpawn = RegisterHookChain(RG_CSGameRules_PlayerSpawn, "CSGameRules_PlayerSpawn")
 	g_hHasRestrictItem = RegisterHookChain(RG_CBasePlayer_HasRestrictItem, "CBasePlayer_HasRestrictItem")
 	g_hRoundEnd = RegisterHookChain(RG_RoundEnd, "RoundEnd")
-	g_hChooseTeam = RegisterHookChain(RG_HandleMenu_ChooseTeam, "HandleMenu_ChooseTeam")
+	//g_hChooseTeam = RegisterHookChain(RG_HandleMenu_ChooseTeam, "HandleMenu_ChooseTeam")
 
 
 	DisableHookChain(g_hDeadPlayerWeapons)
@@ -244,7 +220,7 @@ public client_disconnect(id)
 	{
 		fnNotReady(id)
 
-		if (fnIsPugAlive())
+		if (game_is_live())
 		{
 			new iCount = getPlayersTeam(iTeam, false) - 1
 			new iAbsencePlayers = get_max_absence_players();
@@ -321,12 +297,12 @@ public CBasePlayer_HasRestrictItem(const id, const ItemID:item, const ItemRestTy
 		SetHookChainReturn(ATYPE_INTEGER, 1);
 		return HC_SUPERCEDE;
 	}
-	else if ((item == ITEM_FLASHBANG || item == ITEM_HEGRENADE || item == ITEM_SMOKEGRENADE) && !fnIsPugAlive() && are_grenades_blocked())
+	else if ((item == ITEM_FLASHBANG || item == ITEM_HEGRENADE || item == ITEM_SMOKEGRENADE) && !game_is_live() && are_grenades_blocked())
 	{	
 		SetHookChainReturn(ATYPE_INTEGER, 1);
 		return HC_SUPERCEDE;
 	}
-	else if (item == ITEM_DEFUSEKIT && !fnIsPugAlive())
+	else if (item == ITEM_DEFUSEKIT && !game_is_live())
 	{
 		SetHookChainReturn(ATYPE_INTEGER, 1);
 		return HC_SUPERCEDE;
@@ -363,7 +339,7 @@ public CBasePlayer_TakeDamage(const iVictim, iInflictor, iAttacker, Float:flDama
 
 public RoundEnd(WinStatus:status, ScenarioEventEndRound:event, Float:tmDelay)
 {
-	if (fnIsPugAlive() && event != ROUND_GAME_RESTART && event != ROUND_GAME_COMMENCE)
+	if (game_is_live() && event != ROUND_GAME_RESTART && event != ROUND_GAME_COMMENCE)
 	{
 		g_iRound++
 		// fnUpdateServerName();
@@ -446,7 +422,7 @@ public RoundEnd(WinStatus:status, ScenarioEventEndRound:event, Float:tmDelay)
 
 public HandleMenu_ChooseTeam(const id, MenuChooseTeam:iNewTeam)
 {
-	new TeamName:iOldTeam = get_member(id, m_iTeam);
+	new TeamName:iOldTeam = client_get_team(id);
 
 	if (STAGE_START <= g_iStage <= STAGE_FINISHED &&
 			TEAM_TERRORIST <= iOldTeam <= TEAM_CT)
@@ -531,7 +507,7 @@ public fnScoreInfo(m, s, id)
 	static _score_player_id
 	_score_player_id = get_msg_arg_int(1)
 
-	if (fnIsPugAlive())
+	if (game_is_live())
 	{
 		set_msg_arg_int(2, ARG_SHORT, g_iFrags[_score_player_id])
 		set_msg_arg_int(3, ARG_SHORT, g_iDeaths[_score_player_id])
@@ -544,7 +520,7 @@ public player_give_money (id, amount) set_member(id, m_iAccount, amount);
 
 public money_handler (const id)
 {
-	if (!fnIsPugAlive())
+	if (!game_is_live())
 	{
 		player_give_money(id, 16000);
 		return PLUGIN_HANDLED;
@@ -964,7 +940,7 @@ public fnTeamsRandomize()
 	{
 		player = Players[i]
 		
-		switch ( get_member(player, m_iTeam) )
+		switch ( client_get_team(player) )
 		{
 			case 1: 
 			{
@@ -1027,7 +1003,7 @@ public fnCheckPlayers() {
 
 public fnCheckAfkTime(id)
 {
-	if (!fnIsPugAlive())
+	if (!game_is_live())
 		return;
 
 	new iMaxAfkTime = get_afktime();
@@ -1084,7 +1060,7 @@ public fnHudMoney()
 		sMessage[0] = '^0'
 
 		fnMakeHudTitle(iPlayer, sTitle);
-		get_players(iPlayersTeam, iNumTeam, "eh", get_member(iPlayer, m_iTeam) == TEAM_TERRORIST ? "TERRORIST" : "CT");
+		get_players(iPlayersTeam, iNumTeam, "eh", client_get_team(iPlayer) == TEAM_TERRORIST ? "TERRORIST" : "CT");
 
 		for (new e; e < iNumTeam; e++)
 		{
@@ -1181,7 +1157,7 @@ public fnHookSay(id)
 
 	new TeamName:iTeam, szMessage[192], sName[32];
 
-	iTeam = get_member(id, m_iTeam);
+	iTeam = client_get_team(id);
 	get_user_name(id, sName, charsmax(sName));
 
 	switch (iTeam)
@@ -1224,7 +1200,7 @@ public fnHookSayTeam(id)
 
 	new TeamName:iTeam, szMessage[192], sName[32];
 
-	iTeam = get_member(id, m_iTeam);
+	iTeam = client_get_team(id);
 	get_user_name(id, sName, charsmax(sName));
 
 	switch (iTeam)
@@ -1247,7 +1223,7 @@ public fnHookSayTeam(id)
 	{
 		iPlayer = iPlayers[i];
 
-		if (get_member(iPlayer, m_iTeam) == iTeam)
+		if (client_get_team(iPlayer) == iTeam)
 			fnSendMessage(iPlayer, iTeam == TEAM_TERRORIST ? print_team_red : iTeam == TEAM_CT ? print_team_blue : print_team_grey, szMessage)
 
 	}
@@ -1310,7 +1286,7 @@ public fnForceStart(const id)
 		return PLUGIN_HANDLED;
 	}
 
-	if (fnIsPugAlive())
+	if (game_is_live())
 	{
 		chat_print(id, "%L", LANG_SERVER, "PUG_ACTION_NOTALLOWED")
 		return PLUGIN_HANDLED;
@@ -1340,7 +1316,7 @@ public fnForceCancel(const id)
 		chat_print(id, "%L", LANG_SERVER, "PUG_ACTION_NOTACCESS");
 		return PLUGIN_HANDLED;
 	}
-	else if (!fnIsPugAlive())
+	else if (!game_is_live())
 	{
 		chat_print(id, "%L", LANG_SERVER, "PUG_ACTION_NOTALLOWED");
 		return PLUGIN_HANDLED;
@@ -1458,14 +1434,6 @@ public fnMakeHudBody(const id, msg[], any:...)
 	show_hudmessage(id, fmt);
 }
 
-public bool:fnIsPugAlive()
-{
-	if (g_iStage == STAGE_FIRSTHALF || g_iStage == STAGE_SECONDHALF || g_iStage == STAGE_OVERTIME)
-		return true;
-
-	return false;
-}
-
 public fnChangeLevel(sMap[])
 {
 	#if AMXX_VERSION_NUM >= 183
@@ -1477,7 +1445,7 @@ public fnChangeLevel(sMap[])
 
 public bool:fnIsTeam(id)
 {
-	if (TEAM_TERRORIST <= get_member(id, m_iTeam) <= TEAM_CT)
+	if (TEAM_TERRORIST <= client_get_team(id) <= TEAM_CT)
 		return true;
 
 	return false;
@@ -1485,9 +1453,9 @@ public bool:fnIsTeam(id)
 
 public fnDamage(const id)
 {
-	new TeamName:iTeam = get_member(id, m_iTeam);
+	new TeamName:iTeam = client_get_team(id);
 
-	if (!fnIsPugAlive() || is_user_alive(id) || iTeam == TEAM_SPECTATOR)
+	if (!game_is_live() || is_user_alive(id) || iTeam == TEAM_SPECTATOR)
 	{
 		chat_print(id, "%L", LANG_SERVER, "PUG_ACTION_NOTALLOWED")
 		return PLUGIN_HANDLED;
@@ -1553,7 +1521,7 @@ public fnResetDmg()
 
 public fnHp(id) 
 {
-	if (fnIsPugAlive() && !is_user_alive(id) && fnIsTeam(id))
+	if (game_is_live() && !is_user_alive(id) && fnIsTeam(id))
 	{
 		chat_print(id, "%L", LANG_SERVER, "PUG_HP_TITLE")
 
@@ -1584,13 +1552,13 @@ public fnHp(id)
 
 public fnShowMoney(id) 
 {
-	if (fnIsPugAlive() && fnIsTeam(id))
+	if (game_is_live() && fnIsTeam(id))
 	{
 		chat_print(id, "%L", LANG_SERVER, "PUG_MONEY_TITLE")
 
 		new szName[MAX_NAME_LENGTH];
 		new iPlayers[MAX_PLAYERS], iNum, iPlayer;
-		get_players(iPlayers, iNum, "eh", get_member(id, m_iTeam) == TEAM_TERRORIST ? "TERRORIST" : "CT");
+		get_players(iPlayers, iNum, "eh", client_get_team(id) == TEAM_TERRORIST ? "TERRORIST" : "CT");
 		
 		for (new i;i < iNum;i++)
 		{
@@ -1655,7 +1623,7 @@ public fnResetFrags()
 
 public fnShowScore()
 {
-	if (!fnIsPugAlive())
+	if (!game_is_live())
 		return;
 
 	if (g_iRoundCT == g_iRoundTT)
@@ -1719,150 +1687,11 @@ public show_owners(const id)
 	}
 }
 
-// VOTEKICK
-
-public fnVoteKick(const id, level, cid)
-{
-	if (get_member(id, m_iTeam) == TEAM_SPECTATOR)
-	{
-		chat_print(id, "%L", LANG_SERVER, "PUG_VOTEKICK_SPECTATORS");
-		return;
-	}
-	
-	if (!cmd_access(id, level, cid, 2) )
-	{
-		chat_print(id, "%L", LANG_SERVER, "PUG_VOTEKICK_SPECIFY");
-		return;
-	}
-
-	read_argv(1, pug_votekick_name, 31);
-	new target = cmd_target(id, pug_votekick_name, CMDTARGET_OBEY_IMMUNITY | CMDTARGET_NO_BOTS | CMDTARGET_ALLOW_SELF);
-
-	new name[32];
-	get_user_name(id, name, 31);
-
-	if (!target)
-	{
-		chat_print(id, "%L", LANG_SERVER, "PUG_VOTEKICK_UNAVAILABLE")
-		return;
-	}
-	else
-	{
-		get_user_name(target, pug_votekick_name, 31);
-		UserID = target;
-	}
-
-	if (read_argc() > 2)
-		read_argv(2, pug_votekick_reason, 49);
-
-	else
-		formatex(pug_votekick_reason, charsmax(pug_votekick_reason), "%L", LANG_SERVER, "PUG_VOTEKICK_NOREASON")
-
-	g_szlimitador[id]++;
-
-	if (g_szlimitador[id] > 3)
-		chat_print(id, "%L", LANG_SERVER, "PUG_VOTEKICK_MAXVOTES")
-
-	else if (g_szlimitador[id] < 3)
-	{
-		chat_print(0, "%L", LANG_SERVER, "PUG_VOTEKICK_STARTED", name, pug_votekick_name, pug_votekick_reason);
-		fnVoteKickStart();
-	}
-}
-
-public fnVoteKickStart()
-{
-	new Float:votekick_time = float(get_votekick_time());
-
-	if (pug_voting) {
-		set_task(votekick_time, "fnVoteKickStart", 100 + pug_votekick_menu);
-		return;
-	}
-
-	pug_voting = 1;
-	arrayset(pug_voted, 0, 33);
-	arrayset(pug_votekick_votes, 0, 3);
-
-	static votename[100];
-	formatex(votename, 99, "%L", LANG_SERVER, "PUG_VOTEKICK_TITLE", pug_votekick_name, pug_votekick_reason);
-
-	menu_setprop(pug_votekick_menu, MPROP_TITLE, votename);
-	displayMenuToAll(pug_votekick_menu);
-
-	set_task(votekick_time, "fnVoteKickEnd", 100 + pug_votekick_menu);
-
-	return;
-}
-
-public fnVoteKickEnd()
-{
-	cancelMenu();
-	fnVoteKickCount();
-
-	pug_voting = 0;
-	remove_task ( 100 + pug_votekick_menu );
-}
-
-public fnVoteKickHandle(const id, menu, item)
-{
-	if (item == MENU_EXIT)
-		return PLUGIN_HANDLED;
-
-	static access, callback;
-	static cmd[3], name[32], cmdname[32];
-
-	menu_item_getinfo(menu, item, access, cmd, 2, cmdname, 31, callback);
-	pug_votekick_votes[str_to_num(cmd)]++;
-
-	get_user_name(id, name, 31);
-	pug_voted[id] = 1;
-	if (shouldStopVote()) fnVoteKickEnd();
-
-	return PLUGIN_HANDLED;
-}
-
-public fnVoteKickCount()
-{
-	new winner;
-	if (pug_votekick_votes[1] > pug_votekick_votes[2]) winner = 1;
-	else if (pug_votekick_votes[1] < pug_votekick_votes[2]) winner = 2;
-
-	if (pug_votekick_votes[1] == pug_votekick_votes[2])
-	{
-		chat_print(0, "%L", LANG_SERVER, "PUG_VOTEKICK_TIE");
-		return PLUGIN_HANDLED;
-	}
-	else if (pug_votekick_votes[winner] == 0)
-	{
-		chat_print(0, "%L", LANG_SERVER, "PUG_VOTEKICK_FAILED");
-		return PLUGIN_HANDLED;
-	}
-
-	new Float: tmp = float(get_playersnum()) * float(get_votekick_percentage());
-	if ( pug_votekick_votes[winner] < floatround(tmp, floatround_floor) )
-	{
-		chat_print(0, "%L", LANG_SERVER, "PUG_VOTEKICK_INSUFFICIENT");
-		return PLUGIN_HANDLED;
-	}
-
-	if (winner == 1)
-	{
-		server_cmd("kick #%i %s", get_user_userid(UserID), pug_votekick_reason);
-		chat_print(0, "%L", LANG_SERVER, "PUG_VOTEKICK_KICKED", pug_votekick_name, pug_votekick_votes[winner]);
-	}
-	else if (winner == 2)
-	{
-		chat_print(0, "%L", LANG_SERVER, "PUG_VOTEKICK_NOTKICKED", pug_votekick_name, pug_votekick_votes[winner]);
-	}
-
-	return PLUGIN_HANDLED;
-}
-
 // PAUSE VOTE
 
 public fnStartVotePause(id)
 {
-	new TeamName:iTeam = get_member(id, m_iTeam);
+	new TeamName:iTeam = client_get_team(id);
 
 	if ( !(TEAM_TERRORIST <= iTeam <= TEAM_CT) )
 	{
@@ -1894,7 +1723,7 @@ public fnStartVotePause(id)
 	{
 		iPlayer = iPlayers[i];
 
-		if (get_member(iPlayer, m_iTeam) == iTeam)
+		if (client_get_team(iPlayer) == iTeam)
 			menu_display(iPlayer, g_mPause);
 
 	}
@@ -2038,7 +1867,7 @@ public fnUpdateServerName()
 {
 	new szFmt[32];
 
-	if (fnIsPugAlive())
+	if (game_is_live())
 	{
 		if (g_iRoundCT == g_iRoundTT)
 			formatex(szFmt, charsmax(szFmt), "Ronda: %i | Empate: %i - %i", g_iRound, g_iRoundCT, g_iRoundTT)
@@ -2063,7 +1892,7 @@ public fnUpdateServerName()
 
 public event_new_round()
 {
-	if (fnIsPugAlive())
+	if (game_is_live())
 	{
 		new showMoneyMode = get_showmoney_mode();
 
@@ -2098,60 +1927,3 @@ public event_new_round()
 		}
 	}
 }
-
-// --------------------- Stocks ---------------------
-
-// Votekick
-stock displayMenuToAll(menu_id)
-{
-	static Players[32];
-	new playerCount, i, player;
-	get_players(Players, playerCount, "ch");
-
-	for (i=0; i<playerCount; i++)
-	{
-		player = Players[i];
-		pug_menu_tmp_id[player] = menu_id;
-		displayMenuClient(player);
-	}
-}
-
-stock displayMenuSingle(const id, menu_id)
-{
-	pug_menu_tmp_id[id] = menu_id
-	displayMenuClient(id)
-}
-
-stock displayMenuClient(const id)
-{
-	if (!is_user_connected(id))
-		return;
-
-	new menu_id, keys;
-	new menuUp = player_menu_info( id, menu_id, keys );
-
-	if ( menuUp <= 0 || menu_id < 0 )
-		menu_display ( id, pug_menu_tmp_id[id], 0 );
-
-	else
-		set_task( 1.0, "displayMenuClient", id );
-}
-
-stock cancelMenu()
-{
-	static Players[32];
-	new playerCount, i;
-	get_players(Players, playerCount, "ch");
-	for (i=0; i<playerCount; i++) menu_cancel(Players[i]);
-}
-
-stock shouldStopVote()
-{
-	static Players[32];
-	new playerCount, i;
-	get_players(Players, playerCount, "ch");
-	for (i=0; i<playerCount; i++) if (!pug_voted[Players[i]]) return 0;
-
-	return 1;
-}
-
