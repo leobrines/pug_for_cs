@@ -4,7 +4,7 @@
 #include <competitive/index>
 
 #define PLUGIN "CS Pug Mod"
-#define VERSION "3.82"
+#define VERSION "3.83"
 #define AUTHOR "Leopoldo Brines"
 
 #define TASK_HUD_READY 552214
