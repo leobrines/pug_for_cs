@@ -101,33 +101,38 @@ stock chat_print (const playerID, const message[], any:...)
 		client_print_color(playerID, print_team_grey, "%s %s", TAG, msgFormated);
 }
 
-stock bool:is_user_playing (const id) {
-	if (is_user_connected(id) &&
-		TEAM_TERRORIST <= client_get_team(id) <= TEAM_CT)
+stock bool:game_is_started ()
+	return STAGE_START <= g_iStage <= STAGE_FINISHED
+
+stock bool:game_is_live () {
+	if (g_iStage == STAGE_FIRSTHALF ||
+		g_iStage == STAGE_SECONDHALF ||
+		g_iStage == STAGE_OVERTIME)
 		return true;
 
 	return false;
 }
 
-stock bool:game_is_started ()
-	return STAGE_START <= g_iStage <= STAGE_FINISHED ? true : false;
-
-stock bool:game_is_live ()
-	return (g_iStage == STAGE_FIRSTHALF ||
-			g_iStage == STAGE_SECONDHALF ||
-			g_iStage == STAGE_OVERTIME) ? true : false;
-
 stock bool:team_is_full(TeamName:team, bool:bots=true)
-	return getPlayersTeam(team, bots) >= get_pug_maxplayers()/2 ? true : false
+	return getPlayersTeam(team, bots) >= get_pug_maxplayers()/2
 
 stock bool:client_is_spectator (id) 
-	return client_get_team(id) == TEAM_SPECTATOR ? true : false;
+	return client_get_team(id) == TEAM_SPECTATOR
 
 stock bool:client_is_player (id)
-	return TEAM_TERRORIST <= client_get_team(id) <= TEAM_CT ? true : false;
+	return TEAM_TERRORIST <= client_get_team(id) <= TEAM_CT
 
 stock TeamName:client_get_team (id)
 	return get_member(id, m_iTeam);
+
+stock client_give_money (id, amount)
+	set_member(id, m_iAccount, amount);
+
+stock client_get_money (id)
+	return get_member(id, m_iAccount);
+
+stock is_player_id (id)
+	return 1 <= id <= MAX_PLAYERS+1;
 
 stock client_set_team (const id, TeamName:team) {
 	if (client_get_team(id) == team)
