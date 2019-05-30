@@ -6,6 +6,7 @@
 
 #include <amxmodx>
 #include <reapi>
+#include <amxmisc>
 
 #include <competitive/colorchat>
 #include <competitive/utils>
@@ -15,4 +16,5 @@
 #include <competitive/showequip>
 #include <competitive/votekick>
 #include <competitive/chooseteam>
+#include <competitive/mute>
 
