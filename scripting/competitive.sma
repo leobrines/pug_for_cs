@@ -1,6 +1,3 @@
-#include <amxmodx>
-#include <reapi>
-#include <amxmisc>
 #include <competitive/index>
 
 #define PLUGIN "CS Pug Mod"
@@ -55,15 +52,11 @@ new g_iPauseCount
 new g_sPauseOptions[2][32]
 new g_iPauseVotes[32]
 
-// Mute system
-new g_bMuted[MAX_PLAYERS+1][MAX_PLAYERS+1]
-
 // Hook
 new HookChain:g_hDeadPlayerWeapons
 new HookChain:g_hGiveC4
 new HookChain:g_hPlayerPostThink
 new HookChain:g_hRoundFreezeEnd
-new HookChain:g_hPlayerKilled
 new HookChain:g_hHasRestrictItem
 new HookChain:g_hRoundEnd
 new HookChain:g_hChooseTeam
@@ -99,6 +92,7 @@ public plugin_init()
 	cvars_init();
 	votekick_init();
 	chooseteam_init();
+	mute_init();
 
 	// Commands
 	register_clcmd("say", "fnHookSay")
@@ -113,8 +107,8 @@ public plugin_init()
 	// for players
 	registerCommand("dmg", "fnDamage", ADMIN_ALL)
 	registerCommand("hp", "fnHp", ADMIN_ALL)
-	registerCommand("mute", "fnMute", ADMIN_ALL)
-	registerCommand("unmute", "fnUnmute", ADMIN_ALL)
+	registerCommand("mute", "client_mute", ADMIN_ALL)
+	registerCommand("unmute", "client_unmute", ADMIN_ALL)
 	registerCommand("pause", "fnStartVotePause", ADMIN_ALL)
 	registerCommand("money", "fnShowMoney", ADMIN_ALL)
 
@@ -122,7 +116,6 @@ public plugin_init()
 	g_hDeadPlayerWeapons = RegisterHookChain(RG_CSGameRules_DeadPlayerWeapons, "CSGameRules_DeadPlayerWeapons")
 	g_hGiveC4 = RegisterHookChain(RG_CSGameRules_GiveC4, "CSGameRules_GiveC4");
 	g_hRoundFreezeEnd = RegisterHookChain(RG_CSGameRules_OnRoundFreezeEnd, "CSGameRules_OnRoundFreezeEnd")
-	g_hPlayerKilled = RegisterHookChain(RG_CSGameRules_PlayerKilled, "CSGameRules_PlayerKilled")
 	//g_hTakeDamage = RegisterHookChain(RG_CBasePlayer_TakeDamage, "CBasePlayer_TakeDamage")
 
 	g_hPlayerPostThink = RegisterHookChain(RG_CBasePlayer_PostThink, "CBasePlayer_PostThink")
@@ -143,9 +136,10 @@ public plugin_init()
 	register_message(gMsgScoreInfo, "fnScoreInfo")
 
 	// Events
-	register_event("Money", "money_handler", "b")
-	register_event("Damage", "damage_handler", "b", "2!0", "3=0", "4!0")
+	register_event("Money", "event_money", "b")
+	register_event("Damage", "event_damage", "b", "2!0", "3=0", "4!0")
 	register_event("HLTV", "event_new_round", "a", "1=0", "2=0");
+	register_event("DeathMsg", "event_death_player", "a", "1!0", "2!0");
 
 	set_task(5.0, "PugWarmup", _, _, _, "a", 1)
 	set_task(3.0, "fnPostConfig", _, _, _, "a", 1)
@@ -157,9 +151,7 @@ public plugin_cfg()
 
 	server_cmd("exec pugconfig.cfg")
 
-	update_game_description();
-
-	// fnUpdateServerName();
+	set_default_gamedesc();
 }
 
 public plugin_unpause()
@@ -177,7 +169,6 @@ public plugin_pause()
 	DisableHookChain(g_hGiveC4)
 	DisableHookChain(g_hPlayerPostThink)
 	DisableHookChain(g_hRoundFreezeEnd)
-	DisableHookChain(g_hPlayerKilled)
 	DisableHookChain(g_hHasRestrictItem)
 	DisableHookChain(g_hRoundEnd)
 	DisableHookChain(g_hChooseTeam)
@@ -187,7 +178,6 @@ public client_putinserver(id)
 {
 	g_iFrags[id] = 0
 	g_iDeaths[id] = 0
-	arrayset(g_bMuted[id], false, sizeof(g_bMuted))
 
 	#if AMXX_VERSION_NUM < 183
 	set_task(0.2, "chatcolor_send_teaminfo", id);
@@ -197,6 +187,8 @@ public client_putinserver(id)
 public client_disconnect(id)
 {
 	new TeamName:iTeam = TeamName:get_user_team(id)
+	
+	client_mute_reset(id);
 
 	if (TEAM_TERRORIST <= iTeam <= TEAM_CT)
 	{
@@ -241,17 +233,6 @@ public CSGameRules_DeadPlayerWeapons()
 }
 
 public CSGameRules_GiveC4() return HC_SUPERCEDE;
-
-public CSGameRules_PlayerKilled(const victim, const killer, const inflictor)
-{
-	if (1 <= victim <= g_iMaxClients)
-	{
-		g_iFrags[killer]++
-		g_iDeaths[victim]++
-
-		fnDamageAuto(victim)
-	}
-}
 
 public CBasePlayer_HasRestrictItem(const id, const ItemID:item, const ItemRestType:type)
 {
@@ -312,7 +293,7 @@ public RoundEnd(WinStatus:status, ScenarioEventEndRound:event, Float:tmDelay)
 	if (game_is_live() && event != ROUND_GAME_RESTART && event != ROUND_GAME_COMMENCE)
 	{
 		g_iRound++
-		// fnUpdateServerName();
+		update_gamedesc();
 
 		if (status == WINSTATUS_CTS)
 		{
@@ -484,35 +465,6 @@ public fnScoreInfo(m, s, id)
 	}
 }
 
-// --------------------- Game events ---------------------
-
-public player_give_money (id, amount) set_member(id, m_iAccount, amount);
-
-public money_handler (const id)
-{
-	if (!game_is_live())
-	{
-		player_give_money(id, 16000);
-		return PLUGIN_HANDLED;
-	}
-
-	return PLUGIN_CONTINUE;
-}
-
-public damage_handler (iVictim)
-{
-	static iAttacker; iAttacker = get_user_attacker(iVictim)
-	static iDamage; iDamage = read_data(2)
-
-	if (iAttacker != iVictim && (1 <= iAttacker <= g_iMaxClients) && (1 <= iVictim <= g_iMaxClients))
-	{
-		g_iDmg[iVictim][iAttacker] += iDamage
-		g_iHits[iVictim][iAttacker]++
-	}
-
-	return PLUGIN_CONTINUE;
-}
-
 // --------------------- Partes del PUG ---------------------
 
 public PugWarmup ()
@@ -522,7 +474,7 @@ public PugWarmup ()
 	g_iReadyCount = 0
 	arrayset(g_bReady, false, sizeof(g_bReady))
 
-	// fnUpdateServerName();
+	set_default_gamedesc();
 
 	new iPlayers[MAX_PLAYERS], iNum, iPlayer;
 	get_players(iPlayers, iNum, "ch");
@@ -974,7 +926,7 @@ public fnHudMoney()
 		{
 			iPlayerTeam = iPlayersTeam[e]
 
-			iMoney = get_member(iPlayerTeam, m_iAccount);
+			iMoney = client_get_money(iPlayerTeam);
 			get_user_name(iPlayerTeam, sName, charsmax(sName));
 			iLen += format(sMessage[iLen], charsmax(sMessage) - iLen, "%s: $%d^n", sName, iMoney);
 		}
@@ -991,67 +943,70 @@ public fnRemoveHudMoney()
 
 // --------------------- Utilidades ---------------------
 
-public fnLoadMaps(const sPatch[])
+public maps_create_menu()
 {	
+	new sPatch[40];
+
+	get_configdir(sPatch, charsmax(sPatch));
+	format(sPatch, charsmax(sPatch), "%s/maps.ini", sPatch);
+
+	if (!file_exists(sPatch))
+		get_mapcycle_file(sPatch, charsmax(sPatch));
+
 	g_mMap = menu_create("\gVotacion de mapa", "fnMapMenuHandle")
 
-	if (file_exists(sPatch))
+	new sMap[32], iNum[10], iFile;
+
+	iFile = fopen(sPatch, "rb");
+
+	// Mapa actual
+	formatex(g_sMapNames[g_iMapCount], charsmax(g_sMapNames[]), "%L", LANG_SERVER, "PUG_VOTING_MAPCURRENT");
+		
+	num_to_str(g_iMapCount, iNum, charsmax(iNum));
+	menu_additem(g_mMap, g_sMapNames[g_iMapCount], iNum);
+
+	g_iMapCount++;
+
+	// Mapa aleatorio
+	formatex(g_sMapNames[g_iMapCount], charsmax(g_sMapNames[]), "%L", LANG_SERVER, "PUG_VOTING_RANDOM");
+		
+	num_to_str(g_iMapCount, iNum, charsmax(iNum));
+	menu_additem(g_mMap, g_sMapNames[g_iMapCount], iNum);
+
+	g_iMapCount++;
+
+	while(!feof(iFile) && (g_iMapCount < MAX_MAPS))
 	{
-		new iFile = fopen(sPatch, "rb");
+		fgets(iFile, sMap, charsmax(sMap));
+		trim(sMap);
 		
-		new sMap[32], iNum[10];
-
-		// Mapa actual
-		formatex(g_sMapNames[g_iMapCount], charsmax(g_sMapNames[]), "%L", LANG_SERVER, "PUG_VOTING_MAPCURRENT");
-			
-		num_to_str(g_iMapCount, iNum, charsmax(iNum));
-		menu_additem(g_mMap, g_sMapNames[g_iMapCount], iNum);
-	
-		g_iMapCount++;
-	
-		// Mapa aleatorio
-		formatex(g_sMapNames[g_iMapCount], charsmax(g_sMapNames[]), "%L", LANG_SERVER, "PUG_VOTING_RANDOM");
-			
-		num_to_str(g_iMapCount, iNum, charsmax(iNum));
-		menu_additem(g_mMap, g_sMapNames[g_iMapCount], iNum);
-	
-		g_iMapCount++;
-
-		while(!feof(iFile) && (g_iMapCount < MAX_MAPS))
+		if (is_map_valid(sMap) && !equali(sMap, g_sCurrentMap))
 		{
-			fgets(iFile, sMap, charsmax(sMap));
-			trim(sMap);
-			
-			if ((sMap[0] != ';') && is_map_valid(sMap) && !equali(sMap, g_sCurrentMap))
+			copy(g_sMapNames[g_iMapCount], charsmax(g_sMapNames[]), sMap);
+			num_to_str(g_iMapCount, iNum, charsmax(iNum));
+
+			if ( is_lastmaps_blocked() && (equali(sMap, g_sLastMaps[0]) || equali(sMap, g_sLastMaps[1])) )
 			{
-				copy(g_sMapNames[g_iMapCount], charsmax(g_sMapNames[]), sMap);
-				num_to_str(g_iMapCount, iNum, charsmax(iNum));
+				new text[32]
+				formatex(text, charsmax(text), "\d%i. %s", g_iMapCount+1, sMap)
 
-				if ( is_lastmaps_blocked() && (equali(sMap, g_sLastMaps[0]) || equali(sMap, g_sLastMaps[1])) )
-				{
-					new text[32]
-					formatex(text, charsmax(text), "\d%i. %s", g_iMapCount+1, sMap)
-
-					#if AMXX_VERSION_NUM >= 183
-					menu_addtext2(g_mMap, text)
-					#else
-					menu_addtext(g_mMap, text)
-					#endif
-				}
-
-				else
-					menu_additem(g_mMap, sMap, iNum);
-			
-				g_iMapCount++;
+				#if AMXX_VERSION_NUM >= 183
+				menu_addtext2(g_mMap, text)
+				#else
+				menu_addtext(g_mMap, text)
+				#endif
 			}
+
+			else
+				menu_additem(g_mMap, sMap, iNum);
+		
+			g_iMapCount++;
 		}
-		
-		fclose(iFile);
-		
-		return g_iMapCount;
 	}
 	
-	return 0;
+	fclose(iFile);
+	
+	return g_iMapCount;
 }
 
 public fnHookSay(id)
@@ -1476,7 +1431,7 @@ public fnShowMoney(id)
 				continue;
 
 			get_user_name(iPlayer, szName, charsmax(szName))
-			chat_print(id, "%L", LANG_SERVER, "PUG_MONEY_INFO", get_member(iPlayer, m_iAccount), szName)
+			chat_print(id, "%L", LANG_SERVER, "PUG_MONEY_INFO", client_get_money(iPlayer), szName)
 		}
 	}
 
@@ -1570,16 +1525,7 @@ public fnPostConfig()
 	formatex(g_sPauseOptions[0], charsmax(g_sPauseOptions[]), "%L", LANG_SERVER, "PUG_VOTING_YES");
 	formatex(g_sPauseOptions[1], charsmax(g_sPauseOptions[]), "%L", LANG_SERVER, "PUG_VOTING_NO");
 
-	// Get maps allowed
-	new sPatch[40];
-	get_configdir(sPatch, charsmax(sPatch));
-	format(sPatch, charsmax(sPatch), "%s/maps.ini", sPatch);
-
-	if (!fnLoadMaps(sPatch))
-	{
-		get_mapcycle_file(sPatch, charsmax(sPatch));
-		fnLoadMaps(sPatch);
-	}
+	maps_create_menu();
 }
 
 public show_owners(const id)
@@ -1706,132 +1652,101 @@ public fnUpdateLastMaps()
 	set_lastmaps(g_sLastMaps);
 }	
 
-public fnMute(const id, level, cid)
-{
-	if (!cmd_access(id, level, cid, 1))
-	{
-		chat_print(id, "%L", LANG_SERVER, "PUG_VOTEKICK_SPECIFY");
-		return PLUGIN_HANDLED;
-	}
-
-	new target, targetName[32];
-	read_argv(1, targetName, 31);
-	target = cmd_target(id, targetName, CMDTARGET_OBEY_IMMUNITY | CMDTARGET_NO_BOTS | CMDTARGET_ALLOW_SELF);
-
-	if (!target)
-	{
-		chat_print(id, "%L", LANG_SERVER, "PUG_VOTEKICK_UNAVAILABLE")
-		return PLUGIN_HANDLED;
-	}
-
-	g_bMuted[id][target] = true	
-
-	return PLUGIN_HANDLED
-}
-
-public fnUnmute(const id, level, cid)
-{
-	if (!cmd_access(id, level, cid, 1))
-	{
-		chat_print(id, "%L", LANG_SERVER, "PUG_VOTEKICK_SPECIFY");
-		return PLUGIN_HANDLED
-	}
-
-	new target, targetName[32];
-	read_argv(1, targetName, 31);
-	target = cmd_target(id, targetName, CMDTARGET_OBEY_IMMUNITY | CMDTARGET_NO_BOTS | CMDTARGET_ALLOW_SELF);
-
-	if (!target)
-	{
-		chat_print(id, "%L", LANG_SERVER, "PUG_VOTEKICK_UNAVAILABLE")
-		return PLUGIN_HANDLED
-	}
-
-	g_bMuted[id][target] = false
-
-	return PLUGIN_HANDLED
-}
-
 public fnPregameHooks()
 {
 	EnableHookChain(g_hDeadPlayerWeapons)
 	EnableHookChain(g_hGiveC4)
 	DisableHookChain(g_hRoundFreezeEnd)
-	DisableHookChain(g_hPlayerKilled)
 	//DisableHookChain(g_hTakeDamage)
 }
 
 public fnPugHooks()
 {
 	EnableHookChain(g_hRoundFreezeEnd)
-	EnableHookChain(g_hPlayerKilled)
 	//EnableHookChain(g_hTakeDamage)
 	DisableHookChain(g_hDeadPlayerWeapons)
 	DisableHookChain(g_hGiveC4)
 }
 
-/*
-public fnUpdateServerName()
-{
+public update_gamedesc() {
+	if (!game_is_live())
+		return;
+
 	new szFmt[32];
 
-	if (game_is_live())
-	{
-		if (g_iRoundCT == g_iRoundTT)
-			formatex(szFmt, charsmax(szFmt), "Ronda: %i | Empate: %i - %i", g_iRound, g_iRoundCT, g_iRoundTT)
-
-		else if (g_iRoundCT > g_iRoundTT)
-			formatex(szFmt, charsmax(szFmt), "Ronda: %i | CT: %i | TT: %i", g_iRound, g_iRoundCT, g_iRoundTT)
-
-		else
-			formatex(szFmt, charsmax(szFmt), "Ronda: %i | TT: %i | CT: %i", g_iRound, g_iRoundTT, g_iRoundCT)
-
-	}
-	else 
-	{
-		formatex(szFmt, charsmax(szFmt), "Funny Hosting");
-	}
+	if (g_iRoundCT > g_iRoundTT)
+		formatex(szFmt, charsmax(szFmt), "%i : %i", g_iRoundCT, g_iRoundTT)
+	else
+		formatex(szFmt, charsmax(szFmt), "%i : %i", g_iRoundTT, g_iRoundCT)
 
 	set_member_game(m_GameDesc, szFmt);
 }
-*/
 
-// DISPLAY NAME
+// Events
 
-public event_new_round()
-{
-	if (game_is_live())
+public event_money (const id) {
+	if (game_is_started())
+		return PLUGIN_CONTINUE;
+
+	client_give_money(id, 16000);
+
+	return PLUGIN_HANDLED;
+}
+
+public event_damage (iVictim) {
+	static iAttacker; iAttacker = get_user_attacker(iVictim)
+	static iDamage; iDamage = read_data(2)
+
+	if (iAttacker != iVictim &&
+		is_player_id(iAttacker) &&
+		is_player_id(iVictim))
 	{
-		new showMoneyMode = get_showmoney_mode();
+		g_iDmg[iVictim][iAttacker] += iDamage
+		g_iHits[iVictim][iAttacker]++
+	}
+}
 
-		switch (showMoneyMode)
-		{
-			case 1:
-			{
-				new iPlayers[MAX_PLAYERS], iNum, iPlayer
-				get_players(iPlayers, iNum, "h");
+public event_death_player () {
+	if (!game_is_live())
+		return; 
 
-				for (new i; i < iNum; i++)
-				{
-					iPlayer = iPlayers[i]
+	new const killer = read_data(1);
+	new const victim = read_data(2);
 
-					if (!fnIsTeam(iPlayer))
-						continue;
-				
-					client_cmd(iPlayer, "say_team $%i", get_member(iPlayer, m_iAccount))
-				}
-			}
-			case 2:
-			{
-				remove_task(TASK_DISPLAY_INFO);
+	g_iFrags[killer]++;
+	g_iDeaths[victim]++;
 
-				set_task(0.2, "fnHudMoney", TASK_DISPLAY_INFO, _, _, "b")
-				set_task(float(get_freezetime()), "fnRemoveHudMoney", _, _, _, "a", 1)
-			}
-			case 3:
-			{
-				show_team_equipment();
-			}
+	fnDamageAuto(victim);
+}
+
+public clients_print_money () {
+	new iPlayers[MAX_PLAYERS], iNum, iPlayer
+	get_players(iPlayers, iNum, "ah");
+
+	for (new i; i < iNum; i++) {
+		iPlayer = iPlayers[i]
+		client_cmd(iPlayer, "say_team $%i", client_get_money(iPlayer));
+	}
+}
+
+public event_new_round () {
+	if (!game_is_live())
+		return PLUGIN_CONTINUE;
+
+	new showMoneyMode = get_showmoney_mode();
+
+	switch (showMoneyMode) {
+		case 1: {
+			set_task(0.2, "clients_print_money", _, _, _, "a", 1);
+		}
+		case 2: {
+			set_task(0.2, "fnHudMoney", TASK_DISPLAY_INFO, _, _, "b")
+			set_task(float(get_freezetime()), "fnRemoveHudMoney", _, _, _, "a", 1)
+		}
+		case 3: {
+			show_team_equipment();
 		}
 	}
+
+	return PLUGIN_HANDLED;
 }
