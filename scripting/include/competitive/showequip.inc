@@ -14,6 +14,7 @@
 stock bool:isNewRound;
 stock Float:playerOrigin[33][3];
 stock players[32], count;
+static Float:color[3]
 
 // DISPLAY MONEY 
 
@@ -63,7 +64,7 @@ stock create_sprites () {
 	for (new i; i<count; i++) {
 		id = players[i];
 
-		if (is_user_playing(id))
+		if (client_is_player(id))
 			create_user_sprites(id);
 	}
 }
@@ -75,7 +76,7 @@ public display_sprites () {
 	for (new i; i<count; i++) {
 		id = players[i];
 
-		if (is_user_playing(id))
+		if (client_is_player(id))
 			display_user_sprites(id);
 		else
 			remove_user_sprites(id);
@@ -247,8 +248,6 @@ stock drawspr (const ent, player_id, str[], Float:frame, Float:offset, amount, r
 	playerOrigin[player_id][2] += offset;
 	set_pev(ent, pev_origin, playerOrigin[player_id]);
 }
-
-stock Float:color[3]
 
 stock rg_remove_entity (const ent)
 {
