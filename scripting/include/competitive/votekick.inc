@@ -38,16 +38,17 @@ static create_menu () {
 
 public start_votekick (const id, level, cid) {
 	if (!validate_cmd(id, level, cid))
-		return;
+		return PLUGIN_HANDLED;
 
 	target = find_target(id);
 
-	if (!validate_target(target))
-		return;
+	if (!validate_target(id, target))
+		return PLUGIN_HANDLED;
 
 	set_names(id, target);
 	set_reason();
 	set_menu_title();
+
 	reset_votes();
 
 	votekick_limiter[id]++;
@@ -59,6 +60,8 @@ public start_votekick (const id, level, cid) {
 
 	chat_print(0, "%L", LANG_SERVER, "PUG_VOTEKICK_STARTED",
 				admin_name, target_name, reason);
+
+	return PLUGIN_HANDLED;
 }
 
 public finish_votekick () {
@@ -107,7 +110,7 @@ static find_target (id) {
 							CMDTARGET_NO_BOTS);
 }
 
-static bool:validate_target (id) {
+static bool:validate_target (id, target) {
 	if (!target) {
 		chat_print(id, "%L", LANG_SERVER, "PUG_VOTEKICK_UNAVAILABLE")
 		return false;
@@ -163,7 +166,7 @@ static verify_votes () {
 	}
 
 	if (winner == 1) {
-		server_cmd("kick #%i %s", get_user_userid(target), reason);
+		server_cmd("amx_ban #%i 60 %s", get_user_userid(target), reason);
 		chat_print(0, "%L", LANG_SERVER, "PUG_VOTEKICK_KICKED", target_name, votes[winner]);
 	} else if (winner == 2) {
 		chat_print(0, "%L", LANG_SERVER, "PUG_VOTEKICK_NOTKICKED", target_name, votes[winner]);
