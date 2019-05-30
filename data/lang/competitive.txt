@@ -10,6 +10,9 @@ TERRORIST = Terrorista
 CT = Anti-Terrorista
 SPECTATOR = Espectador
 
+PLAYER_MUTED = Jugador muteado.
+PLAYER_UNMUTED = Jugador desmuteado.
+
 PUG_GAME_CANCELED_ABSENCE = Juego cancelado por ausencia de jugadores en el equipo %s.
 PUG_GAME_FORCED = %s forzo el juego
 PUG_GAME_INTERMISSION = %d segundos de descanso para comenzar el proximo tiempo
@@ -126,6 +129,9 @@ SPECTATORS = Spectators
 TERRORIST = Terrorist
 CT = Counter-Terrorist
 SPECTATOR = Spectator
+
+PLAYER_MUTED = Muted player.
+PLAYER_UNMUTED = Unmuted player.
 
 PUG_GAME_CANCELED_ABSENCE = Game canceled due to absence of players in the %s team.
 PUG_GAME_FORCED = %s forced the game.
