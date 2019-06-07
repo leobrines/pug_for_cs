@@ -77,18 +77,20 @@ PUG_CAPTAIN_SIDE = %s empezara en el bando %s
 
 PUG_ADMIN_SELECTED = %s ha sido seleccionado como el moderador para este equipo y tiene la habilidad de .votekick
 
-PUG_VOTEKICK_SPECTATORS = Los espectadores no pueden kickear.
-PUG_VOTEKICK_SPECIFY = Necesitas especificar un jugador.
-PUG_VOTEKICK_UNAVAILABLE = No es un objetivo disponible.
 PUG_VOTEKICK_MAXVOTES = Solo puedes iniciar 3 votaciones.
-PUG_VOTEKICK_STARTED = %s empezo votacion para kickar a %s. Razon: %s
-PUG_VOTEKICK_TIE = Fallo la votacion (empate de votos).
-PUG_VOTEKICK_FAILED = Fallo la votacion (sin votos).
-PUG_VOTEKICK_INSUFFICIENT = Fallo la votacion (votos insuficientes).
-PUG_VOTEKICK_KICKED = %s kickeado. Votos: %d.
-PUG_VOTEKICK_NOTKICKED = Fallo la votacion para kickear a %s. Votos: %d.
-PUG_VOTEKICK_TITLE = Votekick: %s (Razon: %s)
-PUG_VOTEKICK_NOREASON = Sin razon
+PUG_VOTEKICK_KICKED = %s expulsado por votekick.
+PUG_VOTEKICK_TITLE = Expulsar a %s:
+
+PUG_CMD_SPECIFY = Necesitas especificar un jugador.
+PUG_CMD_UNAVAILABLE = No es un objetivo disponible.
+
+PUG_VOTING_STARTED = %s inicio votacion. 
+PUG_VOTING_INSUFFICIENT = Votos insuficientes.
+PUG_VOTING_FAILED = Votacion fallida.
+
+PUG_VOTEPAUSE_TITLE = Pausar el juego?
+PUG_VOTEPAUSE_SUCCESS = El equipo %s pausara el partido.
+PUG_VOTEPAUSE_MAXVOTES = Solo se puede pausar la partida una vez.
 
 PUG_VOTING_MAP = Votacion de mapa
 PUG_VOTING_MAPCURRENT = Jugar este mapa
@@ -97,6 +99,7 @@ PUG_VOTING_BALANCED = Balanceado
 PUG_VOTING_NOTSORTED = Equipos iguales
 PUG_VOTING_CAPTAINS = Capitanes
 PUG_VOTING_RANDOM = Aleatorio
+
 PUG_NOVOTES = Sin votos
 
 PUG_AFKKICKER_CVAR = Cvar pug_afktime %i tiene un valor muy bajo. El valor minimo es %i.
@@ -111,11 +114,6 @@ PUG_CHANGE_TO_AUTO = Admin %s cambio el servidor a modo: Automatico
 
 PUG_MODE_MANUAL = Modo del servidor: manual
 PUG_MODE_AUTO = Modo del servidor: automatico
-
-PUG_PAUSE_SPECTATORS = Los espectadores no pueden pausar el juego.
-PUG_PAUSE_START = El equipo %L inicio una votacion para pausar el juego.
-PUG_PAUSE_NEXT_ROUND = El partido se pausara en la proxima ronda.
-PUG_PAUSE_FAILED = La votacion para pausar la proxima ronda fallo!
 
 PUG_SPEC_DONT_SAY = Solo los admins pueden escribir en el say de espectador.
 

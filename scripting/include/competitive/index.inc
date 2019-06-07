@@ -15,6 +15,13 @@
 // Modules
 #include <competitive/showequip>
 #include <competitive/votekick>
+#include <competitive/votepause>
 #include <competitive/chooseteam>
 #include <competitive/mute>
+#include <competitive/roundinfo>
+#include <competitive/autoready>
+
+// cmd and events
+#include <competitive/cmd>
+#include <competitive/event>
 
