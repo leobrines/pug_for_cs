@@ -19,9 +19,6 @@ stock votepause_init () {
 	vote_delay = register_cvar("pug_votepause_delay", "10");
 	vote_times = register_cvar("pug_votepause_times", "1");
 	vote_time = register_cvar("pug_votepause_time", "60");
-
-	registerCommand("pause", "start_votepause", ADMIN_ALL,
-					"Starts a votepause");
 }
 
 static create_menu () {
@@ -48,7 +45,7 @@ public votepause_menu_handler (const id, menu, item) {
 	return PLUGIN_HANDLED;
 }
 
-public start_votepause (const id, level, cid) {
+stock start_votepause (id) {
 	new TeamName:team = client_get_team(id);
 
 	if (!validate_cmd(id, team))

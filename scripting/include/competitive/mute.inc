@@ -1,3 +1,9 @@
+#if defined _mute_included
+  #endinput
+#endif
+
+#define _mute_included
+
 #include <amxmodx>
 #include <fakemeta>
 
@@ -31,45 +37,12 @@ public mute_hook (receiver, sender, bool:listen) {
 	return FMRES_IGNORED;
 }
 
-public client_mute (const id, level, cid) {
-	new const target = cmd_get_target(id, level, cid);
-
-	if (target) {
-		clients_muted[id][target] = true	
-		chat_print(id, "%L", LANG_SERVER, "PLAYER_MUTED");
-	}
-
-	return PLUGIN_HANDLED
+stock client_mute (id, target) {
+	clients_muted[id][target] = true	
+	chat_print(id, "%L", LANG_SERVER, "PLAYER_MUTED");
 }
 
-public client_unmute (const id, level, cid) {
-	new const target = cmd_get_target(id, level, cid);
-
-	if (target) {
-		clients_muted[id][target] = false
-		chat_print(id, "%L", LANG_SERVER, "PLAYER_UNMUTED");
-	}
-
-	return PLUGIN_HANDLED
-}
-
-static cmd_get_target (id, level, cid) {
-	if (!cmd_access(id, level, cid, 2)) {
-		chat_print(id, "%L", LANG_SERVER, "PUG_VOTEKICK_SPECIFY");
-		return 0;
-	}
-
-	new target, targetName[32];
-
-	read_argv(1, targetName, 31);
-	target = cmd_target(id, targetName, CMDTARGET_OBEY_IMMUNITY | 
-										CMDTARGET_NO_BOTS |
-										CMDTARGET_ALLOW_SELF);
-
-	if (!target) {
-		chat_print(id, "%L", LANG_SERVER, "PUG_VOTEKICK_UNAVAILABLE")
-		return 0;
-	}
-
-	return target;
+stock client_unmute (id, target) {
+	clients_muted[id][target] = false
+	chat_print(id, "%L", LANG_SERVER, "PLAYER_UNMUTED");
 }

@@ -1,37 +1,33 @@
-#if !defined _amxmodx_included
-	#include <amxmodx>
+#if defined _showequip_included
+  #endinput
 #endif
 
-#if !defined _fakemeta_included
-	#include <fakemeta>
-#endif
+#define _showequip_included
 
-#if !defined _reapi_included
-	#include <reapi>
-#endif
+#include <amxmodx>
+#include <fakemeta>
+#include <reapi>
 
 #define DISPLAY_ENTS_TASK 4563
-stock bool:isNewRound;
-stock Float:playerOrigin[33][3];
-stock players[32], count;
-static Float:color[3]
+static bool:is_newround;
+static Float:playerOrigin[33][3];
 
 // DISPLAY MONEY 
 
 #define NUMBER_OF_SPRITES	5
-stock money_sprites[MAX_PLAYERS+1][NUMBER_OF_SPRITES];
-stock tmpstr[6], value[2];
-stock dolar_sprite[MAX_PLAYERS+1];
+static money_sprites[MAX_PLAYERS+1][NUMBER_OF_SPRITES];
+static tmpstr[6], value[2];
+static dolar_sprite[MAX_PLAYERS+1];
 
 // DISPLAY WEAPONS
 
 #define NUMBER_OF_WEAPTYPES	7
-stock const Float:pistols[6] = {1.0,10.0,11.0,16.0,17.0,26.0};
-stock const Float:rifles[18] = {3.0,5.0,7.0,8.0,12.0,13.0,14.0,15.0,18.0,19.0,20.0,21.0,22.0,23.0,24.0,27.0,28.0,30.0};
-stock weapon_sprites[33][NUMBER_OF_WEAPTYPES];
-stock ArmorType:armor, weapons;
+static const Float:pistols[6] = {1.0,10.0,11.0,16.0,17.0,26.0};
+static const Float:rifles[18] = {3.0,5.0,7.0,8.0,12.0,13.0,14.0,15.0,18.0,19.0,20.0,21.0,22.0,23.0,24.0,27.0,28.0,30.0};
+static weapon_sprites[33][NUMBER_OF_WEAPTYPES];
+static ArmorType:armor, weapons;
 
-new const models[][] = {
+static const models[][] = {
 	"sprites/10000.spr",
 	"sprites/1000.spr",
 	"sprites/100.spr",
@@ -43,22 +39,22 @@ new const models[][] = {
 	"sprites/arrow.spr"
 };
 
-stock precache_showequip_sprites () {
+stock showequip_precache () {
 	for (new i=0; i < sizeof models; i++)
 		precache_model(models[i]);
 }
 
 stock show_team_equipment () {
-	isNewRound = true;
+	is_newround = true;
 
 	create_sprites();
 
 	set_task(get_cvar_float("mp_freezetime"), "remove_sprites", _, _, _, "a", 1);
-	set_task(0.2, "display_sprites", DISPLAY_ENTS_TASK, "", 0, "b");
+	set_task(0.4, "display_sprites", DISPLAY_ENTS_TASK, "", 0, "b");
 }
 
 stock create_sprites () {
-	new id, players[MAX_PLAYERS], count;
+	static id, players[MAX_PLAYERS], count;
 	get_players(players, count, "ah");
 
 	for (new i; i<count; i++) {
@@ -70,7 +66,7 @@ stock create_sprites () {
 }
 
 public display_sprites () {
-	new id;
+	new id, players[MAX_PLAYERS], count;
 	get_players(players, count, "ah");
 
 	for (new i; i<count; i++) {
@@ -82,7 +78,7 @@ public display_sprites () {
 			remove_user_sprites(id);
 	}
 
-	isNewRound = false;
+	is_newround = false;
 }
 
 public remove_sprites () {
@@ -235,7 +231,7 @@ stock drawspr (const ent, player_id, str[], Float:frame, Float:offset, amount, r
 	if (!is_entity(ent))
 		return;
 
-	if (isNewRound){		
+	if (is_newround){		
 		engfunc(EngFunc_SetModel, ent, str);
 		set_pev(ent, pev_movetype, MOVETYPE_NOCLIP);
 		set_pev(ent, pev_framerate, 1.0);
@@ -262,6 +258,7 @@ stock rg_set_rendering (const ent, const fx=kRenderFxNone, r,g,b, render=kRender
 	if (!is_entity(ent))
 		return;
 
+	new Float:color[3]
 	color[0] = float(r);
 	color[1] = float(g);
 	color[2] = float(b);
