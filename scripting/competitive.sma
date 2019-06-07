@@ -65,14 +65,15 @@ public plugin_init()
 	#endif
 	
 	utils_init();
-	
 	cvars_init();
 
 	votekick_init();
-	chooseteam_init();
-	mute_init();
 	votepause_init();
+	mute_init();
+	chooseteam_init();
+
 	cmd_init();
+	event_init();
 
 	// Commands
 	register_clcmd("say", "fnHookSay")
