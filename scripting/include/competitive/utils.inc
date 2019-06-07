@@ -24,6 +24,7 @@ stock g_sCurrentMap[32]
 stock g_iMaxClients
 stock g_sLang[3]
 stock TAG[32]
+
 stock const team_name[TeamName][MAX_NAME_LENGTH];
 
 enum _:PUGSTATE
@@ -64,20 +65,23 @@ stock getPlayersNum ()
 	return amountPlayers;
 }
 
-stock getPlayersTeam (TeamName:team, bool:includeBots=true)
+stock getPlayersTeam (TeamName:team, bool:bots=true)
 {
-	new playersID[MAX_CLIENTS], amountPlayers, playerID, amountPlayersInTeam;
-	get_players(playersID, amountPlayers, includeBots ? "h" : "ch");
-	 
-	for (new i; i < amountPlayers; i++)
-	{
-		playerID = playersID[i]
+	new players[MAX_PLAYERS], count;
+	new tmp_team_name[10];
 
-		if (client_get_team(playerID) == team)
-			amountPlayersInTeam++;
+	switch (team) {
+		case TEAM_CT:
+			copy(tmp_team_name, charsmax(tmp_team_name), "CT");
+		case TEAM_TERRORIST:
+			copy(tmp_team_name, charsmax(tmp_team_name), "TERRORIST");
+		default:
+			copy(tmp_team_name, charsmax(tmp_team_name), "SPECTATOR");
 	}
 
-	return amountPlayersInTeam;
+	get_players(players, count, bots ? "eh" : "ceh", tmp_team_name);
+
+	return count;
 }
 
 /* Next version
@@ -101,8 +105,30 @@ stock chat_print (const playerID, const message[], any:...)
 		client_print_color(playerID, print_team_grey, "%s %s", TAG, msgFormated);
 }
 
+stock team_print (TeamName:team, const msg[], any:...) {
+	new players[MAX_PLAYERS], count;
+	new tmp_team[10];
+
+	new msgFormated[191];
+	vformat(msgFormated, charsmax(msgFormated), msg, 3);
+
+	switch (team) {
+		case TEAM_TERRORIST:
+			copy(tmp_team, charsmax(tmp_team), "TERRORIST")
+		case TEAM_CT:
+			copy(tmp_team, charsmax(tmp_team), "CT")
+		default:
+			copy(tmp_team, charsmax(tmp_team), "SPECTATOR")
+	}
+
+	get_players(players, count, "ceh", tmp_team);
+
+	for (new i; i<count; i++)
+		chat_print(players[i], msgFormated);
+}
+
 stock bool:game_is_started ()
-	return STAGE_START <= g_iStage <= STAGE_FINISHED
+	return (STAGE_START <= g_iStage <= STAGE_FINISHED);
 
 stock bool:game_is_live () {
 	if (g_iStage == STAGE_FIRSTHALF ||
@@ -114,13 +140,36 @@ stock bool:game_is_live () {
 }
 
 stock bool:team_is_full(TeamName:team, bool:bots=true)
-	return getPlayersTeam(team, bots) >= get_pug_maxplayers()/2
+	return getPlayersTeam(team, bots) >= get_pug_maxplayers()/2;
 
-stock bool:client_is_spectator (id) 
-	return client_get_team(id) == TEAM_SPECTATOR
+stock team_count_players(TeamName:team) {
+	new players[MAX_PLAYERS], count, tmp_team[10];
+
+	switch (team) {
+		case TEAM_TERRORIST:
+			copy(tmp_team, charsmax(tmp_team), "TERRORIST")
+		case TEAM_CT:
+			copy(tmp_team, charsmax(tmp_team), "CT")
+		default:
+			copy(tmp_team, charsmax(tmp_team), "SPECTATOR")
+	}
+
+	get_players(players, count, "ceh", tmp_team);
+
+	return count;
+}
 
 stock bool:client_is_player (id)
-	return TEAM_TERRORIST <= client_get_team(id) <= TEAM_CT
+	return TEAM_TERRORIST <= client_get_team(id) <= TEAM_CT;
+
+stock bool:client_is_spectator (id) 
+	return client_get_team(id) == TEAM_SPECTATOR;
+
+stock bool:client_is_terrorist (id)
+	return client_get_team(id) == TEAM_TERRORIST;
+
+stock bool:client_is_ct (id)
+	return client_get_team(id) == TEAM_CT;
 
 stock TeamName:client_get_team (id)
 	return get_member(id, m_iTeam);
@@ -131,6 +180,30 @@ stock client_give_money (id, amount)
 stock client_get_money (id)
 	return get_member(id, m_iAccount);
 
+stock clients_print_money () {
+	static players[MAX_PLAYERS], count, id
+	get_players(players, count, "ah");
+
+	for (new i; i < count; i++) {
+		id = players[i]
+		client_cmd(id, "say_team $%i", client_get_money(id));
+	}
+}
+
+stock clients_inteam_count () {
+	static players[MAX_PLAYERS], count, count_all;
+
+	count_all = 0;
+
+	get_players(players, count, "ceh", "TERRORIST");
+	count_all += count;
+
+	get_players(players, count, "ceh", "CT");
+	count_all += count;
+
+	return count_all;
+}
+
 stock is_player_id (id)
 	return 1 <= id <= MAX_PLAYERS+1;
 
@@ -138,15 +211,15 @@ stock client_set_team (const id, TeamName:team) {
 	if (client_get_team(id) == team)
 		return;
 
+	set_task(5.0, "show_owners", id, _, _, "a", 1) 
+
 	new TeamName:new_team;
 
 	if (team == TEAM_SPECTATOR) {
-		if (!is_spectator_allowed() && !access(id, PUG_CMD_LVL)) {
+		if (!is_spectator_allowed() && !access(id, PUG_CMD_LVL))
 			chat_print(id, "%L", LANG_SERVER, "PUG_TEAMS_SPECTATORS");
-		} else {
-			fnNotReady(id)
-			rg_join_team(id, team);
-		}
+		else
+			client_join_team(id, team);
 
 		return;
 	} else if (team == TEAM_UNASSIGNED) {
@@ -167,7 +240,39 @@ stock client_set_team (const id, TeamName:team) {
 		}
 	}
 
-	rg_join_team(id, new_team);
-	rg_round_respawn(id);
-	fnReady(id);
+	client_join_team(id, new_team);
+}
+
+stock client_join_team (id, TeamName:team) {
+	rg_join_team(id, team);
+	//rg_round_respawn(id);
+
+	autoready_check();
+
+	#if AMXX_VERSION_NUM < 183
+	chatcolor_send_teaminfo(id);
+	#endif
+}
+
+stock show_hudtitle(const id, msg[], any:...) {
+	new fmt[50]
+	vformat(fmt, charsmax(fmt), msg, 3)
+	set_hudmessage(0, 255, 0, 0.23, 0.02, 0, 1.0, 1.1, 0.0, 0.0, 1)
+	show_hudmessage(id, fmt);
+}
+
+stock show_hudbody(const id, msg[], any:...) {
+	new fmt[512]
+	vformat(fmt, charsmax(fmt), msg, 3)
+	set_hudmessage(255, 255, 255, 0.23, 0.05, 0, 1.0, 1.1, 0.0, 0.0, 2)
+	show_hudmessage(id, fmt);
+}
+
+stock server_changemap(sMap[])
+{
+	#if AMXX_VERSION_NUM >= 183
+	engine_changelevel(sMap);
+	#else
+	server_cmd("changelevel %s", sMap);
+	#endif
 }
