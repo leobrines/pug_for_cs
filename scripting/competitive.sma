@@ -230,7 +230,7 @@ public CBasePlayer_TakeDamage(const iVictim, iInflictor, iAttacker, Float:flDama
 }	
 */
 
-public RoundEnd(WinStatus:status, ScenarioEventEndRound:event, Float:tmDelay)
+public RoundEnd (WinStatus:status, ScenarioEventEndRound:event, Float:tmDelay)
 {
 	server_print("Event: RoundEnd. ScenarioEventEndRound: %i WinStatus: %i", event, status);
 
@@ -264,36 +264,35 @@ public RoundEnd(WinStatus:status, ScenarioEventEndRound:event, Float:tmDelay)
 	for (new i;i < iNum;i++) 
 		fnDamageAuto(iPlayers[i])
 
-	if (g_iStage == STAGE_FIRSTHALF)
-	{
-		if (g_iRound == get_maxrounds()/2)
-			PugHalftime();
-		else
-			fnShowScore();
-	}
-	else if (g_iStage == STAGE_SECONDHALF)
-	{
-		if (teamct_is_winner()) {
-			PugFinished(WINSTATUS_CTS)
-		} else if (teamtt_is_winner()) {
-			PugFinished(WINSTATUS_TERRORISTS)
-		} else if (is_scores_tie()) {
-			if (is_tie_allowed())
-				PugFinished(WINSTATUS_DRAW)
+	switch (g_iStage) {
+		case STAGE_FIRSTHALF: {
+			if (g_iRound == get_maxrounds()/2)
+				PugHalftime();
 			else
-				PugHalftime()
-		} else {
-			fnShowScore();
+				fnShowScore();
 		}
-	}
-	else if (g_iStage == STAGE_OVERTIME)
-	{
-		if (teamct_is_winner_ot())
-			PugFinished(WINSTATUS_CTS)
-		if (teamtt_is_winner_ot())
-			PugFinished(WINSTATUS_TERRORISTS)
-		else 
-			fnShowScore();
+		case STAGE_SECONDHALF: {
+			if (teamct_is_winner()) {
+				PugFinished(WINSTATUS_CTS)
+			} else if (teamtt_is_winner()) {
+				PugFinished(WINSTATUS_TERRORISTS)
+			} else if (is_scores_tie()) {
+				if (is_tie_allowed())
+					PugFinished(WINSTATUS_DRAW)
+				else
+					PugHalftime()
+			} else {
+				fnShowScore();
+			}
+		}
+		case STAGE_OVERTIME: {
+			if (teamct_is_winner_ot())
+				PugFinished(WINSTATUS_CTS)
+			if (teamtt_is_winner_ot())
+				PugFinished(WINSTATUS_TERRORISTS)
+			else 
+				fnShowScore();
+		}
 	}
 
 	return HC_CONTINUE;
@@ -558,8 +557,11 @@ public fnVoteMapEnd()
 	formatex(sMapName, charsmax(sMapName), "%s", g_sMapNames[winner])
 
 	chat_print(0, "%L", LANG_SERVER, "PUG_MAP_CHANGE", sMapName)
-	set_task(4.0, "server_changemap", _, sMapName, charsmax(sMapName), "a", 1)
+	set_task(4.0, "votemap_changemap", _, sMapName, charsmax(sMapName), "a", 1)
 }
+
+public votemap_changemap (map[])
+	server_changemap(map);
 
 public fnStartVoteTeam()
 {
@@ -988,7 +990,7 @@ public fnShowScore()
 
 	if (teamct_is_winning())
 		chat_print(0, "%L", LANG_SERVER, "PUG_SCORE_WINNING", g_szTeams[TEAM_CT], ctscore, ttscore)
-	if (teamtt_is_winning())
+	else if (teamtt_is_winning())
 		chat_print(0, "%L", LANG_SERVER, "PUG_SCORE_WINNING", g_szTeams[TEAM_TERRORIST], ttscore, ctscore)
 	else
 		chat_print(0, "%L", LANG_SERVER, "PUG_SCORE_TIED", ctscore, ttscore)
