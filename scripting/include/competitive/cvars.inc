@@ -1,3 +1,9 @@
+#if defined _cvars_included
+  #endinput
+#endif
+
+#define _cvars_included
+
 #include <amxmodx>
 
 // Cfg files
@@ -210,4 +216,19 @@ stock get_freezetime ()
 	return get_pcvar_num(g_pFreezeTime);
 
 stock set_freezetime (num) 
-	return set_pcvar_num(g_pFreezeTime, num);
+	set_pcvar_num(g_pFreezeTime, num);
+
+public show_owners (id) {
+	new owner[256], lang[3];
+
+	get_owner(owner, charsmax(owner));
+	get_serverlang(lang, charsmax(lang));
+
+	if (equali(owner, ""))
+		return;
+
+	if (equali(lang, "es"))
+		chat_print(id, "Lider del servidor: !t%s", owner);
+	else
+		chat_print(id, "Server leader: !t%s", owner);
+}
