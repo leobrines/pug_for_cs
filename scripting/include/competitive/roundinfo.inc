@@ -53,16 +53,19 @@ stock client_add_frag (id)
 	frags[id]++;
 
 stock client_add_death (id)
-	frags[id]++;
+	deaths[id]++;
 
 stock client_reset_score (id) {
 	frags[id] = 0;
 	deaths[id] = 0;
 }
 
-stock clients_reset_score () {
-	arrayset(frags, 0, sizeof(frags));
-	arrayset(deaths, 0, sizeof(deaths));
+stock clients_reset_scores () {
+	new players[MAX_PLAYERS], count;
+	get_players(players, count, "h");
+
+	for (new i; i<count; i++)
+		client_reset_score(players[i]);
 }
 
 stock client_get_frags (id)
@@ -77,8 +80,10 @@ stock teamtt_get_score ()
 stock teamct_get_score ()
 	return winsCT;
 
-stock teams_reset_scores ()
-	winsCT = winsTT = 0;
+stock teams_reset_scores () {
+	winsCT = 0;
+	winsTT = 0;
+}
 
 stock bool:teamct_is_winning ()
 	return winsCT > winsTT;
