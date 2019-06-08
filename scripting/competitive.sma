@@ -128,8 +128,7 @@ public plugin_pause()
 	DisableHookChain(g_hRoundEnd)
 }
 
-public client_putinserver(id)
-{
+public client_putinserver(id) {
 	client_reset_score(id);
 }
 
@@ -230,33 +229,34 @@ public CBasePlayer_TakeDamage(const iVictim, iInflictor, iAttacker, Float:flDama
 }	
 */
 
-public RoundEnd (WinStatus:status, ScenarioEventEndRound:event, Float:tmDelay)
-{
+public RoundEnd (WinStatus:status, ScenarioEventEndRound:event, Float:tmDelay) {
 	server_print("Event: RoundEnd. ScenarioEventEndRound: %i WinStatus: %i", event, status);
 
-	if (game_is_live() && event == ROUND_GAME_RESTART && g_iRound) {
-		players_round_restarted();
+	if (!game_is_live())
 		return HC_CONTINUE;
+
+	switch (event) {
+		case ROUND_GAME_RESTART: {
+			if (g_iRound)
+				players_round_restarted();
+				
+			return HC_CONTINUE;
+		}
+		case ROUND_GAME_COMMENCE: {
+			return HC_CONTINUE;
+		}
 	}
 
-	if (!game_is_live() ||
-		(event != ROUND_TERRORISTS_WIN &&
-		event != ROUND_CTS_WIN &&
-		event != ROUND_BOMB_DEFUSED &&
-		event != ROUND_TARGET_BOMB &&
-		event != ROUND_TARGET_SAVED &&
-		status != WINSTATUS_TERRORISTS &&
-		status != WINSTATUS_CTS))
-	{
-		return HC_CONTINUE;
+	switch (status) {
+		case WINSTATUS_CTS:
+			teamct_add_score();
+		case WINSTATUS_TERRORISTS:
+			teamtt_add_score();
+		default:
+			return HC_CONTINUE;
 	}
 
-	g_iRound++
-
-	if (status == WINSTATUS_CTS)
-		teamct_add_score();
-	else if (status == WINSTATUS_TERRORISTS)
-		teamtt_add_score();
+	g_iRound++;
 
 	new iPlayers[MAX_PLAYERS], iNum;
 	get_players(iPlayers, iNum, "ach");
@@ -307,8 +307,9 @@ public PugWarmup ()
 	set_default_gamedesc();
 
 	g_iRound = 0;
+
 	teams_reset_scores();
-	clients_reset_score();
+	clients_reset_scores();
 
 	fnPregameHooks()
 
@@ -1090,6 +1091,11 @@ public event_new_round () {
 			autoready_check();
 
 		return PLUGIN_CONTINUE;
+	}
+
+	if (g_iRound == 0) {
+		teams_reset_scores();
+		clients_reset_scores();
 	}
 
 	new showMoneyMode = get_showmoney_mode();
