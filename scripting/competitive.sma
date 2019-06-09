@@ -11,6 +11,7 @@
 #define MAX_BYTES 192
 
 new g_iRound;
+new bool:first_roundhalf;
 
 // Damage - Hits
 new g_iDmg[MAX_PLAYERS+1][MAX_PLAYERS+1]
@@ -237,9 +238,13 @@ public RoundEnd (WinStatus:status, ScenarioEventEndRound:event, Float:tmDelay) {
 
 	switch (event) {
 		case ROUND_GAME_RESTART: {
-			if (g_iRound)
+			if (g_iRound) {
 				players_round_restarted();
-				
+			} else {
+				teams_reset_scores();
+				clients_reset_scores();
+			}
+					
 			return HC_CONTINUE;
 		}
 		case ROUND_GAME_COMMENCE: {
@@ -334,6 +339,7 @@ public PugFirstHalf(){
 	g_iStage = STAGE_FIRSTHALF
 
 	autoready_hide();
+	first_roundhalf = true;
 
 	// fnTeamsRandomize()
 
@@ -362,6 +368,7 @@ public PugHalftime(){
 
 public PugSecondHalf(){
 	g_iStage = STAGE_SECONDHALF
+	first_roundhalf = true;
 
 	client_cmd(0, "-showscores")
 	DisableHookChain(g_hPlayerPostThink)
@@ -375,6 +382,7 @@ public PugSecondHalf(){
 public PugOvertime()
 {
 	g_iStage = STAGE_OVERTIME
+	first_roundhalf = true;
 
 	client_cmd(0, "-showscores")
 	DisableHookChain(g_hPlayerPostThink)
@@ -1093,14 +1101,13 @@ public event_new_round () {
 		return PLUGIN_CONTINUE;
 	}
 
-	if (g_iRound == 0) {
-		teams_reset_scores();
-		clients_reset_scores();
+	if (first_roundhalf) {
+		first_roundhalf = false;
+	} else {
+		players_round_start();
 	}
 
 	new showMoneyMode = get_showmoney_mode();
-
-	players_round_start();
 
 	switch (showMoneyMode) {
 		case 1: {
