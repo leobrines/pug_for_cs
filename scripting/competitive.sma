@@ -930,30 +930,55 @@ public fnSendMessage(id, Colors:color, msg[192])
 	message_end();
 }
 
-public fnDamageAuto(const id)
-{
+static user_print_dmg (id) {
 	console_print(id, "%L", LANG_SERVER, "PUG_DMG_TITLE")
 
-	new iPlayers[MAX_PLAYERS], iNum, iVictim;
-	get_players(iPlayers, iNum, "h");
+	new players[MAX_PLAYERS], count, victim;
+	get_players(players, count, "h");
 	
 	new szName[MAX_NAME_LENGTH];
 	
-	for (new i;i < iNum;i++)
-	{
-		iVictim = iPlayers[i];
+	for (new i; i<count;i++) {
+		victim = players[i];
 		
-		if (g_iDmg[iVictim][id] > 0)
-		{
-			get_user_name(iVictim, szName, charsmax(szName));
-			console_print(id, "%L", LANG_SERVER, "PUG_DMG_INFO", szName, g_iDmg[iVictim][id], g_iHits[iVictim][id])
-		}
+		if (!g_iDmg[victim][id])
+			continue;
+
+		get_user_name(victim, szName, charsmax(szName));
+		console_print(id, "%L", LANG_SERVER, "PUG_DMG_INFO", szName,
+					  g_iDmg[victim][id], g_iHits[victim][id])
 	}
 	
 	if (!szName[0])
 		console_print(id, "%L", LANG_SERVER, "PUG_DMG_DIDNTHURT")
+}
 
-	console_print(id, "%L", LANG_SERVER, "PUG_DMG_TITLE")
+static user_print_rdmg (id) {
+	console_print(id, "%L", LANG_SERVER, "PUG_RDMG_TITLE")
+
+	new players[MAX_PLAYERS], count, attacker;
+	get_players(players, count, "h");
+	
+	new szName[MAX_NAME_LENGTH];
+	
+	for (new i; i<count;i++) {
+		attacker = players[i];
+		
+		if (!g_iDmg[id][attacker])
+			continue;
+
+		get_user_name(attacker, szName, charsmax(szName));
+		console_print(id, "%L", LANG_SERVER, "PUG_RDMG_INFO", szName,
+					  g_iDmg[id][attacker], g_iHits[id][attacker])
+	}
+	
+	if (!szName[0])
+		console_print(id, "%L", LANG_SERVER, "PUG_RDMG_DIDNTHURT")
+}
+
+public fnDamageAuto(const id) {
+	user_print_dmg(id);
+	user_print_rdmg(id);
 }
 
 public fnResetDmg()

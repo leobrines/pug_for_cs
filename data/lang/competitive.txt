@@ -53,16 +53,13 @@ PUG_ACTION_NOTALLOWED = Accion no permitida en este momento.
 PUG_ACTION_NOTACCESS = No tienes acceso a este comando.
 PUG_WEAPON_NOTALLOWED = Este item no esta permitido.
 
-PUG_DMG_TITLE = ========== DMG ==========
-PUG_DMG_INFO = Jugador: %s | Dmg: %i | Tiros: %i
+PUG_DMG = ========== DMG ==========
+PUG_DMG_INFO = Jugador: %s | Dmg: %i | Hits: %i
 PUG_DMG_DIDNTHURT = No heriste a nadie esta ronda.
 
-PUG_HP_TITLE = ========== HP ==========
-PUG_HP_INFO = Jugador: %s | Vida: %i
-PUG_HP_DIDNTLIVE = No hay nadie vivo.
-
-PUG_MONEY_TITLE = ========== MONEY ==========
-PUG_MONEY_INFO = $%i | %s
+PUG_RDMG = ========== DMG recibido ==========
+PUG_RDMG_INFO = Jugador: %s | Dmg: %i | Hits: %i
+PUG_RDMG_DIDNTHURT = No recibiste daño esta ronda.
 
 PUG_BALANCING_TEAMS = Balanceando los equipos.
 PUG_RANDOMIZING_TEAMS = Randomizando los equipos.
@@ -175,9 +172,9 @@ PUG_DMG_TITLE = ========== DMG ==========
 PUG_DMG_INFO = Player: %s | Dmg: %i | Hits: %i
 PUG_DMG_DIDNTHURT = You didn't hurt anyone in this round.
 
-PUG_HP_TITLE = ========== HP ==========
-PUG_HP_INFO = Player: %s | Health: %i
-PUG_HP_DIDNTLIVE = No one live.
+PUG_RDMG = ========== Received DMG ==========
+PUG_RDMG_INFO = Player: %s | Dmg: %i | Hits: %i
+PUG_RDMG_DIDNTHURT = You didn't get hurt this round.
 
 PUG_BALANCING_TEAMS = Balancing teams.
 PUG_RANDOMIZING_TEAMS = Randomizing teams.
