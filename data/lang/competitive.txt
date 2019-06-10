@@ -168,7 +168,7 @@ PUG_ACTION_NOTALLOWED = Action not allowed at this time.
 PUG_ACTION_NOTACCESS = You don't have access to this command.
 PUG_WEAPON_NOTALLOWED = This weapon is not allowed.
 
-PUG_DMG_TITLE = ========== DMG ==========
+PUG_DMG = ========== DMG ==========
 PUG_DMG_INFO = Player: %s | Dmg: %i | Hits: %i
 PUG_DMG_DIDNTHURT = You didn't hurt anyone in this round.
 
