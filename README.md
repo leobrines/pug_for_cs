@@ -2,6 +2,16 @@
 
 Tome lo mejor de varios plugins para hacerlo un poco mas automatico. Por ejemplo, inicia automaticamente al estar 10 jugadores en el servidor, kickea automaticamente a los AFK y muestra el daño que realizaste en una ronda justo luego de morir.
 
+## Caracteristicas 
+- Inicio de juego automatico
+- Pausar partido (.votepause)
+- Mutear y desmutear (.mute .unmute)
+- Expulsar jugador (.votekick)
+- DMG automatico en consola
+- Empate disponible y configurable
+- Mantiene puntuaciones al cambio de bando
+- Al cambiar bando, se mantienen los scores
+
 ## Requisitos
 
 - [Amxmodx 1.8.x](https://www.amxmodx.org/)
@@ -32,9 +42,10 @@ $ unzip build-{date}.zip
 	.auto		- El modo iniciara automaticamente<br>
 
 - Jugador<br>
-	.dmg						- Muestra el daño hecho en la ronda<br>
-	.hp							- Muestra la vida de los jugadores<br>
-	.votekick <nombre> <razon>	- Inicia votacion para expulsar a un jugador<br>
+	.votekick <nombre>	- Votacion para expulsar a un jugador<br>
+	.votepause			- Votacion para pausar partido<br>
+	.mute <nombre>		- Mutear jugador<br>
+	.unmute <nombre>	- Desmutear jugador<br>
 
 ## Cvars configurables (pugconfig.cfg)
 
@@ -74,6 +85,7 @@ pug_allow_soundmsg		"1" // Habilita/Deshabilita el sonido hecho por los mensajes
 - Que los espectadores entren automaticamente por orden de llegada
 - Bloquear modo espectador, solo para admins
 - Refactorizar todo el codigo por modulos (includes)
+- Banear solamente de la ronda en juego, cuando se da votekick
 
 ## Inspirado en los siguientes plugins
 
