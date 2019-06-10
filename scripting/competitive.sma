@@ -468,8 +468,8 @@ public fnStartingGame()
 	}
 }
 
-public fnStartVoteMap()
-{
+public fnStartVoteMap () {
+	maps_create_menu();
 	arrayset(g_iMapVotes, 0, sizeof(g_iMapVotes))
 
 	new iPlayers[MAX_PLAYERS], iNum, iPlayer;
@@ -481,7 +481,6 @@ public fnStartVoteMap()
 
 		if (client_is_player(iPlayer))
 			menu_display(iPlayer, g_mMap);
-
 	}
 
 	set_task(0.0, "fnVoteListMap", TASK_HUD_VOTE, _, _, "b")
@@ -931,7 +930,7 @@ public fnSendMessage(id, Colors:color, msg[192])
 }
 
 static user_print_dmg (id) {
-	console_print(id, "%L", LANG_SERVER, "PUG_DMG_TITLE")
+	console_print(id, "%L", LANG_SERVER, "PUG_DMG")
 
 	new players[MAX_PLAYERS], count, victim;
 	get_players(players, count, "h");
@@ -954,7 +953,7 @@ static user_print_dmg (id) {
 }
 
 static user_print_rdmg (id) {
-	console_print(id, "%L", LANG_SERVER, "PUG_RDMG_TITLE")
+	console_print(id, "%L", LANG_SERVER, "PUG_RDMG")
 
 	new players[MAX_PLAYERS], count, attacker;
 	get_players(players, count, "h");
@@ -1029,8 +1028,6 @@ public fnPostConfig()
 
 	formatex(g_sTeamNames[0], charsmax(g_sTeamNames[]), "%L", LANG_SERVER, "PUG_VOTING_NOTSORTED");
 	formatex(g_sTeamNames[1], charsmax(g_sTeamNames[]), "%L", LANG_SERVER, "PUG_VOTING_RANDOM");
-
-	maps_create_menu();
 }
 
 public fnUpdateLastMaps()
