@@ -4,8 +4,6 @@
 
 #define _cmd_included
 
-#include <competitive/utils>
-
 stock cmd_init () {
 	register_concmd(".auto", "cmd_auto", PUG_CMD_LVL)
 	register_concmd(".manual", "cmd_manual", PUG_CMD_LVL)
@@ -111,6 +109,9 @@ public cmd_unmute (const id, level, cid) {
 }
 
 public cmd_votekick (id, level, cid) {
+	if (!client_is_player(id) || !game_is_started())
+		return PLUGIN_CONTINUE;
+		
 	new const target = find_target(id, level, cid);
 
 	if (target)
@@ -120,8 +121,12 @@ public cmd_votekick (id, level, cid) {
 }
 
 public cmd_votepause (id, level, cid) {
-	if (!cmd_access(id, level, cid, 1))
+	if (!cmd_access(id, level, cid, 1) || 
+		!client_is_player(id) ||
+		!game_is_live())
+	{
 		return PLUGIN_CONTINUE;
+	}
 
 	start_votepause(id);
 

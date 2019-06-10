@@ -1,7 +1,7 @@
 #include <competitive/index>
 
 #define PLUGIN "CS Pug Mod"
-#define VERSION "3.85"
+#define VERSION "3.86"
 #define AUTHOR "Leopoldo Brines"
 
 #define TASK_HUD_VOTE    996541
@@ -528,18 +528,7 @@ public fnVoteMapEnd()
 	set_votemap_ready(true);
 
 	remove_task(TASK_HUD_VOTE)
-
-	// Cancelar menu
-	new iPlayers[MAX_PLAYERS], iNum, iPlayer;
-	get_players(iPlayers, iNum, "ch");
-	
-	for (new i;i < iNum;i++) 
-	{
-		iPlayer = iPlayers[i];
-		menu_cancel(iPlayer)
-	}
-
-	show_menu(0, 0, "^n", 1)
+	menu_destroy(g_mMap);
 
 	// Obtener ganador
 	new winner, temp
@@ -644,18 +633,7 @@ public fnTeamMenuHandle(const id, iMenu, iItem)
 public fnVoteTeamEnd()
 {
 	remove_task(TASK_HUD_VOTE)
-
-	// Cancelar menu
-	new iPlayers[MAX_PLAYERS], iNum, iPlayer;
-	get_players(iPlayers, iNum, "ch");
-	
-	for (new i;i < iNum;i++) 
-	{
-		iPlayer = iPlayers[i];
-		menu_cancel(iPlayer)
-	}
-
-	show_menu(0, 0, "^n", 1)
+	menu_destroy(g_mTeam);
 
 	// Obtener ganador
 	new winner, temp
