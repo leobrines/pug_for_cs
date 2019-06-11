@@ -15,6 +15,7 @@ new HookChain:g_hRoundEnd
 stock event_init () {
 	register_message(get_user_msgid("TeamScore"), "event_team_score")
 	register_message(get_user_msgid("ScoreInfo"), "event_player_score")
+	register_logevent("join_team", 3, "1=joined team")
 }
 
 public event_player_score (m, s, id) {
@@ -36,5 +37,26 @@ public event_team_score (m, e, id) {
 			set_msg_arg_int(2, ARG_SHORT, teamtt_get_score());
 		case 'C':
 			set_msg_arg_int(2, ARG_SHORT, teamct_get_score());
+	}
+}
+
+public join_team () {
+	static loguser[80], name[32], id, team[2];
+
+	read_logargv(0, loguser, 79)
+	parse_loguser(loguser, name, 31)
+	id = get_user_index(name);
+
+	read_logargv(2, team, 1);
+
+	switch (team[0]) {
+		case 'T':
+			client_set_team(id, TEAM_TERRORIST);
+		case 'C':
+			client_set_team(id, TEAM_CT);
+		case 'S':
+			client_set_team(id, TEAM_SPECTATOR);
+		default:
+			client_set_team(id, TEAM_UNASSIGNED);
 	}
 }

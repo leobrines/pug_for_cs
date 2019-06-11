@@ -11,12 +11,12 @@
 #include <competitive/colorchat>
 #include <competitive/utils>
 #include <competitive/cvars>
+#include <competitive/client>
 
 // Modules
 #include <competitive/showequip>
 #include <competitive/votekick>
 #include <competitive/votepause>
-#include <competitive/chooseteam>
 #include <competitive/mute>
 #include <competitive/roundinfo>
 #include <competitive/autoready>

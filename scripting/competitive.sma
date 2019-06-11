@@ -62,7 +62,6 @@ public plugin_init()
 	votekick_init();
 	votepause_init();
 	mute_init();
-	chooseteam_init();
 
 	cmd_init();
 	event_init();

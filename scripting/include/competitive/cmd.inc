@@ -17,6 +17,15 @@ stock cmd_init () {
 
 	register_concmd(".votekick", "cmd_votekick", ADMIN_ALL);
 	register_concmd(".pause", "cmd_votepause", ADMIN_ALL);
+
+	register_clcmd("chooseteam", "cmd_chooseteam");
+}
+
+public cmd_chooseteam (id) {
+	// Unlocks the selection of a single team
+	set_pdata_int(id, 125, get_pdata_int(id, 125, 5) & ~(1<<8), 5);
+
+	return PLUGIN_CONTINUE;
 }
 
 public cmd_restart (id, level, cid) {
