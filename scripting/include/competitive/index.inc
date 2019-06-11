@@ -21,7 +21,8 @@
 #include <competitive/roundinfo>
 #include <competitive/autoready>
 
-// cmd and events
+// Core
 #include <competitive/cmd>
 #include <competitive/event>
+#include <competitive/half>
 

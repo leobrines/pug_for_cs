@@ -11,7 +11,6 @@
 #define MAX_BYTES 192
 
 new g_iRound;
-new bool:first_roundhalf;
 
 // Damage - Hits
 new g_iDmg[MAX_PLAYERS+1][MAX_PLAYERS+1]
@@ -33,14 +32,6 @@ new g_mTeam
 new g_iTeamCount
 new g_sTeamNames[2][32]
 new g_iTeamVotes[32]
-
-// Hook
-new HookChain:g_hGiveC4
-new HookChain:g_hPlayerPostThink
-new HookChain:g_hRoundFreezeEnd
-new HookChain:g_hHasRestrictItem
-new HookChain:g_hRoundEnd
-// new HookChain:g_hTakeDamage
 
 // Team names
 new const g_szTeams[TeamName][MAX_NAME_LENGTH]
@@ -148,16 +139,15 @@ public client_disconnect(id)
 			new iCount = getPlayersTeam(iTeam, false) - 1
 			new iAbsencePlayers = get_max_absence_players();
 
-			if (iAbsencePlayers && iCount <= iAbsencePlayers)
-			{
+			if (iAbsencePlayers && iCount <= iAbsencePlayers) {
 				chat_print(0, "%L", LANG_SERVER, "PUG_GAME_CANCELED_ABSENCE", iTeam == TEAM_TERRORIST ? g_szTeams2[TEAM_TERRORIST] : g_szTeams2[TEAM_CT])
 
 				if (teamct_is_winning())
-					PugFinished(WINSTATUS_CTS)
+					game_finish(WINSTATUS_CTS)
 				else if (teamtt_is_winning())
-					PugFinished(WINSTATUS_TERRORISTS)
+					game_finish(WINSTATUS_TERRORISTS)
 				else
-					PugFinished(WINSTATUS_DRAW)
+					game_finish(WINSTATUS_DRAW)
 			}
 		}
 	}
@@ -252,10 +242,12 @@ public RoundEnd (WinStatus:status, ScenarioEventEndRound:event, Float:tmDelay) {
 		}
 	}
 
+	server_print("winstatus: %i", status);
+
 	switch (status) {
 		case WINSTATUS_CTS:
 			teamct_add_score();
-		case WINSTATUS_TERRORISTS:
+		case WINSTATUS_TERRORISTS, WINSTATUS_DRAW:
 			teamtt_add_score();
 		default:
 			return HC_CONTINUE;
@@ -269,36 +261,7 @@ public RoundEnd (WinStatus:status, ScenarioEventEndRound:event, Float:tmDelay) {
 	for (new i;i < iNum;i++) 
 		fnDamageAuto(iPlayers[i])
 
-	switch (g_iStage) {
-		case STAGE_FIRSTHALF: {
-			if (g_iRound == get_maxrounds()/2)
-				PugHalftime();
-			else
-				fnShowScore();
-		}
-		case STAGE_SECONDHALF: {
-			if (teamct_is_winner()) {
-				PugFinished(WINSTATUS_CTS)
-			} else if (teamtt_is_winner()) {
-				PugFinished(WINSTATUS_TERRORISTS)
-			} else if (is_scores_tie()) {
-				if (is_tie_allowed())
-					PugFinished(WINSTATUS_DRAW)
-				else
-					PugHalftime()
-			} else {
-				fnShowScore();
-			}
-		}
-		case STAGE_OVERTIME: {
-			if (teamct_is_winner_ot())
-				PugFinished(WINSTATUS_CTS)
-			if (teamtt_is_winner_ot())
-				PugFinished(WINSTATUS_TERRORISTS)
-			else 
-				fnShowScore();
-		}
-	}
+	check_halfend();
 
 	return HC_CONTINUE;
 }
@@ -322,6 +285,7 @@ public PugWarmup ()
 	DisableHookChain(g_hPlayerPostThink)
 
 	fnRemoveHudMoney()
+	autoready_check();
 
 	exec_warmup();
 }
@@ -333,90 +297,6 @@ public PugStart () {
 	g_iVoteId = 0
 
 	fnNextVote()
-}
-
-public PugFirstHalf(){
-	g_iStage = STAGE_FIRSTHALF
-
-	autoready_hide();
-	first_roundhalf = true;
-
-	// fnTeamsRandomize()
-
-	exec_pugmode();
-
-	fnPugHooks()
-	chat_print(0, "%L", LANG_SERVER, "PUG_STARTING_FIRSTHALF")
-}
-
-public PugHalftime(){
-	g_iStage = STAGE_HALFTIME
-
-	exec_halftime();
-
-	EnableHookChain(g_hPlayerPostThink)
-	fnPregameHooks()
-
-	chat_print(0, "%L", LANG_SERVER, "PUG_GAME_INTERMISSION", get_halftime())
-
-	if (g_iRound < get_maxrounds())
-		set_task(float(get_halftime()), "PugSecondHalf", _, _, _, "a", 1);
-
-	else
-		set_task(float(get_halftime()), "PugOvertime", _, _, _, "a", 1);
-}
-
-public PugSecondHalf(){
-	g_iStage = STAGE_SECONDHALF
-	first_roundhalf = true;
-
-	client_cmd(0, "-showscores")
-	DisableHookChain(g_hPlayerPostThink)
-	fnPugHooks()
-	teams_switch()
-
-	chat_print(0, "%L", LANG_SERVER, "PUG_STARTING_SECONDHALF")
-	exec_pugmode();
-}
-
-public PugOvertime()
-{
-	g_iStage = STAGE_OVERTIME
-	first_roundhalf = true;
-
-	client_cmd(0, "-showscores")
-	DisableHookChain(g_hPlayerPostThink)
-	fnPugHooks()
-	teams_switch()
-
-	chat_print(0, "%L", LANG_SERVER, "PUG_STARTING_OVERTIME")
-	exec_overtime();
-}
-
-public PugFinished(WinStatus:status)
-{
-	static ttscore, ctscore;
-	ctscore = teamct_get_score();
-	ttscore = teamtt_get_score();
-
-	g_iStage = STAGE_FINISHED
-	
-	set_task(float(get_endtime()), "PugWarmup", _, _, _, "a", 1); 
-
-	exec_finished();
-
-	EnableHookChain(g_hPlayerPostThink)
-	// fnUpdateLastMaps()
-
-	switch (status)
-	{
-		case WINSTATUS_TERRORISTS:
-			chat_print(0, "%L", LANG_SERVER, "PUG_GAMEOVER_WON", g_szTeams[TEAM_TERRORIST], ttscore, ctscore)
-		case WINSTATUS_CTS:
-			chat_print(0, "%L", LANG_SERVER, "PUG_GAMEOVER_WON", g_szTeams[TEAM_CT], ctscore, ttscore)
-		case WINSTATUS_DRAW:
-			chat_print(0, "%L", LANG_SERVER, "PUG_GAMEOVER_TIED", ctscore, ttscore)
-	}
 }
 
 // --------------------- Votaciones ---------------------
@@ -445,25 +325,7 @@ public fnNextVote()
 		default:
 		{
 			set_votemap_ready(false);
-			fnStartingGame()
-		}
-	}
-}
-
-public fnStartingGame()
-{
-	switch(g_iStage)
-	{
-		case STAGE_START:
-		{
-			PugFirstHalf();
-		}
-		case STAGE_HALFTIME:
-		{
-			if (g_iRound < get_maxrounds())
-				PugSecondHalf();
-			else
-				PugOvertime();
+			firsthalf();
 		}
 	}
 }
@@ -1101,11 +963,8 @@ public event_new_round () {
 		return PLUGIN_CONTINUE;
 	}
 
-	if (first_roundhalf) {
-		first_roundhalf = false;
-	} else {
+	if (!is_firstround())
 		players_round_start();
-	}
 
 	new showMoneyMode = get_showmoney_mode();
 

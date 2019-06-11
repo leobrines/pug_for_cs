@@ -33,10 +33,9 @@ enum _:PUGSTATE
 	STAGE_WARMUP, 
 	STAGE_START, 
 	STAGE_FIRSTHALF, 
-	STAGE_HALFTIME, 
 	STAGE_SECONDHALF, 
-	STAGE_OVERTIME, 
-	STAGE_FINISHED
+	STAGE_FIRSTOT, 
+	STAGE_SECONDOT
 }
 
 stock utils_init () {
@@ -128,15 +127,10 @@ stock team_print (TeamName:team, const msg[], any:...) {
 }
 
 stock bool:game_is_started ()
-	return (STAGE_START <= g_iStage <= STAGE_FINISHED);
+	return (g_iStage >= STAGE_START);
 
 stock bool:game_is_live () {
-	if (g_iStage == STAGE_FIRSTHALF ||
-		g_iStage == STAGE_SECONDHALF ||
-		g_iStage == STAGE_OVERTIME)
-		return true;
-
-	return false;
+	return (g_iStage >= STAGE_FIRSTHALF);
 }
 
 stock bool:team_is_full(TeamName:team, bool:bots=true)
