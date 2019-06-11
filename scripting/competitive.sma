@@ -626,6 +626,7 @@ public maps_create_menu()
 		get_mapcycle_file(sPatch, charsmax(sPatch));
 
 	g_mMap = menu_create("\gVotacion de mapa", "fnMapMenuHandle")
+	g_iMapCount = 0;
 
 	new sMap[32], iNum[10], iFile;
 
