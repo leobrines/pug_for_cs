@@ -4,6 +4,8 @@
 
 #define _cmd_included
 
+static const KEYSMENU = (1<<0)|(1<<1)|(1<<4)|(1<<5);
+
 stock cmd_init () {
 	register_concmd(".auto", "cmd_auto", PUG_CMD_LVL)
 	register_concmd(".manual", "cmd_manual", PUG_CMD_LVL)
@@ -19,6 +21,45 @@ stock cmd_init () {
 	register_concmd(".pause", "cmd_votepause", ADMIN_ALL);
 
 	register_clcmd("chooseteam", "cmd_chooseteam");
+	register_clcmd("jointeam", "cmd_jointeam");
+	register_menucmd(register_menuid("Team_Select", 1), KEYSMENU,
+										"cmd_teamshowmenu"); 
+}
+
+public cmd_jointeam (id) {
+	new param[2], selected, TeamName:team;
+
+	read_argv(1, param, charsmax(param)); 
+	selected = str_to_num(param);
+
+	switch (selected) {
+		case 1: team = TEAM_TERRORIST;
+		case 2: team = TEAM_CT;
+		case 6: team = TEAM_SPECTATOR;
+		case 5: team = TEAM_UNASSIGNED;
+		default: return PLUGIN_CONTINUE;
+	}
+
+	if (valid_jointeam(id, team))
+		return PLUGIN_CONTINUE;
+
+	return PLUGIN_HANDLED;
+}
+
+public cmd_teamshowmenu (id, selected) {
+	new TeamName:team;
+
+	switch (selected) {
+		case 0: team = TEAM_TERRORIST;
+		case 1: team = TEAM_CT;
+		case 4: team = TEAM_UNASSIGNED;
+		case 5: team = TEAM_SPECTATOR;
+	}
+
+	if (valid_jointeam(id, team))
+		return PLUGIN_CONTINUE;
+
+	return PLUGIN_HANDLED;
 }
 
 public cmd_chooseteam (id) {

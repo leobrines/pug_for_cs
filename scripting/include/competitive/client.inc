@@ -52,54 +52,60 @@ stock clients_inteam_count () {
 stock is_player_id (id)
 	return 1 <= id <= MAX_PLAYERS+1;
 
-stock client_set_team (const id, TeamName:team) {
+stock bool:valid_jointeam (const id, TeamName:team) {
 	if (!valid_player_team(id, team))
-		return;
-
-	set_task(5.0, "show_owners", id, _, _, "a", 1) 
+		return false;
 
 	new TeamName:new_team;
 
-	if (team == TEAM_SPECTATOR) {
-		if (!is_spectator_allowed() && !access(id, PUG_CMD_LVL))
-			chat_print(id, "%L", LANG_SERVER, "PUG_TEAMS_SPECTATORS");
-		else
-			client_join_team(id, team);
+	switch (team) {
+		case TEAM_SPECTATOR: {
+			if (!is_spectator_allowed() && !access(id, PUG_CMD_LVL)) {
+				chat_print(id, "%L", LANG_SERVER, "PUG_TEAMS_SPECTATORS");
+				return false;
+			}
 
-		return;
-	} else if (team == TEAM_UNASSIGNED) {
-		new_team = TeamName:random_num(_:TEAM_TERRORIST, _:TEAM_CT);
-	} else {
-		new_team = team;
-	}
-
-	if (team_is_full(new_team, true)) {
-		if (is_user_bot(id))
-			return;
-
-		if (team_is_full(new_team, false)) {
-			chat_print(id, "%L", LANG_SERVER, "PUG_TEAMS_FULL",
-						team_name[new_team]);
-
-			return;
+			return true;
+		}
+		case TEAM_UNASSIGNED: {
+			new_team = TeamName:random_num(_:TEAM_TERRORIST, _:TEAM_CT);
+		}
+		default: {
+			new_team = team;
 		}
 	}
 
-	client_join_team(id, new_team);
+	if (team_is_full(new_team, false)) {
+		chat_print(id, "%L", LANG_SERVER, "PUG_TEAMS_FULL",
+					team_name[new_team]);
+		return false;
+	}
+
+	user_joined(id)
+
+	return true;
 }
 
-stock client_join_team (id, TeamName:team) {
-	rg_join_team(id, team);
-
+stock user_joined (id) {
 	autoready_check();
+	set_task(5.0, "show_owners", id, _, _, "a", 1) 
 
 	#if AMXX_VERSION_NUM < 183
-	chatcolor_send_teaminfo(id);
+	new args[2];
+	args[0] = id;
+	set_task(1.0, "send_teaminfo", _, args, charsmax(args), "a", 1);
 	#endif
+}
+
+public send_teaminfo (args[]) {
+	chatcolor_send_teaminfo(args[0]);
 }
 
 static bool:valid_player_team (id, TeamName:team) {
 	if (client_get_team(id) == team)
+		return false;
+
+	if (team_is_full(team, true) && is_user_bot(id))
 		return false;
 
 	if (game_is_started() && client_is_player(id)) {
