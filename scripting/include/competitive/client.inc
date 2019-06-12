@@ -81,14 +81,11 @@ stock bool:valid_jointeam (const id, TeamName:team) {
 		return false;
 	}
 
-	user_joined(id)
-
 	return true;
 }
 
 stock user_joined (id) {
-	autoready_check();
-	set_task(5.0, "show_owners", id, _, _, "a", 1) 
+	set_task(5.0, "show_owners", id, _, _, "a", 1);
 
 	#if AMXX_VERSION_NUM < 183
 	new args[2];
