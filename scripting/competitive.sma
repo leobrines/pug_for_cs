@@ -94,11 +94,14 @@ public plugin_init()
 
 public plugin_cfg()
 {
-	get_lastmaps(g_sLastMaps);
+	static configfile[40];
 
-	server_cmd("exec pugconfig.cfg")
+	get_lastmaps(g_sLastMaps);
+	get_configfile(configfile, charsmax(configfile));
 
 	set_default_gamedesc();
+
+	server_cmd("exec %s", configfile);
 }
 
 public plugin_unpause()
@@ -617,12 +620,7 @@ public fnRemoveHudMoney()
 public maps_create_menu()
 {	
 	new sPatch[40];
-
-	get_configdir(sPatch, charsmax(sPatch));
-	format(sPatch, charsmax(sPatch), "%s/maps.ini", sPatch);
-
-	if (!file_exists(sPatch))
-		get_mapcycle_file(sPatch, charsmax(sPatch));
+	get_mapfile(sPatch, charsmax(sPatch));
 
 	g_mMap = menu_create("\gVotacion de mapa", "fnMapMenuHandle")
 	g_iMapCount = 0;

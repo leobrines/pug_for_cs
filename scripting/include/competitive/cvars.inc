@@ -181,6 +181,19 @@ stock get_configdir (dir[], size) {
 	format(dir, size, "%s/pug", dir);
 }
 
+stock get_mapfile (patch[], size) {
+	get_localinfo("amxx_configsdir", patch, size);
+	format(patch, size, "%s/maps.ini", patch);
+
+	if (!file_exists(patch))
+		get_mapcycle_file(patch, size);
+}
+
+stock get_configfile (patch[], size) {
+	get_localinfo("amxx_configsdir", patch, size);
+	format(patch, size, "%s/competitive.cfg", patch);
+}
+
 stock set_server_manual ()
 	set_pcvar_num(g_pManual, 1);
 
