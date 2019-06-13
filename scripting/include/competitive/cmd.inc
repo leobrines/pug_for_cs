@@ -18,7 +18,7 @@ stock cmd_init () {
 	register_concmd(".unmute", "cmd_unmute", ADMIN_ALL);
 
 	register_concmd(".votekick", "cmd_votekick", ADMIN_ALL);
-	register_concmd(".pause", "cmd_votepause", ADMIN_ALL);
+	register_concmd(".votepause", "cmd_votepause", ADMIN_ALL);
 
 	register_clcmd("chooseteam", "cmd_chooseteam");
 	register_clcmd("jointeam", "cmd_jointeam");
@@ -159,7 +159,7 @@ public cmd_unmute (const id, level, cid) {
 }
 
 public cmd_votekick (id, level, cid) {
-	if (!client_is_player(id) || !game_is_started())
+	if (!client_is_player(id) || !game_is_live())
 		return PLUGIN_CONTINUE;
 		
 	new const target = find_target(id, level, cid);
@@ -171,12 +171,8 @@ public cmd_votekick (id, level, cid) {
 }
 
 public cmd_votepause (id, level, cid) {
-	if (!cmd_access(id, level, cid, 1) || 
-		!client_is_player(id) ||
-		!game_is_live())
-	{
+	if (!client_is_player(id) || !game_is_live())
 		return PLUGIN_CONTINUE;
-	}
 
 	start_votepause(id);
 
