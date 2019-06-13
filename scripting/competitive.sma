@@ -258,11 +258,15 @@ public RoundEnd (WinStatus:status, ScenarioEventEndRound:event, Float:tmDelay) {
 
 	g_iRound++;
 
-	new iPlayers[MAX_PLAYERS], iNum;
-	get_players(iPlayers, iNum, "ach");
-	
-	for (new i;i < iNum;i++) 
-		fnDamageAuto(iPlayers[i])
+	new print_mode = get_cvar_num("pug_dmg_printmode");
+
+	if (print_mode) {
+		new iPlayers[MAX_PLAYERS], iNum;
+		get_players(iPlayers, iNum, "ach");
+		
+		for (new i;i < iNum;i++) 
+			fnDamageAuto(iPlayers[i])
+	}
 
 	check_halfend();
 
@@ -943,9 +947,9 @@ public event_damage (victim) {
 }
 
 public event_death_player () {
-	if (!game_is_live())
+	if (!game_is_live() || is_restarting())
 		return; 
-
+	
 	new const killer = read_data(1);
 	new const victim = read_data(2);
 

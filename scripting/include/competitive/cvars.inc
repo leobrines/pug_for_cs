@@ -72,6 +72,7 @@ stock cvars_init () {
 	g_pManual = register_cvar("pug_manual", "0");
 	g_pShowMoney = register_cvar("pug_show_money", "3");
 	g_pAllowSoundMsg = register_cvar("pug_allow_soundmsg", "1");
+	register_cvar("pug_dmg_printmode", "2");
 
 	g_pAllowSpec = get_cvar_pointer("allow_spectators")
 	g_pMapCycle = get_cvar_pointer("mapcyclefile");
