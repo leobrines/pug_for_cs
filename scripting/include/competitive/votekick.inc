@@ -12,18 +12,20 @@ static votekick_limiter[33];
 static menu[TeamName], votes[TeamName][2];
 static teammates_count[TeamName];
 static bool:is_voting[TeamName];
+static players_kicked[10][32];
 
 static vote_delay;
 
 stock votekick_init () {
-	vote_delay = register_cvar("pug_vote_delay", "10");
+	vote_delay = register_cvar("pug_votekick_delay", "10");
 }
 
-static create_menu (TeamName:team) {
-	new title[32];
-	formatex(title, charsmax(title), "Votekick %s:", target_name[team]);
+static create_menu (name[]) {
+	static title[100];
+	formatex(title, sizeof(title) -1, "%L", LANG_SERVER,
+	         "PUG_VOTEKICK_TITLE", name);
 
-	new const newmenu = menu_create(title, "votekick_menu_handler");
+	new newmenu = menu_create(title, "votekick_menu_handler");
 
 	menu_additem(newmenu, "Si");
 	menu_additem(newmenu, "No");
@@ -60,7 +62,7 @@ stock start_votekick (id, target_id) {
 
 	new name[32];
 	get_user_name(id, name, charsmax(name));
-	team_print(team, "%L", LANG_SERVER, "PUG_VOTING_STARTED", name);
+	team_print(team, "%L para votekick", LANG_SERVER, "PUG_VOTING_STARTED", name);
 
 	display_menu_team(id, menu[team], team);
 
@@ -86,10 +88,42 @@ static finish_votekick (TeamName:team) {
 		return;
 	}
 
-	server_cmd("amx_ban #%i 60 ^"Votekick^"", get_user_userid(target[team]));
+	user_kick(target[team]);
+	
 	chat_print(0, "%L", LANG_SERVER, "PUG_VOTEKICK_KICKED", target_name[team]);
+}
 
-	return;
+stock user_iskicked (id) {
+	static steamid[32];
+
+	for (new i; i<sizeof players_kicked; i++) {
+		get_user_authid(id, steamid, sizeof(steamid) -1);
+
+		if (equali(players_kicked[i], steamid))
+			return true;
+	}
+
+	return false;
+}
+
+static user_kick (id) {
+	static steamid[32];
+	get_user_authid(id, steamid, sizeof(steamid) -1);
+
+	for (new i; i<sizeof players_kicked; i++) {
+		if (!equali(players_kicked[i], ""))
+			continue;
+
+		server_cmd("kick #%i ^"Votekick^"", get_user_userid(id));
+
+		format(players_kicked[i], charsmax(players_kicked[]), "%s", steamid);
+		break;
+	}
+}
+
+stock votekick_unban () {
+	for (new i; i<sizeof players_kicked; i++)
+		format(players_kicked[i], sizeof(players_kicked[]), "");
 }
 
 static display_menu_team (id, menu_id, TeamName:team) {
@@ -110,11 +144,14 @@ static Float:_get_votedelay ()
 	return get_pcvar_float(vote_delay);
 
 static bool:validate_vote (id, TeamName:team, TeamName:target_team) {
-	if (team != target_team) {
+	if (!team_can_vote(team) ||
+		is_voting[team] ||
+	    team != target_team)
+	{
 		return false;
-	} else if (is_voting[team]) {
-		return false;
-	} else if (votekick_limiter[id] > MAX_VOTEKICKS) {
+	}
+
+	if (votekick_limiter[id] > MAX_VOTEKICKS) {
 		chat_print(id, "%L", LANG_SERVER, "PUG_VOTEKICK_MAXVOTES");
 		return false;
 	}
@@ -123,21 +160,13 @@ static bool:validate_vote (id, TeamName:team, TeamName:target_team) {
 }
 
 static init_team_values (TeamName:team) {
-	menu[team] = create_menu(team);
-	set_menu_title(menu[team]);
-
 	get_user_name(target[team], target_name[team], charsmax(target_name[]));
 
 	is_voting[team] = true;
-
 	arrayset(votes[team], false, 2);
 	votes[team][0]++;
-}
 
-static set_menu_title (menu_target) {
-	static votename[100];
-	formatex(votename, charsmax(votename), "%L", LANG_SERVER, "PUG_VOTEKICK_TITLE", target_name);
-	menu_setprop(menu_target, MPROP_TITLE, votename);
+	menu[team] = create_menu(target_name[team]);
 }
 
 static get_total_votes (TeamName:team)

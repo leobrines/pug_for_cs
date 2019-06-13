@@ -122,12 +122,16 @@ public plugin_pause()
 	DisableHookChain(g_hRoundEnd)
 }
 
-public client_putinserver(id) {
+public client_connect (id) {
+	if (user_iskicked(id))
+		server_cmd("kick #%i ^"Votekick^"", get_user_userid(id));
+}
+
+public client_putinserver (id) {
 	client_reset_score(id);
 }
 
-public client_disconnect(id)
-{
+public client_disconnect (id) {
 	new TeamName:iTeam = TeamName:get_user_team(id)
 	
 	client_mute_reset(id);
@@ -271,6 +275,7 @@ public PugWarmup ()
 	g_iStage = STAGE_WARMUP
 
 	set_default_gamedesc();
+	votekick_unban();
 
 	g_iRound = 0;
 
