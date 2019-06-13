@@ -163,7 +163,8 @@ public client_disconnect (id) {
 
 public CSGameRules_OnRoundFreezeEnd()
 {	
-	set_freezetime(15);
+	votepause_check();
+
 	fnResetDmg();
 
 	return HC_CONTINUE;
