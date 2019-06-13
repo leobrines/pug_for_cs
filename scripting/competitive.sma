@@ -73,8 +73,6 @@ public plugin_init()
 	// Hooks
 	g_hGiveC4 = RegisterHookChain(RG_CSGameRules_GiveC4, "CSGameRules_GiveC4");
 	g_hRoundFreezeEnd = RegisterHookChain(RG_CSGameRules_OnRoundFreezeEnd, "CSGameRules_OnRoundFreezeEnd")
-	//g_hTakeDamage = RegisterHookChain(RG_CBasePlayer_TakeDamage, "CBasePlayer_TakeDamage")
-
 	g_hPlayerPostThink = RegisterHookChain(RG_CBasePlayer_PostThink, "CBasePlayer_PostThink")
 	g_hHasRestrictItem = RegisterHookChain(RG_CBasePlayer_HasRestrictItem, "CBasePlayer_HasRestrictItem")
 	g_hRoundEnd = RegisterHookChain(RG_RoundEnd, "RoundEnd")
@@ -210,22 +208,6 @@ public CBasePlayer_PostThink(const id)
 
 	client_cmd(id, "+showscores")
 }
-
-/*
-public CBasePlayer_TakeDamage(const iVictim, iInflictor, iAttacker, Float:flDamage, bitsDamageType)
-{
-	if (iAttacker == iVictim
-	|| !rg_is_player_can_takedamage(iAttacker, iVictim)
-	|| flDamage < 1.0
-	|| ( bitsDamageType != DMG_BULLET && bitsDamageType != DMG_GRENADE) )
-		return HC_CONTINUE;
-
-	g_iDmg[iVictim][iAttacker] += floatround(flDamage)
-	g_iHits[iVictim][iAttacker]++
-
-	return HC_CONTINUE;
-}	
-*/
 
 public RoundEnd (WinStatus:status, ScenarioEventEndRound:event, Float:tmDelay) {
 	server_print("Event: RoundEnd. ScenarioEventEndRound: %i WinStatus: %i", event, status);
@@ -911,13 +893,11 @@ public fnPregameHooks()
 {
 	EnableHookChain(g_hGiveC4)
 	DisableHookChain(g_hRoundFreezeEnd)
-	//DisableHookChain(g_hTakeDamage)
 }
 
 public fnPugHooks()
 {
 	EnableHookChain(g_hRoundFreezeEnd)
-	//EnableHookChain(g_hTakeDamage)
 	DisableHookChain(g_hGiveC4)
 }
 

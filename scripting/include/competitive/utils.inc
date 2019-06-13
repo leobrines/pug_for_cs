@@ -60,9 +60,11 @@ stock registerCommand (const szCommand[], const szFunction[], iFlags = 0, const 
 stock getPlayersNum ()
 {
 	new players[MAX_CLIENTS], count;
+
+	count = 0;
 	get_players(players, count, "h");
 
-	return count ? count : 0;
+	return count;
 }
 
 stock getPlayersTeam (TeamName:team, bool:bots=true)
@@ -79,9 +81,10 @@ stock getPlayersTeam (TeamName:team, bool:bots=true)
 			copy(tmp_team_name, charsmax(tmp_team_name), "SPECTATOR");
 	}
 
+	count = 0;
 	get_players(players, count, bots ? "eh" : "ceh", tmp_team_name);
 
-	return count ? count : 0;
+	return count;
 }
 
 /* Next version
@@ -152,9 +155,10 @@ stock team_count_players(TeamName:team) {
 			copy(tmp_team, charsmax(tmp_team), "SPECTATOR")
 	}
 
+	count = 0;
 	get_players(players, count, "ceh", tmp_team);
 
-	return count ? count : 0;
+	return count;
 }
 
 stock show_hudtitle(const id, msg[], any:...) {

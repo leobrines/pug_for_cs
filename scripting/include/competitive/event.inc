@@ -10,7 +10,6 @@ new HookChain:g_hPlayerPostThink;
 new HookChain:g_hRoundFreezeEnd;
 new HookChain:g_hHasRestrictItem;
 new HookChain:g_hRoundEnd;
-// new HookChain:g_hTakeDamage;
 
 stock event_init () {
 	register_message(get_user_msgid("TeamScore"), "event_team_score");
