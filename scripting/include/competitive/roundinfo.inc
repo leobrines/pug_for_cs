@@ -11,14 +11,14 @@ static frags[MAX_PLAYERS+1];
 static deaths[MAX_PLAYERS+1];
 static winsCT;
 static winsTT;
-static bool:is_server_restarted;
+static bool:is_round_restarted;
 
-stock players_round_restarted ()
-	is_server_restarted = true;
+stock round_restarted ()
+	is_round_restarted = true;
 
-stock players_round_start () {
-	if (is_server_restarted) {
-		is_server_restarted = false;
+stock round_start () {
+	if (is_round_restarted) {
+		is_round_restarted = false;
 		players_return_money();
 	} else {
 		players_save_money();

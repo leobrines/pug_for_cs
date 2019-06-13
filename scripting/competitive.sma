@@ -230,13 +230,9 @@ public RoundEnd (WinStatus:status, ScenarioEventEndRound:event, Float:tmDelay) {
 
 	switch (event) {
 		case ROUND_GAME_RESTART: {
-			if (g_iRound) {
-				players_round_restarted();
-			} else {
-				teams_reset_scores();
-				clients_reset_scores();
-			}
-					
+			if (!is_firstround())
+				round_restarted();
+
 			return HC_CONTINUE;
 		}
 		case ROUND_GAME_COMMENCE: {
@@ -966,8 +962,12 @@ public event_new_round () {
 		return PLUGIN_CONTINUE;
 	}
 
-	if (!is_firstround())
-		players_round_start();
+	round_start();
+
+	if (!g_iRound) {
+		clients_reset_scores();
+		teams_reset_scores();
+	}
 
 	new showMoneyMode = get_showmoney_mode();
 
