@@ -277,6 +277,7 @@ public PugWarmup ()
 
 	set_default_gamedesc();
 	votekick_unban();
+	votepause_reset();
 
 	g_iRound = 0;
 

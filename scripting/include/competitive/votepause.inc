@@ -15,11 +15,11 @@ static bool:is_voting[TeamName];
 static bool:will_pause;
 static bool:in_pause;
 
-static vote_delay, vote_maxplayervotes, vote_time;
+static vote_delay, vote_maxvotes, vote_time;
 
 stock votepause_init () {
 	vote_delay = register_cvar("pug_votepause_delay", "10");
-	vote_maxplayervotes = register_cvar("pug_votepause_maxplayervotes", "1");
+	vote_maxvotes = register_cvar("pug_votepause_maxvotes", "1");
 	vote_time = register_cvar("pug_votepause_time", "60");
 }
 
@@ -106,6 +106,10 @@ stock votepause_end () {
 	will_pause = false;
 }
 
+stock votepause_reset ()
+	arrayset(pause_limiter, false, sizeof(pause_limiter)-1);
+
+
 static display_menu_team (id, TeamName:team) {
 	new players[MAX_PLAYERS], player;
 	get_players(players, teammates_count[team], "ceh", team == TEAM_TERRORIST ? "TERRORIST" : "CT");
@@ -131,8 +135,8 @@ static cancel_menu (TeamName:team) {
 static Float:_get_votedelay ()
 	return get_pcvar_float(vote_delay);
 
-static get_maxplayervotes ()
-	return get_pcvar_num(vote_maxplayervotes);
+static get_maxvotes ()
+	return get_pcvar_num(vote_maxvotes);
 
 static get_votetime ()
 	return get_pcvar_num(vote_time);
@@ -141,7 +145,7 @@ static bool:validate_cmd (id, TeamName:team) {
 	if (is_voting[team] || !team_can_vote(team) || will_pause || in_pause)
 		return false;
 
-	if (pause_limiter[team] >= get_maxplayervotes()) {
+	if (pause_limiter[team] >= get_maxvotes()) {
 		chat_print(id, "%L", LANG_SERVER, "PUG_VOTEPAUSE_MAXVOTES");
 		return false;
 	}
