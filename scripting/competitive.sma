@@ -276,7 +276,8 @@ public PugWarmup ()
 	g_iStage = STAGE_WARMUP
 
 	set_default_gamedesc();
-	votekick_unban();
+
+	votekick_reset();
 	votepause_reset();
 
 	g_iRound = 0;

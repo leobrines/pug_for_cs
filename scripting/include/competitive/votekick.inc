@@ -121,7 +121,12 @@ static user_kick (id) {
 	}
 }
 
-stock votekick_unban () {
+stock votekick_reset () {
+	votekick_unban();
+	arrayset(votekick_limiter, 0, sizeof(votekick_limiter));
+}
+
+static votekick_unban () {
 	for (new i; i<sizeof players_kicked; i++)
 		format(players_kicked[i], sizeof(players_kicked[]), "");
 }

@@ -7,7 +7,7 @@
 #include <amxmodx>
 #include <competitive/utils>
 
-static pause_limiter[TeamName];
+static pause_limiter[_:TeamName];
 
 static menu[TeamName], votes[TeamName][2];
 static teammates_count[TeamName];
@@ -107,8 +107,7 @@ stock votepause_end () {
 }
 
 stock votepause_reset ()
-	arrayset(pause_limiter, false, sizeof(pause_limiter)-1);
-
+	arrayset(pause_limiter, 0, sizeof(pause_limiter));
 
 static display_menu_team (id, TeamName:team) {
 	new players[MAX_PLAYERS], player;
@@ -145,7 +144,7 @@ static bool:validate_cmd (id, TeamName:team) {
 	if (is_voting[team] || !team_can_vote(team) || will_pause || in_pause)
 		return false;
 
-	if (pause_limiter[team] >= get_maxvotes()) {
+	if (pause_limiter[_:team] >= get_maxvotes()) {
 		chat_print(id, "%L", LANG_SERVER, "PUG_VOTEPAUSE_MAXVOTES");
 		return false;
 	}
@@ -157,7 +156,7 @@ static set_init_values (TeamName:team) {
 	menu[team] = votepause_create_menu();
 	set_menu_title(menu[team]);
 
-	pause_limiter[team]++;
+	pause_limiter[_:team]++;
 
 	is_voting[team] = true;
 
