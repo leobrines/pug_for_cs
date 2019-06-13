@@ -971,6 +971,7 @@ public event_new_round () {
 	}
 
 	round_start();
+	votepause_check();
 
 	if (!g_iRound) {
 		clients_reset_scores();
