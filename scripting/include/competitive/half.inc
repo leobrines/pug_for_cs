@@ -43,6 +43,8 @@ static secondhalf_ot () {
 stock game_finish (WinStatus:status) {
 	static ttscore, ctscore;
 
+	g_iStage = STAGE_FINISHED;
+
 	ctscore = teamct_get_score();
 	ttscore = teamtt_get_score();
 

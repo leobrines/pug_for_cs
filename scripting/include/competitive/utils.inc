@@ -35,7 +35,8 @@ enum _:PUGSTATE
 	STAGE_FIRSTHALF, 
 	STAGE_SECONDHALF, 
 	STAGE_FIRSTOT, 
-	STAGE_SECONDOT
+	STAGE_SECONDOT,
+	STAGE_FINISHED
 }
 
 stock utils_init () {
@@ -130,11 +131,14 @@ stock bool:game_is_started ()
 	return (g_iStage >= STAGE_START);
 
 stock bool:game_is_live () {
-	return (g_iStage >= STAGE_FIRSTHALF);
+	return (STAGE_FIRSTHALF <= g_iStage <= STAGE_SECONDOT);
 }
 
 stock bool:team_is_full(TeamName:team, bool:bots=true)
 	return (getPlayersTeam(team, bots) >= get_pug_maxplayers()/2);
+
+stock bool:team_can_vote(TeamName:team)
+	return (getPlayersTeam(team, false) > 2);
 
 stock team_count_players(TeamName:team) {
 	new players[MAX_PLAYERS], count, tmp_team[10];
