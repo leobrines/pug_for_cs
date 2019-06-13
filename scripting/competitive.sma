@@ -948,8 +948,13 @@ public event_death_player () {
 	client_add_frag(killer);
 	client_add_death(victim);
 
-	fnDamageAuto(victim);
+	new args[2];
+	args[0] = victim;
+	set_task(1.0, "console_print_dmg", _, args, charsmax(args), "a", 1);
 }
+
+public console_print_dmg (args[])
+	fnDamageAuto(args[0]);
 
 public event_new_round () {
 	server_print("Event: new round.");
