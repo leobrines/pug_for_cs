@@ -56,6 +56,7 @@ pug_rounds_max		"30" // Rondas maximas del partido<br>
 pug_rounds_ot		"6" // Rondas maximas del overtime<br>
 pug_allow_tie		"0" // Activa el empate de la partida<br>
 pug_show_money			"1" // Muestra el dinero. 0 = Deshabilita; 1 = Por chat; 2 = Por HUD; 3 = Por sprites<br>
+pug_votepause_time			"60" // Tiempo que duran las pausas
 
 ## Cosas por hacer
 - Añadir ronda a cuchillo y configurar por cvar
