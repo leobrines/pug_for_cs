@@ -1,5 +1,6 @@
 static maxrounds;
 static bool:firstround;
+static bool:restarting;
 
 stock firsthalf () {
 	g_iStage = STAGE_FIRSTHALF
@@ -69,7 +70,9 @@ stock game_finish (WinStatus:status) {
 
 static halfstart (bool:remove_break=false) {
 	fnPugHooks();
+
 	firstround = true;
+	restarting = true;
 
 	if (remove_break) {
 		client_cmd(0, "-showscores");
@@ -152,3 +155,11 @@ static is_half_end () {
 stock bool:is_firstround ()
 	return firstround;
 
+stock bool:is_restarting () {
+	if (restarting) {
+		restarting = false;
+		return true;
+	}
+
+	return false;
+}
