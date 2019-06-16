@@ -10,7 +10,7 @@ stock autoready_check () {
 	if (game_is_started() || is_server_manual())
 		return;
 
-	if (clients_inteam_count() == get_pug_maxplayers()) {
+	if (clients_inteam_count() >= get_pug_maxplayers()) {
 		autoready_hide();
 		PugStart();
 	} else {
