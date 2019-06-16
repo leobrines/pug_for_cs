@@ -34,7 +34,7 @@ public cmd_jointeam (id) {
 	return check_team(id, str_to_num(param));
 }
 
-public cmd_teamshowmenu (id, selected) {
+public cmd_teamselect (id, selected) {
 	return check_team(id, selected+1);
 }
 
