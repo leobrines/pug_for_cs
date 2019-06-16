@@ -4,8 +4,6 @@
 
 #define _cmd_included
 
-static const KEYSMENU = (1<<0)|(1<<1)|(1<<4)|(1<<5);
-
 stock cmd_init () {
 	register_concmd(".auto", "cmd_auto", PUG_CMD_LVL)
 	register_concmd(".manual", "cmd_manual", PUG_CMD_LVL)
