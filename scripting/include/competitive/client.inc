@@ -35,20 +35,6 @@ stock clients_print_money () {
 	}
 }
 
-stock clients_inteam_count () {
-	static players[MAX_PLAYERS], count, count_all;
-
-	count_all = 0;
-
-	get_players(players, count, "ceh", "TERRORIST");
-	count_all += count ? count : 0;
-
-	get_players(players, count, "ceh", "CT");
-	count_all += count ? count : 0;
-
-	return count_all;
-}
-
 stock is_player_id (id)
 	return 1 <= id <= MAX_PLAYERS+1;
 

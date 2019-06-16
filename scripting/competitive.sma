@@ -139,7 +139,7 @@ public client_disconnect (id) {
 
 		if (game_is_live())
 		{
-			new iCount = getPlayersTeam(iTeam, false) - 1
+			new iCount = get_teamplayers(iTeam, false) - 1
 			new iAbsencePlayers = get_max_absence_players();
 
 			if (iAbsencePlayers && iCount <= iAbsencePlayers) {
@@ -276,7 +276,6 @@ public PugWarmup ()
 	DisableHookChain(g_hPlayerPostThink)
 
 	fnRemoveHudMoney()
-	autoready_check();
 
 	exec_warmup();
 }

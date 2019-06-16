@@ -57,17 +57,16 @@ stock registerCommand (const szCommand[], const szFunction[], iFlags = 0, const 
 	register_concmd(szBuffer, szFunction, iFlags, szInfo);
 }
 
-stock getPlayersNum ()
-{
-	new players[MAX_CLIENTS], count;
+stock get_readyplayers () {
+	new count[2];
 
-	count = 0;
-	get_players(players, count, "h");
+	count[0] = get_teamplayers(TEAM_TERRORIST, false);
+	count[1] = get_teamplayers(TEAM_CT, false);
 
-	return count;
+	return count[0] + count[1];
 }
 
-stock getPlayersTeam (TeamName:team, bool:bots=true)
+stock get_teamplayers (TeamName:team, bool:bots=true)
 {
 	new players[MAX_PLAYERS], count;
 	new tmp_team_name[10];
@@ -81,7 +80,6 @@ stock getPlayersTeam (TeamName:team, bool:bots=true)
 			copy(tmp_team_name, charsmax(tmp_team_name), "SPECTATOR");
 	}
 
-	count = 0;
 	get_players(players, count, bots ? "eh" : "ceh", tmp_team_name);
 
 	return count;
@@ -138,10 +136,10 @@ stock bool:game_is_live () {
 }
 
 stock bool:team_is_full(TeamName:team, bool:bots=true)
-	return (getPlayersTeam(team, bots) >= get_pug_maxplayers()/2);
+	return (get_teamplayers(team, bots) >= get_pug_maxplayers()/2);
 
 stock bool:team_can_vote(TeamName:team)
-	return (getPlayersTeam(team, false) > 2);
+	return (get_teamplayers(team, false) > 2);
 
 stock team_count_players(TeamName:team) {
 	new players[MAX_PLAYERS], count, tmp_team[10];

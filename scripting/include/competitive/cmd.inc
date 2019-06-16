@@ -21,21 +21,6 @@ stock cmd_init () {
 	register_concmd(".votepause", "cmd_votepause", ADMIN_ALL);
 
 	register_clcmd("chooseteam", "cmd_chooseteam");
-	register_clcmd("jointeam", "cmd_jointeam");
-	register_menucmd(register_menuid("Team_Select", 1), KEYSMENU,
-	                 "cmd_teamselect"); 
-	register_menucmd(-2, KEYSMENU, "cmd_teamselect"); 
-}
-
-public cmd_jointeam (id) {
-	static param[2];
-	read_argv(1, param, charsmax(param)); 
-
-	return check_team(id, str_to_num(param));
-}
-
-public cmd_teamselect (id, selected) {
-	return check_team(id, selected+1);
 }
 
 public cmd_chooseteam (id) {

@@ -15,6 +15,7 @@ stock event_init () {
 	register_message(get_user_msgid("TeamScore"), "event_team_score");
 	register_message(get_user_msgid("ScoreInfo"), "event_player_score");
 	register_logevent("event_joined_team", 3, "1=joined team");
+	RegisterHookChain(RG_HandleMenu_ChooseTeam, "event_choose_team");
 }
 
 public event_player_score (m, s, id) {
@@ -37,6 +38,15 @@ public event_team_score (m, e, id) {
 		case 'C':
 			set_msg_arg_int(2, ARG_SHORT, teamct_get_score());
 	}
+}
+
+public event_choose_team (id, MenuChooseTeam:selected) {
+	if (check_team(id, _:selected)) {
+		SetHookChainReturn(ATYPE_INTEGER, 0);
+		return HC_SUPERCEDE;
+	}
+
+	return HC_CONTINUE;
 }
 
 public event_joined_team () {

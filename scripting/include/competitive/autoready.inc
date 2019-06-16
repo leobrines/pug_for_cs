@@ -10,7 +10,7 @@ stock autoready_check () {
 	if (game_is_started() || is_server_manual())
 		return;
 
-	if (clients_inteam_count() >= get_pug_maxplayers()) {
+	if (get_readyplayers() >= get_pug_maxplayers()) {
 		autoready_hide();
 		PugStart();
 	} else {
@@ -29,7 +29,7 @@ stock autoready_display (Float:fHoldTime) {
 		return;
 	}
 
-	new iNeed = get_pug_maxplayers() - clients_inteam_count();
+	new iNeed = get_pug_maxplayers() - get_readyplayers();
 
 	set_hudmessage(0, 255, 0, 0.8, 0.07, 0, 0.0, fHoldTime, 0.0, 0.0, 1)
 
