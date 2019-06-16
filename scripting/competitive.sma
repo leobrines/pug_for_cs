@@ -7,7 +7,6 @@
 #define TASK_HUD_VOTE    996541
 #define TASK_HUD_MONEY 3001
 
-#define MAX_MAPS 7
 #define MAX_BYTES 192
 
 new g_iRound;
@@ -23,8 +22,8 @@ new g_iVotesCount
 // VoteMap
 new g_mMap
 new g_iMapCount
-new g_sMapNames[MAX_MAPS][32]
-new g_iMapVotes[MAX_MAPS]
+new g_sMapNames[15][32]
+new g_iMapVotes[15];
 new g_sLastMaps[2][32]
 
 // VoteTeam
@@ -324,7 +323,6 @@ public fnNextVote()
 
 public fnStartVoteMap () {
 	maps_create_menu();
-	arrayset(g_iMapVotes, 0, sizeof(g_iMapVotes))
 
 	new iPlayers[MAX_PLAYERS], iNum, iPlayer;
 	get_players(iPlayers, iNum, "ch");
@@ -347,7 +345,7 @@ public fnVoteListMap()
 
 	for (new i = 0 ; i < g_iMapCount; i++)
 	{
-		temp = g_iMapVotes[i]
+		temp = g_iMapVotes[i];
 		if (temp)
 		{
 			count++
@@ -369,7 +367,7 @@ public fnMapMenuHandle(const id, iMenu, iItem)
 	if (iItem == MENU_EXIT)
 		return PLUGIN_HANDLED;
 
-	g_iMapVotes[iItem]++
+	g_iMapVotes[iItem]++;
 	g_iVotesCount++
 	fnVoteListMap()
 
@@ -385,11 +383,11 @@ public fnVoteMapEnd()
 
 	// Obtener ganador
 	new winner, temp
-	for (new i = 0 ; i < sizeof (g_iMapVotes) ; i++)
+	for (new i = 0 ; i < sizeof(g_iMapVotes) ; i++)
 	{
 		if (temp < g_iMapVotes[i])
 		{
-			temp = g_iMapVotes[i]
+			temp = g_iMapVotes[i];
 			winner = i
 		}
 	}
@@ -613,6 +611,7 @@ public maps_create_menu()
 	get_mapfile(sPatch, charsmax(sPatch));
 
 	g_mMap = menu_create("\gVotacion de mapa", "fnMapMenuHandle")
+
 	g_iMapCount = 0;
 
 	new sMap[32], iNum[10], iFile;
@@ -625,17 +624,10 @@ public maps_create_menu()
 	num_to_str(g_iMapCount, iNum, charsmax(iNum));
 	menu_additem(g_mMap, g_sMapNames[g_iMapCount], iNum);
 
+	g_iMapVotes[g_iMapCount] = 0;
 	g_iMapCount++;
 
-	// Mapa aleatorio
-	formatex(g_sMapNames[g_iMapCount], charsmax(g_sMapNames[]), "%L", LANG_SERVER, "PUG_VOTING_RANDOM");
-		
-	num_to_str(g_iMapCount, iNum, charsmax(iNum));
-	menu_additem(g_mMap, g_sMapNames[g_iMapCount], iNum);
-
-	g_iMapCount++;
-
-	while(!feof(iFile) && (g_iMapCount < MAX_MAPS))
+	while(!feof(iFile))
 	{
 		fgets(iFile, sMap, charsmax(sMap));
 		trim(sMap);
@@ -660,6 +652,7 @@ public maps_create_menu()
 			else
 				menu_additem(g_mMap, sMap, iNum);
 		
+			g_iMapVotes[g_iMapCount] = 0;
 			g_iMapCount++;
 		}
 	}
