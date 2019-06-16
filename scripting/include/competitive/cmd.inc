@@ -23,43 +23,19 @@ stock cmd_init () {
 	register_clcmd("chooseteam", "cmd_chooseteam");
 	register_clcmd("jointeam", "cmd_jointeam");
 	register_menucmd(register_menuid("Team_Select", 1), KEYSMENU,
-										"cmd_teamshowmenu"); 
+	                 "cmd_teamselect"); 
+	register_menucmd(-2, KEYSMENU, "cmd_teamselect"); 
 }
 
 public cmd_jointeam (id) {
-	new param[2], selected, TeamName:team;
-
+	static param[2];
 	read_argv(1, param, charsmax(param)); 
-	selected = str_to_num(param);
 
-	switch (selected) {
-		case 1: team = TEAM_TERRORIST;
-		case 2: team = TEAM_CT;
-		case 6: team = TEAM_SPECTATOR;
-		case 5: team = TEAM_UNASSIGNED;
-		default: return PLUGIN_CONTINUE;
-	}
-
-	if (valid_jointeam(id, team))
-		return PLUGIN_CONTINUE;
-
-	return PLUGIN_HANDLED;
+	return check_team(id, str_to_num(param));
 }
 
 public cmd_teamshowmenu (id, selected) {
-	new TeamName:team;
-
-	switch (selected) {
-		case 0: team = TEAM_TERRORIST;
-		case 1: team = TEAM_CT;
-		case 4: team = TEAM_UNASSIGNED;
-		case 5: team = TEAM_SPECTATOR;
-	}
-
-	if (valid_jointeam(id, team))
-		return PLUGIN_CONTINUE;
-
-	return PLUGIN_HANDLED;
+	return check_team(id, selected+1);
 }
 
 public cmd_chooseteam (id) {
