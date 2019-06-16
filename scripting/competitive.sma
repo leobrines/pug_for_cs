@@ -322,7 +322,7 @@ public fnNextVote()
 }
 
 public fnStartVoteMap () {
-	maps_create_menu();
+	g_mMap = maps_create_menu();
 
 	new iPlayers[MAX_PLAYERS], iNum, iPlayer;
 	get_players(iPlayers, iNum, "ch");
@@ -606,26 +606,24 @@ public fnRemoveHudMoney()
 // --------------------- Utilidades ---------------------
 
 public maps_create_menu()
-{	
-	new sPatch[40];
-	get_mapfile(sPatch, charsmax(sPatch));
-
-	g_mMap = menu_create("\gVotacion de mapa", "fnMapMenuHandle")
-
-	g_iMapCount = 0;
-
+{
+	new menu, sPatch[40];
 	new sMap[32], iNum[10], iFile;
 
-	iFile = fopen(sPatch, "rb");
+	menu = menu_create("\gVotacion de mapa", "fnMapMenuHandle")
+	g_iMapCount = 0;
+	arrayset(g_iMapVotes, 0, sizeof(g_iMapVotes));
 
 	// Mapa actual
 	formatex(g_sMapNames[g_iMapCount], charsmax(g_sMapNames[]), "%L", LANG_SERVER, "PUG_VOTING_MAPCURRENT");
 		
 	num_to_str(g_iMapCount, iNum, charsmax(iNum));
-	menu_additem(g_mMap, g_sMapNames[g_iMapCount], iNum);
+	menu_additem(menu, g_sMapNames[g_iMapCount], iNum);
 
-	g_iMapVotes[g_iMapCount] = 0;
 	g_iMapCount++;
+
+	get_mapfile(sPatch, charsmax(sPatch));
+	iFile = fopen(sPatch, "rb");
 
 	while(!feof(iFile))
 	{
@@ -643,23 +641,22 @@ public maps_create_menu()
 				formatex(text, charsmax(text), "\d%i. %s", g_iMapCount+1, sMap)
 
 				#if AMXX_VERSION_NUM >= 183
-				menu_addtext2(g_mMap, text)
+				menu_addtext2(menu, text)
 				#else
-				menu_addtext(g_mMap, text)
+				menu_addtext(menu, text)
 				#endif
 			}
 
 			else
-				menu_additem(g_mMap, sMap, iNum);
+				menu_additem(menu, sMap, iNum);
 		
-			g_iMapVotes[g_iMapCount] = 0;
 			g_iMapCount++;
 		}
 	}
 	
 	fclose(iFile);
 	
-	return g_iMapCount;
+	return menu;
 }
 
 public fnHookSay(id)
