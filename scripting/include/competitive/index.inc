@@ -10,6 +10,7 @@
 
 #include <competitive/colorchat>
 #include <competitive/utils>
+#include <competitive/menutils>
 #include <competitive/cvars>
 #include <competitive/client>
 
@@ -20,6 +21,7 @@
 #include <competitive/mute>
 #include <competitive/roundinfo>
 #include <competitive/autoready>
+#include <competitive/autodmg>
 
 // Core
 #include <competitive/cmd>
