@@ -53,12 +53,10 @@ PUG_ACTION_NOTALLOWED = Accion no permitida en este momento.
 PUG_ACTION_NOTACCESS = No tienes acceso a este comando.
 PUG_WEAPON_NOTALLOWED = Este item no esta permitido.
 
-PUG_DMG = ========== DMG ==========
-PUG_DMG_INFO = Jugador: %s | Dmg: %i | Hits: %i
+PUG_DMG_INFO = Heriste a "%s" - %i en %i hits
 PUG_DMG_DIDNTHURT = No heriste a nadie esta ronda.
 
-PUG_RDMG = ========== DMG recibido ==========
-PUG_RDMG_INFO = Jugador: %s | Dmg: %i | Hits: %i
+PUG_RDMG_INFO = Te hirio "%s" - %i en %i hits
 PUG_RDMG_DIDNTHURT = No recibiste daño esta ronda.
 
 PUG_BALANCING_TEAMS = Balanceando los equipos.
@@ -168,12 +166,10 @@ PUG_ACTION_NOTALLOWED = Action not allowed at this time.
 PUG_ACTION_NOTACCESS = You don't have access to this command.
 PUG_WEAPON_NOTALLOWED = This weapon is not allowed.
 
-PUG_DMG = ========== DMG ==========
-PUG_DMG_INFO = Player: %s | Dmg: %i | Hits: %i
+PUG_DMG_INFO = Damage given to "%s" - %i in %i hits
 PUG_DMG_DIDNTHURT = You didn't hurt anyone in this round.
 
-PUG_RDMG = ========== Received DMG ==========
-PUG_RDMG_INFO = Player: %s | Dmg: %i | Hits: %i
+PUG_RDMG_INFO = Damage recieved from "%s" - %i in %i hits
 PUG_RDMG_DIDNTHURT = You didn't get hurt this round.
 
 PUG_BALANCING_TEAMS = Balancing teams.
