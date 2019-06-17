@@ -7,15 +7,13 @@
 #define TASK_HUD_READY 552214
 
 stock autoready_check () {
-	if (game_is_started() || is_server_manual())
+	if (is_server_manual())
 		return;
 
-	if (get_readyplayers() >= get_pug_maxplayers()) {
-		autoready_hide();
-		PugStart();
-	} else {
-		set_task(1.0, "autoready_keep", TASK_HUD_READY, _, _, "b")
-	}
+	if (get_readyplayers() >= get_pug_maxplayers())
+		set_task(4.0, "PugStart", _, _, _, "a", 1);
+	else
+		set_task(1.0, "autoready_keep", TASK_HUD_READY, _, _, "b");
 }
 
 stock autoready_hide () {
