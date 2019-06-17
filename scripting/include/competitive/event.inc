@@ -60,6 +60,6 @@ public event_joined_team () {
 
 	user_joined(id);
 
-	if (team[0] == 'T' || team[0] == 'C')
+	if ((team[0] == 'T' || team[0] == 'C') && !game_is_started())
 		autoready_check();
 }
