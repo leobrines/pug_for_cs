@@ -11,10 +11,6 @@
 
 new g_iRound;
 
-// Damage - Hits
-new g_iDmg[MAX_PLAYERS+1][MAX_PLAYERS+1]
-new g_iHits[MAX_PLAYERS+1][MAX_PLAYERS+1]
-
 // Votation System
 new g_iVoteId;
 new g_iVotesCount
@@ -129,30 +125,29 @@ public client_putinserver (id) {
 }
 
 public client_disconnect (id) {
-	new TeamName:iTeam = TeamName:get_user_team(id)
-	
 	client_mute_reset(id);
 
-	if (TEAM_TERRORIST <= iTeam <= TEAM_CT)
-	{
+	if (!client_is_player(id))
+		return;
+	if (!game_is_started())
 		autoready_check();
+	if (!game_is_live())
+		return;
 
-		if (game_is_live())
-		{
-			new iCount = get_teamplayers(iTeam, false) - 1
-			new iAbsencePlayers = get_max_absence_players();
+	new TeamName:iTeam = TeamName:get_user_team(id)
 
-			if (iAbsencePlayers && iCount <= iAbsencePlayers) {
-				chat_print(0, "%L", LANG_SERVER, "PUG_GAME_CANCELED_ABSENCE", iTeam == TEAM_TERRORIST ? g_szTeams2[TEAM_TERRORIST] : g_szTeams2[TEAM_CT])
+	new iCount = get_teamplayers(iTeam, false) - 1
+	new iAbsencePlayers = get_max_absence_players();
 
-				if (teamct_is_winning())
-					game_finish(WINSTATUS_CTS)
-				else if (teamtt_is_winning())
-					game_finish(WINSTATUS_TERRORISTS)
-				else
-					game_finish(WINSTATUS_DRAW)
-			}
-		}
+	if (iAbsencePlayers && iCount <= iAbsencePlayers) {
+		chat_print(0, "%L", LANG_SERVER, "PUG_GAME_CANCELED_ABSENCE", iTeam == TEAM_TERRORIST ? g_szTeams2[TEAM_TERRORIST] : g_szTeams2[TEAM_CT])
+
+		if (teamct_is_winning())
+			game_finish(WINSTATUS_CTS)
+		else if (teamtt_is_winning())
+			game_finish(WINSTATUS_TERRORISTS)
+		else
+			game_finish(WINSTATUS_DRAW)
 	}
 }
 
@@ -161,8 +156,7 @@ public client_disconnect (id) {
 public CSGameRules_OnRoundFreezeEnd()
 {	
 	votepause_check();
-
-	fnResetDmg();
+	dmg_reset();
 
 	return HC_CONTINUE;
 }
@@ -209,8 +203,6 @@ public CBasePlayer_PostThink(const id)
 }
 
 public RoundEnd (WinStatus:status, ScenarioEventEndRound:event, Float:tmDelay) {
-	server_print("Event: RoundEnd. ScenarioEventEndRound: %i WinStatus: %i", event, status);
-
 	if (!game_is_live())
 		return HC_CONTINUE;
 
@@ -226,8 +218,6 @@ public RoundEnd (WinStatus:status, ScenarioEventEndRound:event, Float:tmDelay) {
 		}
 	}
 
-	server_print("winstatus: %i", status);
-
 	switch (status) {
 		case WINSTATUS_CTS:
 			teamct_add_score();
@@ -239,14 +229,15 @@ public RoundEnd (WinStatus:status, ScenarioEventEndRound:event, Float:tmDelay) {
 
 	g_iRound++;
 
-	new print_mode = get_cvar_num("pug_dmg_printmode");
-
-	if (print_mode) {
+	if (get_cvar_num("pug_dmgmode")) {
 		new iPlayers[MAX_PLAYERS], iNum;
 		get_players(iPlayers, iNum, "ach");
 		
-		for (new i;i < iNum;i++) 
-			fnDamageAuto(iPlayers[i])
+		for (new i;i < iNum;i++)  {
+			new args[2];
+			args[0] = iPlayers[i];
+			set_task(1.0, "printdmg_task", _, args, charsmax(args), "a", 1);
+		}
 	}
 
 	check_halfend();
@@ -269,6 +260,7 @@ public PugWarmup ()
 
 	teams_reset_scores();
 	clients_reset_scores();
+	autoready_check();
 
 	fnPregameHooks()
 
@@ -282,9 +274,9 @@ public PugWarmup ()
 
 public PugStart () {
 	g_iStage = STAGE_START
+	g_iVoteId = 0
 
 	autoready_hide();
-	g_iVoteId = 0
 
 	fnNextVote()
 }
@@ -334,7 +326,7 @@ public fnStartVoteMap () {
 			menu_display(iPlayer, g_mMap);
 	}
 
-	set_task(0.0, "fnVoteListMap", TASK_HUD_VOTE, _, _, "b")
+	set_task(0.1, "fnVoteListMap", TASK_HUD_VOTE, _, _, "b")
 	set_task(float(get_votedelay()), "fnVoteMapEnd", _, _, _, "a", 1)
 }
 
@@ -768,64 +760,12 @@ public fnSendMessage(id, Colors:color, msg[192])
 	message_end();
 }
 
-static user_print_dmg (id) {
-	console_print(id, "%L", LANG_SERVER, "PUG_DMG")
+public print_dmgrdmg(const id) {
+	new const mode = get_cvar_num("pug_dmgmode");
 
-	new players[MAX_PLAYERS], count, victim;
-	get_players(players, count, "h");
-	
-	new szName[MAX_NAME_LENGTH];
-	
-	for (new i; i<count;i++) {
-		victim = players[i];
-		
-		if (!g_iDmg[victim][id])
-			continue;
-
-		get_user_name(victim, szName, charsmax(szName));
-		console_print(id, "%L", LANG_SERVER, "PUG_DMG_INFO", szName,
-					  g_iDmg[victim][id], g_iHits[victim][id])
-	}
-	
-	if (!szName[0])
-		console_print(id, "%L", LANG_SERVER, "PUG_DMG_DIDNTHURT")
-}
-
-static user_print_rdmg (id) {
-	console_print(id, "%L", LANG_SERVER, "PUG_RDMG")
-
-	new players[MAX_PLAYERS], count, attacker;
-	get_players(players, count, "h");
-	
-	new szName[MAX_NAME_LENGTH];
-	
-	for (new i; i<count;i++) {
-		attacker = players[i];
-		
-		if (!g_iDmg[id][attacker])
-			continue;
-
-		get_user_name(attacker, szName, charsmax(szName));
-		console_print(id, "%L", LANG_SERVER, "PUG_RDMG_INFO", szName,
-					  g_iDmg[id][attacker], g_iHits[id][attacker])
-	}
-	
-	if (!szName[0])
-		console_print(id, "%L", LANG_SERVER, "PUG_RDMG_DIDNTHURT")
-}
-
-public fnDamageAuto(const id) {
-	user_print_dmg(id);
-	user_print_rdmg(id);
-}
-
-public fnResetDmg()
-{
-	for (new i; i < g_iMaxClients+1; i++)
-	{
-		arrayset(g_iDmg[i], 0, sizeof(g_iDmg))
-		arrayset(g_iHits[i], 0, sizeof(g_iHits))
-	}
+	console_print(id, "---------------------------------");
+	dmgprint(id, (mode > 1));
+	rdmgprint(id, (mode > 1));
 }
 
 public fnShowScore()
@@ -910,8 +850,7 @@ public event_damage (victim) {
 		is_player_id(attacker) &&
 		is_player_id(victim))
 	{
-		g_iDmg[victim][attacker] += damage;
-		g_iHits[victim][attacker]++;
+		dmg_addattack(victim, attacker, damage);
 	}
 }
 
@@ -927,28 +866,22 @@ public event_death_player () {
 
 	new args[2];
 	args[0] = victim;
-	set_task(1.0, "console_print_dmg", _, args, charsmax(args), "a", 1);
+	set_task(1.0, "printdmg_task", _, args, charsmax(args), "a", 1);
 }
 
-public console_print_dmg (args[])
-	fnDamageAuto(args[0]);
+public printdmg_task (args[])
+	print_dmgrdmg(args[0]);
 
 public event_new_round () {
-	server_print("Event: new round.");
-
-	if (!game_is_live()) {
-		if (!game_is_started())
-			autoready_check();
-
+	if (!game_is_live())
 		return PLUGIN_CONTINUE;
-	}
 
 	round_start();
 	votepause_check();
 
 	if (!g_iRound) {
-		clients_reset_scores();
 		teams_reset_scores();
+		clients_reset_scores();
 	}
 
 	new showMoneyMode = get_showmoney_mode();
