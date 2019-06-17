@@ -63,16 +63,16 @@ stock cvars_init () {
 	g_pVoteMapReady = register_cvar("pug_vote_map_ready", "0"); // Esta cvar solo la controla el plugin, no los .rc
 	g_pVoteDelay = register_cvar("pug_vote_delay", "15")
 	g_pVoteTeam = register_cvar("pug_vote_team", "1")
-	g_pAllowTie = register_cvar("pug_allow_tie", "0")
+	g_pAllowTie = register_cvar("pug_allow_tie", "1")
 	g_pDelayEnd = register_cvar("pug_delay_end", "5.0")
 	g_pLastMap = register_cvar("pug_last_map", ""); // Esta cvar solo la controla el plugin, no los .rc
 	g_pLastMap2 = register_cvar("pug_last_map2", ""); // Esta cvar solo la controla el plugin, no los .rc
 	g_pIntermissionTime = register_cvar("pug_intermission_time", "15")
 	g_pAbsencePlayers = register_cvar("pug_absence_players", "2")
 	g_pManual = register_cvar("pug_manual", "0");
-	g_pShowMoney = register_cvar("pug_show_money", "3");
-	g_pAllowSoundMsg = register_cvar("pug_allow_soundmsg", "1");
-	register_cvar("pug_dmg_printmode", "2");
+	g_pShowMoney = register_cvar("pug_show_money", "2");
+	g_pAllowSoundMsg = register_cvar("pug_allow_soundmsg", "0");
+	register_cvar("pug_dmgmode", "2");
 
 	g_pAllowSpec = get_cvar_pointer("allow_spectators")
 	g_pMapCycle = get_cvar_pointer("mapcyclefile");
