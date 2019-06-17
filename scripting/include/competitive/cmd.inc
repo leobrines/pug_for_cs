@@ -133,7 +133,7 @@ public cmd_votepause (id, level, cid) {
 	if (!client_is_player(id) || !game_is_live())
 		return PLUGIN_CONTINUE;
 
-	start_votepause(id);
+	votepause_start(id);
 
 	return PLUGIN_HANDLED
 }
