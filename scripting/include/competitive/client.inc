@@ -102,9 +102,6 @@ public send_teaminfo (args[]) {
 }
 
 static bool:valid_player_team (id, TeamName:team) {
-	if (client_get_team(id) == team)
-		return false;
-
 	if (team_is_full(team, true) && is_user_bot(id))
 		return false;
 
