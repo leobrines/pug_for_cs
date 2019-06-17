@@ -124,7 +124,7 @@ public cmd_votekick (id, level, cid) {
 	new const target = find_target(id, level, cid);
 
 	if (target)
-		start_votekick(id, target);
+		votekick_start(id, target);
 
 	return PLUGIN_HANDLED
 }
