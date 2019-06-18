@@ -591,10 +591,9 @@ public fnRemoveHudMoney()
 
 // --------------------- Utilidades ---------------------
 
-public maps_create_menu()
-{
-	new menu, sPatch[40];
-	new sMap[32], iNum[10], iFile;
+public maps_create_menu () {
+	new menu, patch[40];
+	new map[32], mapfile;
 
 	menu = menu_create("\gVotacion de mapa", "fnMapMenuHandle")
 	g_iMapCount = 0;
@@ -607,22 +606,21 @@ public maps_create_menu()
 
 	g_iMapCount++;
 
-	get_mapfile(sPatch, charsmax(sPatch));
-	iFile = fopen(sPatch, "rb");
+	get_mapfile(patch, charsmax(patch));
+	mapfile = fopen(patch, "rb");
 
-	while(!feof(iFile))
-	{
-		fgets(iFile, sMap, charsmax(sMap));
-		trim(sMap);
+	while (!feof(mapfile)) {
+		fgets(mapfile, map, charsmax(map));
+		trim(map);
 		
-		if (!is_map_valid(sMap) || !equali(sMap, g_sCurrentMap))
+		if (!is_map_valid(map) || !equali(map, g_sCurrentMap))
 			continue;
 
-		copy(g_sMapNames[g_iMapCount], charsmax(g_sMapNames[]), sMap);
+		copy(g_sMapNames[g_iMapCount], charsmax(g_sMapNames[]), map);
 
-		if ( is_lastmaps_blocked() && (equali(sMap, g_sLastMaps[0]) || equali(sMap, g_sLastMaps[1])) ) {
+		if ( is_lastmaps_blocked() && (equali(map, g_sLastMaps[0]) || equali(map, g_sLastMaps[1])) ) {
 			new text[32]
-			formatex(text, charsmax(text), "\d%i. %s", g_iMapCount+1, sMap)
+			formatex(text, charsmax(text), "\d%i. %s", g_iMapCount+1, map)
 
 			#if AMXX_VERSION_NUM >= 183
 			menu_addtext2(menu, text)
@@ -630,13 +628,13 @@ public maps_create_menu()
 			menu_addtext(menu, text)
 			#endif
 		} else {
-			menu_additem(menu, sMap);
+			menu_additem(menu, map);
 		}
 	
 		g_iMapCount++;
 	}
 	
-	fclose(iFile);
+	fclose(mapfile);
 	
 	return menu;
 }
