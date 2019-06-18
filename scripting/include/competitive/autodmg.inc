@@ -33,11 +33,11 @@ stock dmgprint (id, bool:inchat=false) {
 						  user_dmg[victim][id], user_hits[victim][id]);
 	}
 
-	if (name[0])
+	if (!name[0])
 		console_print(id, "%L", LANG_SERVER, "PUG_DMG_DIDNTHURT")
 }
 
-stock rdmgprint (id, bool:inchat=false) {
+stock rdmgprint (id) {
 	new players[MAX_PLAYERS], count, attacker, name[MAX_NAME_LENGTH];
 	get_players(players, count, "h");
 	
@@ -51,12 +51,8 @@ stock rdmgprint (id, bool:inchat=false) {
 
 		console_print(id, "%L", LANG_SERVER, "PUG_RDMG_INFO", name,
 					  user_dmg[id][attacker], user_hits[id][attacker])
-
-		if (inchat)
-			chat_print(id, "%L", LANG_SERVER, "PUG_RDMG_INFO", name,
-						  user_dmg[id][attacker], user_hits[id][attacker])
 	}
 	
-	if (name[0])
+	if (!name[0])
 		console_print(id, "%L", LANG_SERVER, "PUG_RDMG_DIDNTHURT")
 }

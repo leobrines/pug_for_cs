@@ -765,7 +765,8 @@ public print_dmgrdmg(const id) {
 
 	console_print(id, "---------------------------------");
 	dmgprint(id, (mode > 1));
-	rdmgprint(id, (mode > 1));
+	rdmgprint(id);
+	console_print(id, "---------------------------------");
 }
 
 public fnShowScore()
