@@ -374,24 +374,18 @@ public fnVoteMapEnd()
 
 	// Obtener ganador
 	new winner, temp
-	for (new i = 0 ; i < sizeof(g_iMapVotes) ; i++)
-	{
-		if (temp < g_iMapVotes[i])
-		{
+	for (new i = 0 ; i < sizeof(g_iMapVotes) ; i++) {
+		if (temp < g_iMapVotes[i]) {
 			temp = g_iMapVotes[i];
 			winner = i
 		}
 	}
 
-	if (winner == 0)
-	{
+	if (!winner) {
 		chat_print(0, "%L", LANG_SERVER, "PUG_MAP_CURRENT")
 		fnNextVote();
 		return
 	}
-
-	else if (winner == 1)
-		winner = random_num(1, 7)
 
 	new sMapName[32]
 	formatex(sMapName, charsmax(sMapName), "%s", g_sMapNames[winner])
@@ -410,6 +404,7 @@ public fnStartVoteTeam()
 	g_mTeam = menu_create("\gVotacion de equipos", "fnTeamMenuHandle")
 
 	new sNum[10]
+
 	for (new i; i < sizeof(g_sTeamNames); i++)
 	{
 		num_to_str(g_iTeamCount, sNum, charsmax(sNum));
@@ -608,8 +603,7 @@ public maps_create_menu()
 	// Mapa actual
 	formatex(g_sMapNames[g_iMapCount], charsmax(g_sMapNames[]), "%L", LANG_SERVER, "PUG_VOTING_MAPCURRENT");
 		
-	num_to_str(g_iMapCount, iNum, charsmax(iNum));
-	menu_additem(menu, g_sMapNames[g_iMapCount], iNum);
+	menu_additem(menu, g_sMapNames[g_iMapCount]);
 
 	g_iMapCount++;
 
@@ -621,28 +615,25 @@ public maps_create_menu()
 		fgets(iFile, sMap, charsmax(sMap));
 		trim(sMap);
 		
-		if (is_map_valid(sMap) && !equali(sMap, g_sCurrentMap))
-		{
-			copy(g_sMapNames[g_iMapCount], charsmax(g_sMapNames[]), sMap);
-			num_to_str(g_iMapCount, iNum, charsmax(iNum));
+		if (!is_map_valid(sMap) || !equali(sMap, g_sCurrentMap))
+			continue;
 
-			if ( is_lastmaps_blocked() && (equali(sMap, g_sLastMaps[0]) || equali(sMap, g_sLastMaps[1])) )
-			{
-				new text[32]
-				formatex(text, charsmax(text), "\d%i. %s", g_iMapCount+1, sMap)
+		copy(g_sMapNames[g_iMapCount], charsmax(g_sMapNames[]), sMap);
 
-				#if AMXX_VERSION_NUM >= 183
-				menu_addtext2(menu, text)
-				#else
-				menu_addtext(menu, text)
-				#endif
-			}
+		if ( is_lastmaps_blocked() && (equali(sMap, g_sLastMaps[0]) || equali(sMap, g_sLastMaps[1])) ) {
+			new text[32]
+			formatex(text, charsmax(text), "\d%i. %s", g_iMapCount+1, sMap)
 
-			else
-				menu_additem(menu, sMap, iNum);
-		
-			g_iMapCount++;
+			#if AMXX_VERSION_NUM >= 183
+			menu_addtext2(menu, text)
+			#else
+			menu_addtext(menu, text)
+			#endif
+		} else {
+			menu_additem(menu, sMap);
 		}
+	
+		g_iMapCount++;
 	}
 	
 	fclose(iFile);
