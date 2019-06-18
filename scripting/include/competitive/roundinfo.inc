@@ -26,8 +26,6 @@ stock round_start () {
 }
 
 stock players_save_money () {
-	server_print("Guardando dinero!");
-
 	static players[MAX_PLAYERS], count, id;
 	get_players(players, count, "h");
 
@@ -38,8 +36,6 @@ stock players_save_money () {
 }
 
 stock players_return_money () {
-	server_print("Dinero restaurado!");
-
 	static players[MAX_PLAYERS], count, id;
 	get_players(players, count, "h");
 
