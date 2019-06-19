@@ -229,8 +229,12 @@ stock get_showmoney_mode ()
 stock get_freezetime () 
 	return get_pcvar_num(g_pFreezeTime);
 
-stock set_freezetime (num) 
+stock set_freezetime (num) {
+	new Float:buytime = float(num+10)/60;
+
 	set_pcvar_num(g_pFreezeTime, num);
+	set_cvar_float("mp_buytime", buytime);
+}
 
 public show_owners (id) {
 	new owner[256], lang[3];

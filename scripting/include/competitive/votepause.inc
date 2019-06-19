@@ -18,6 +18,7 @@ static bool:will_pause;
 static bool:in_pause;
 
 static vote_delay, vote_maxvotes, vote_time;
+static freezetime_saved;
 
 stock votepause_init () {
 	vote_delay = register_cvar("pug_votepause_delay", "10");
@@ -129,18 +130,44 @@ stock votepause_finish (TeamName:team, menu) {
 	chat_print(0, "%L", LANG_SERVER, "PUG_VOTEPAUSE_SUCCESS", team_name[team]);
 	will_pause = true;
 }
+stock votepause_check (bool:pause_now) {
+	if (will_pause) {
+		will_pause = false;
+		in_pause = true;
 
+		freezetime_saved = get_freezetime();
+		set_freezetime(get_votetime());
+
+		if (pause_now)
+			server_cmd("sv_restart 1");
+	} else {
+		if (freezetime_saved) {
+			set_freezetime(freezetime_saved);
+			freezetime_saved = 0;
+		}
+
+		in_pause = false;
+	}
+
+}
+
+/*
 stock votepause_check () {
 	if (will_pause)  {
 		will_pause = false;
 		in_pause = true;
-		set_freezetime(15 + get_votetime());
-		server_cmd("sv_restart 1");
+
+		freezetime_saved = get_freezetime();
+		set_freezetime(get_votetime());
+
 	} else {
-		set_freezetime(15);
+		if (freezetime_saved)
+			set_freezetime(freezetime_saved);
+
 		in_pause = false;
 	}
 }
+*/
 
 stock votepause_end () {
 	set_freezetime(15);

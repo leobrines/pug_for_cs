@@ -154,8 +154,8 @@ public client_disconnect (id) {
 // --------------------- HookChains ---------------------
 
 public CSGameRules_OnRoundFreezeEnd()
-{	
-	votepause_check();
+{
+	votepause_check(true);
 	dmg_reset();
 
 	return HC_CONTINUE;
@@ -241,6 +241,9 @@ public RoundEnd (WinStatus:status, ScenarioEventEndRound:event, Float:tmDelay) {
 	}
 
 	check_halfend();
+
+	if (game_is_live())
+		votepause_check(false);
 
 	return HC_CONTINUE;
 }
@@ -867,7 +870,6 @@ public event_new_round () {
 		return PLUGIN_CONTINUE;
 
 	round_start();
-	votepause_check();
 
 	if (!g_iRound) {
 		teams_reset_scores();
