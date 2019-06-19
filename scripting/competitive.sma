@@ -613,7 +613,7 @@ public maps_create_menu () {
 		fgets(mapfile, map, charsmax(map));
 		trim(map);
 		
-		if (!is_map_valid(map) || !equali(map, g_sCurrentMap))
+		if (!is_map_valid(map) || equali(map, g_sCurrentMap))
 			continue;
 
 		copy(g_sMapNames[g_iMapCount], charsmax(g_sMapNames[]), map);
