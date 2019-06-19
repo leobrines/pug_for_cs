@@ -66,7 +66,6 @@ stock votepause_start (id) {
 		return PLUGIN_HANDLED;
 	
 	is_voting[team] = true;
-	pause_limiter[_:team]++;
 	arrayset(votes[team], 0, 2);
 
 	new name[32];
@@ -114,6 +113,7 @@ public votepause_list(TeamName:team) {
 
 stock votepause_finish (TeamName:team, menu) {
 	is_voting[team] = false;
+	pause_limiter[_:team]++;
 
 	remove_task(TASK_HUD_VOTEPAUSE)
 	menu_cancel_team(team);
@@ -149,29 +149,6 @@ stock votepause_check (bool:pause_now) {
 		in_pause = false;
 	}
 
-}
-
-/*
-stock votepause_check () {
-	if (will_pause)  {
-		will_pause = false;
-		in_pause = true;
-
-		freezetime_saved = get_freezetime();
-		set_freezetime(get_votetime());
-
-	} else {
-		if (freezetime_saved)
-			set_freezetime(freezetime_saved);
-
-		in_pause = false;
-	}
-}
-*/
-
-stock votepause_end () {
-	set_freezetime(15);
-	will_pause = false;
 }
 
 stock votepause_reset ()
