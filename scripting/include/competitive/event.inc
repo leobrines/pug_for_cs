@@ -4,18 +4,21 @@
 
 #define _event_included
 
-// Hook
 new HookChain:g_hGiveC4;
 new HookChain:g_hPlayerPostThink;
 new HookChain:g_hRoundFreezeEnd;
 new HookChain:g_hHasRestrictItem;
 new HookChain:g_hRoundEnd;
 
+#define HUD_HIDE_TIMER (1<<4)
+#define HUD_HIDE_MONEY (1<<5)
+
 stock event_init () {
 	register_message(get_user_msgid("TeamScore"), "event_team_score");
 	register_message(get_user_msgid("ScoreInfo"), "event_player_score");
 	register_logevent("event_joined_team", 3, "1=joined team");
 	RegisterHookChain(RG_HandleMenu_ChooseTeam, "event_choose_team");
+	RegisterHookChain(RG_CWeaponBox_SetModel, "event_drop_item");
 }
 
 public event_player_score (m, s, id) {
@@ -62,4 +65,13 @@ public event_joined_team () {
 
 	if ((team[0] == 'T' || team[0] == 'C') && !game_is_started())
 		autoready_check();
+}
+
+public event_drop_item (ent, modelname[]) {
+	if (game_is_live())
+		return HC_CONTINUE;
+
+	set_entvar(ent, var_flags, FL_KILLME); 
+
+	return HC_BREAK;
 }
