@@ -3,3 +3,8 @@
 *.swo
 *.zip
 *.amxx
+*.txt
+*.tpl
+*.sma
+!competitive.sma
+scripting/include/*.inc
