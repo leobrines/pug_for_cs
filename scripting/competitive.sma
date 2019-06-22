@@ -57,6 +57,7 @@ public plugin_init()
 	votekick_init();
 	votepause_init();
 	mute_init();
+	afkicker_start();
 
 	cmd_init();
 	event_init();
@@ -157,6 +158,7 @@ public CSGameRules_OnRoundFreezeEnd()
 {
 	votepause_check(true);
 	dmg_reset();
+	set_task(0.8, "afkicker_newround_task");
 
 	return HC_CONTINUE;
 }

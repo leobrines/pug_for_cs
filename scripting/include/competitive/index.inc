@@ -22,6 +22,7 @@
 #include <competitive/roundinfo>
 #include <competitive/autoready>
 #include <competitive/autodmg>
+#include <competitive/afkicker>
 
 // Core
 #include <competitive/pugmenu>
