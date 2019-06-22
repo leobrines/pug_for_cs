@@ -128,6 +128,17 @@ stock team_print (TeamName:team, const msg[], any:...) {
 		chat_print(players[i], msgFormated);
 }
 
+stock team_to_str (TeamName:team, str[], size) {
+	switch (team) {
+		case TEAM_TERRORIST:
+			format(str, size, "%s", "TERRORIST")
+		case TEAM_CT:
+			format(str, size, "%s", "CT");
+		default:
+			format(str, size, "%s", "SPECTATOR");
+	}
+}
+
 stock bool:game_is_started ()
 	return (g_iStage >= STAGE_START);
 
@@ -157,6 +168,30 @@ stock team_count_players(TeamName:team) {
 	get_players(players, count, "ceh", tmp_team);
 
 	return count;
+}
+
+stock showt_hudtitle(TeamName:team, msg[], any:...) {
+	new fmt[50]
+	vformat(fmt, charsmax(fmt), msg, 3)
+
+	new players[MAX_PLAYERS], num, strteam[12];
+	team_to_str(team, strteam, charsmax(strteam));
+	get_players(players, num, "ceh", strteam);
+
+	for (new i; i<num; i++)
+		show_hudtitle(players[i], fmt);
+}
+
+stock showt_hudbody(TeamName:team, msg[], any:...) {
+	new fmt[50]
+	vformat(fmt, charsmax(fmt), msg, 3)
+
+	new players[MAX_PLAYERS], num, strteam[12];
+	team_to_str(team, strteam, charsmax(strteam));
+	get_players(players, num, "ceh", strteam);
+
+	for (new i; i<num; i++)
+		show_hudbody(players[i], fmt);
 }
 
 stock show_hudtitle(const id, msg[], any:...) {
