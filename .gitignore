@@ -6,5 +6,7 @@
 *.txt
 *.tpl
 *.sma
+amxxpc*
 !competitive.sma
+!competitive.txt
 scripting/include/*.inc
