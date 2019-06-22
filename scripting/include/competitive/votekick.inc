@@ -50,23 +50,22 @@ public votekick_menuhandler (const id, menu, item) {
 	votes[team][item]++;
 	votekick_list(team);
 
-	if (all_voted(team))
+	if (votekick_isready(team))
 		votekick_finish(team, menu);
 
 	return PLUGIN_HANDLED;
 }
 
 stock votekick_start (id, target_id) {
-	new TeamName:team, TeamName:target_team;
+	new TeamName:team;
 	new name[32];
 
 	team = client_get_team(id);
 	get_user_name(id, name, charsmax(name));
 
-	target_team = client_get_team(target_id);
 	get_user_name(target_id, target_name[team], charsmax(target_name[]));
 
-	if (!validate_vote(id, team, target_team))
+	if (!votekick_validate(id, target_id, team))
 		return;
 
 	target[team] = target_id;
@@ -109,8 +108,8 @@ stock votekick_list (TeamName:team) {
 	if (!(votes_yes + votes_no)) 
 		formatex(hud, charsmax(hud), "%L", LANG_SERVER, "PUG_NOVOTES")
 
-	show_hudtitle(0, "Votekick")
-	show_hudbody(0, hud)
+	showt_hudtitle(team, "Votekick");
+	showt_hudbody(team, hud);
 }
 
 stock votekick_finish (TeamName:team, menu) {
@@ -171,7 +170,9 @@ stock votekick_unban () {
 static Float:get_votekick_delay ()
 	return get_pcvar_float(vote_delay);
 
-static bool:validate_vote (id, TeamName:team, TeamName:target_team) {
+stock bool:votekick_validate (id, target_id, TeamName:team) {
+	new TeamName:target_team = client_get_team(target_id);
+
 	if (!team_can_vote(team) ||
 		is_voting[team] ||
 	    team != target_team)
@@ -187,11 +188,11 @@ static bool:validate_vote (id, TeamName:team, TeamName:target_team) {
 	return true;
 }
 
-static get_total_votes (TeamName:team)
+stock votekick_totalvotes (TeamName:team)
 	return votes[team][0] + votes[team][1];
 
-static bool:all_voted (TeamName:team) {
-	new const total_votes = get_total_votes(team);
+stock bool:votekick_isready (TeamName:team) {
+	new const total_votes = votekick_totalvotes(team);
 
 	if (total_votes >= teammates_count[team])
 		return true;

@@ -53,7 +53,7 @@ public votepause_menuhandler (const id, menu, item) {
 	votes[team][item]++;
 	votepause_list(team);
 
-	if (all_voted(team))
+	if (votepause_isready(team))
 		votepause_finish(team, menu);
 
 	return PLUGIN_HANDLED;
@@ -62,7 +62,7 @@ public votepause_menuhandler (const id, menu, item) {
 stock votepause_start (id) {
 	new TeamName:team = client_get_team(id);
 
-	if (!validate_cmd(id, team))
+	if (!votepause_validate(id, team))
 		return PLUGIN_HANDLED;
 	
 	is_voting[team] = true;
@@ -92,7 +92,7 @@ public votepause_finish_task (args[]) {
 public votepause_list_task (args[])
 	votepause_list(TeamName:args[0])
 
-public votepause_list(TeamName:team) {
+stock votepause_list (TeamName:team) {
 	new hud[512];
 	new votes_yes, votes_no;
 
@@ -107,13 +107,12 @@ public votepause_list(TeamName:team) {
 	if (!(votes_yes + votes_no)) 
 		formatex(hud, charsmax(hud), "%L", LANG_SERVER, "PUG_NOVOTES")
 
-	show_hudtitle(0, "Votepause");
-	show_hudbody(0, hud);
+	showt_hudtitle(team, "Votepause");
+	showt_hudbody(team, hud);
 }
 
 stock votepause_finish (TeamName:team, menu) {
 	is_voting[team] = false;
-	pause_limiter[_:team]++;
 
 	remove_task(TASK_HUD_VOTEPAUSE)
 	menu_cancel_team(team);
@@ -129,6 +128,7 @@ stock votepause_finish (TeamName:team, menu) {
 
 	chat_print(0, "%L", LANG_SERVER, "PUG_VOTEPAUSE_SUCCESS", team_name[team]);
 	will_pause = true;
+	pause_limiter[_:team]++;
 }
 stock votepause_check (bool:pause_now) {
 	if (will_pause) {
@@ -148,7 +148,6 @@ stock votepause_check (bool:pause_now) {
 
 		in_pause = false;
 	}
-
 }
 
 stock votepause_reset ()
@@ -163,7 +162,7 @@ static get_maxvotes ()
 static get_votetime ()
 	return get_pcvar_num(vote_time);
 
-static bool:validate_cmd (id, TeamName:team) {
+stock bool:votepause_validate (id, TeamName:team) {
 	if (is_voting[team] || !team_can_vote(team) || will_pause || in_pause)
 		return false;
 
@@ -175,11 +174,11 @@ static bool:validate_cmd (id, TeamName:team) {
 	return true;
 }
 
-static get_total_votes (TeamName:team)
+stock votepause_totalvotes (TeamName:team)
 	return votes[team][0] + votes[team][1];
 
-static bool:all_voted (TeamName:team) {
-	new const total_votes = get_total_votes(team);
+stock bool:votepause_isready (TeamName:team) {
+	new const total_votes = votepause_totalvotes(team);
 
 	if (total_votes >= teammates_count[team])
 		return true;
