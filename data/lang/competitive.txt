@@ -16,6 +16,7 @@ PLAYER_UNMUTED = Jugador desmuteado.
 PUG_GAME_CANCELED_ABSENCE = Juego cancelado por ausencia de jugadores en el equipo %s.
 PUG_GAME_FORCED = %s forzo el juego
 PUG_GAME_INTERMISSION = %d segundos de descanso para comenzar el proximo tiempo
+PUG_GAME_NOTSTARTED = El partido no ha empezado.
 
 PUG_GAMEOVER_WON = Juego finalizado! Los %s ganaron: %i-%i
 PUG_GAMEOVER_TIED = Juego finalizado! Empate: %i-%i
@@ -79,9 +80,12 @@ PUG_VOTEKICK_TITLE = Expulsar a %s:
 PUG_CMD_SPECIFY = Necesitas especificar un jugador.
 PUG_CMD_UNAVAILABLE = No es un objetivo disponible.
 
+PUG_MENU_SELECT = Selecciona:
+
 PUG_VOTING_STARTED = %s inicio votacion. 
 PUG_VOTING_INSUFFICIENT = Votos insuficientes.
 PUG_VOTING_FAILED = Votacion fallida.
+PUG_VOTING_SPEC = Los espectadores no pueden hacer votaciones.
 
 PUG_VOTEPAUSE_TITLE = Pausar el juego?
 PUG_VOTEPAUSE_SUCCESS = El equipo %s pausara el partido.

@@ -8,17 +8,17 @@ stock cmd_init () {
 	register_concmd(".auto", "cmd_auto", PUG_CMD_LVL)
 	register_concmd(".manual", "cmd_manual", PUG_CMD_LVL)
 	register_concmd(".restart", "cmd_restart", PUG_CMD_LVL);
-
 	register_concmd(".start", "cmd_start", PUG_CMD_LVL);
 	register_concmd(".cancel", "cmd_cancel", PUG_CMD_LVL);
 
+	register_concmd(".menu", "cmd_menu", ADMIN_ALL);
 	register_concmd(".mute", "cmd_mute", ADMIN_ALL);
 	register_concmd(".unmute", "cmd_unmute", ADMIN_ALL);
-
 	register_concmd(".votekick", "cmd_votekick", ADMIN_ALL);
 	register_concmd(".votepause", "cmd_votepause", ADMIN_ALL);
 
 	register_clcmd("chooseteam", "cmd_chooseteam");
+	register_clcmd("nightvision", "cmd_menu");
 }
 
 public cmd_chooseteam (id) {
@@ -97,6 +97,11 @@ public cmd_auto (id, level, cid) {
 	set_server_auto();
 	
 	return PLUGIN_HANDLED;
+}
+
+public cmd_menu (id) {
+	pugmenu_start(id);
+	return PLUGIN_HANDLED
 }
 
 public cmd_mute (const id, level, cid) {
