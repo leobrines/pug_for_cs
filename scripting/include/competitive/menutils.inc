@@ -5,16 +5,10 @@
 #define _menutils_included
 
 stock menu_display_team (TeamName:team, menu) {
-	new players[MAX_PLAYERS], num;
+	new players[MAX_PLAYERS], num, strteam[12];
 
-	switch (team) {
-		case TEAM_TERRORIST:
-			get_players(players, num, "ceh", "TERRORIST");
-		case TEAM_CT:
-			get_players(players, num, "ceh", "CT");
-		default:
-			get_players(players, num, "ceh", "SPECTATOR");
-	}
+	team_to_str(team, strteam, charsmax(strteam));
+	get_players(players, num, "ceh", strteam);
 
 	for (new i; i<num; i++)
 		menu_display(players[i], menu);
@@ -23,17 +17,56 @@ stock menu_display_team (TeamName:team, menu) {
 }
 
 stock menu_cancel_team (TeamName:team) {
-	new players[MAX_PLAYERS], num;
+	new players[MAX_PLAYERS], num, strteam[12];
 
-	switch (team) {
-		case TEAM_TERRORIST:
-			get_players(players, num, "ceh", "TERRORIST");
-		case TEAM_CT:
-			get_players(players, num, "ceh", "CT");
-		default:
-			get_players(players, num, "ceh", "SPECTATOR");
-	}
+	team_to_str(team, strteam, charsmax(strteam));
+	get_players(players, num, "ceh", strteam);
 
 	for (new i; i<num; i++)
 		menu_cancel(players[i]);
+}
+
+stock menu_create_players (id, handler[]) {
+	new players[MAX_PLAYERS], num;
+	get_players(players, num, "ch");
+
+	new menu = menu_create_ptitle(handler);
+	menu_addplayers(menu, players, num, id);
+
+	return menu;
+}
+
+stock menu_create_tplayers (id, handler[], bool:showself=false) {
+	new players[MAX_PLAYERS], num, strteam[12];
+
+	team_to_str(client_get_team(id), strteam, charsmax(strteam));
+	get_players(players, num, "ceh", strteam);
+
+	new menu = menu_create_ptitle(handler);
+	menu_addplayers(menu, players, num, showself ? id : 0);
+
+	return menu;
+}
+
+stock menu_create_ptitle (handler[]) {
+	new title[32];
+	format(title, charsmax(title), "%L", LANG_SERVER, "PUG_MENU_SELECT")
+
+	return menu_create(title, handler);
+}
+
+stock menu_addplayers (menu, players[], num, plyrignore=0) {
+	new player, name[32], authid[32];
+
+	for (new i; i<num; i++) {
+		player = players[i];
+
+		if (player == plyrignore)
+			continue;
+
+		get_user_name(player, name, charsmax(name));
+		get_user_authid(player, authid, charsmax(authid));
+
+		menu_additem(menu, name, authid);
+	}
 }
