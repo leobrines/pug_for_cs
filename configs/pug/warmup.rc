@@ -16,7 +16,7 @@ mp_limitteams 0
 mp_maxrounds 0
 mp_playerid 0
 mp_refill_bpammo_weapons 3
-mp_respawn_immunitytime 4
+mp_respawn_immunitytime 3
 mp_round_infinite acdefg
 mp_roundtime 0
 mp_startmoney 16000
