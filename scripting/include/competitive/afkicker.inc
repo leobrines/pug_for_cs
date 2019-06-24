@@ -5,7 +5,7 @@
 #define _afkicker_included
 
 #define MIN_AFK_TIME 30
-#define DROPC4_AFK_TIME 10
+#define DROPC4_AFK_TIME 20
 #define CHECK_FREQ 5
 
 new old_angles[33][3]
