@@ -4,35 +4,20 @@ Tome lo mejor de varios plugins para hacerlo un poco mas automatico. Por ejemplo
 
 ## Caracteristicas 
 - Inicio de juego automatico
-- Pausar partido (.votepause)
-- Mutear y desmutear (.mute .unmute)
-- Expulsar jugador (.votekick)
+- Menu general en la tecla N
+- Pausar el partido
+- Mutear y desmutear
+- Expulsar jugador d ela partida
 - DMG automatico en consola
 - Empate disponible y configurable
 - Mantiene puntuaciones al cambio de bando
-- Al cambiar bando, se mantienen los scores
 - Los vivos pueden leer a los muertos
 
 ## Requisitos
 
-- [Amxmodx 1.8.x](https://www.amxmodx.org/)
+- [Amxmodx 1.8.x](https://www.amxmodx.org/downloads.php)
+- [Regamedll 5.x](https://github.com/s1lentq/ReGameDLL_CS)
 - [Reapi 5.6.x](https://github.com/s1lentq/reapi)
-
-## Pasos para instalar
-
-1. Compilar y comprimir
-
-En Linux: 
-
-```bash
-$ bash make.sh
-```
-
-2. Descomprime en la raiz del HLDS el zip creado por la compilacion 
-
-```bash
-$ unzip build-{date}.zip
-```
 
 ## Comandos de chat
 
@@ -43,6 +28,7 @@ $ unzip build-{date}.zip
 	.auto		- El modo iniciara automaticamente<br>
 
 - Jugador<br>
+	.menu				- Menu de funcionalidades (tecla N)<br>
 	.votekick <nombre>	- Votacion para expulsar a un jugador<br>
 	.votepause			- Votacion para pausar partido<br>
 	.mute <nombre>		- Mutear jugador<br>
@@ -50,22 +36,24 @@ $ unzip build-{date}.zip
 
 ## Configuraciones destacables  (pugconfig.cfg)
 
-pug_tag		"[Server]" // Prefix del servidor<br>
-pug_owner	"" // Nombre de los lideres del servidor<br>
-pug_rounds_max		"30" // Rondas maximas del partido<br>
-pug_rounds_ot		"6" // Rondas maximas del overtime<br>
-pug_allow_tie		"0" // Activa el empate de la partida<br>
-pug_show_money			"1" // Muestra el dinero. 0 = Deshabilita; 1 = Por chat; 2 = Por HUD; 3 = Por sprites<br>
-pug_votepause_time			"60" // Tiempo que duran las pausas
+| Cvar                 | Default    | Descripción |
+| :------------------- | :--------: | :--------------------------------------------------- |
+| pug_tag              | "[Server]" | Prefix del servidor                                  |
+| pug_owner	           | ""         | Nombre de los lideres del servidor                   |
+| pug_rounds_max       | 30         | Rondas maximas del partido                           |
+| pug_rounds_ot        | 6          | Rondas maximas del overtime                          |
+| pug_allow_tie        | 0          | Activa el empate de la partida                       |
+| pug_show_money       | 1          | Muestra el dinero de los jugadores. <br/>`0` Deshabilitado<br/>`1` Por chat<br/>`2` Por HUD<br/>`3` Por sprites |
+| pug_votepause_time   | 60         | Tiempo (seg) que duran las pausa                     |
+| pug_afktime          | 60         | Tiempo (seg) en que sera kickeado un jugador por afk |
 
 ## Cosas por hacer
 - Añadir ronda a cuchillo y configurar por cvar
 - Que los espectadores entren automaticamente por orden de llegada
 - Bloquear modo espectador, solo para admins
 - Refactorizar todo el codigo por modulos (includes)
-- Banear solamente de la ronda en juego, cuando se da votekick
 
-## Inspirado en los siguientes plugins
+## Agradecimientos | Autores de otros pugmod 
 
 [Sugisaki](https://amxmodx-es.com/Thread-Competitive-Face-it-Pick-Up-Game-PUG)<br>
 [PredatorFlys](https://amxmodx-es.com/Thread-Auto-Mix-YAP-Capitan-resubido)<br>
