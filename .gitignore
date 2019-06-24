@@ -6,7 +6,9 @@
 *.txt
 *.tpl
 *.sma
+*.sh
 amxxpc*
 !competitive.sma
 !competitive.txt
+!cash-sprites.zip
 scripting/include/*.inc
