@@ -14,7 +14,7 @@ new bool:spawned[33] = {true, ...}
 
 stock afkicker_start () {
 	set_task(float(CHECK_FREQ), "check_afkplayers", _, _, _, "b");
-	register_cvar("pug_afktime", "90");
+	register_cvar("pug_afktime", "60");
 }
 
 public afkicker_newround_task () 
