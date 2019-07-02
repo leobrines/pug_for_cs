@@ -1,7 +1,7 @@
 #include <competitive/index>
 
 #define PLUGIN "Competitive"
-#define VERSION "0.9.1"
+#define VERSION "0.10.0"
 #define AUTHOR "Leopoldo Brines"
 
 #define TASK_HUD_VOTE    996541
