@@ -10,6 +10,7 @@ stock cmd_init () {
 	register_concmd(".restart", "cmd_restart", PUG_CMD_LVL);
 	register_concmd(".start", "cmd_start", PUG_CMD_LVL);
 	register_concmd(".cancel", "cmd_cancel", PUG_CMD_LVL);
+	register_concmd(".test", "cmd_test", PUG_CMD_LVL);
 
 	register_concmd(".menu", "cmd_menu", ADMIN_ALL);
 	register_concmd(".mute", "cmd_mute", ADMIN_ALL);
@@ -19,6 +20,8 @@ stock cmd_init () {
 
 	register_clcmd("chooseteam", "cmd_chooseteam");
 	register_clcmd("nightvision", "cmd_menu");
+
+	register_concmd("kill", "block_kill")
 }
 
 public cmd_chooseteam (id) {
@@ -99,6 +102,16 @@ public cmd_auto (id, level, cid) {
 	return PLUGIN_HANDLED;
 }
 
+public cmd_test (id, level, cid) {
+	if (!cmd_access(id, level, cid, 1))
+		return PLUGIN_CONTINUE;
+
+	if (!game_is_started())
+		firsthalf();
+
+	return PLUGIN_HANDLED;
+}
+
 public cmd_menu (id) {
 	pugmenu_start(id);
 	return PLUGIN_HANDLED
@@ -141,6 +154,13 @@ public cmd_votepause (id, level, cid) {
 	votepause_start(id);
 
 	return PLUGIN_HANDLED
+}
+
+public block_kill () {
+	if (game_is_live())
+		return PLUGIN_HANDLED;
+
+	return PLUGIN_CONTINUE; 
 }
 
 static find_target (id, level, cid) {
