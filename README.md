@@ -7,7 +7,7 @@ Tome lo mejor de varios plugins para hacerlo un poco mas automatico. Por ejemplo
 - Menu general en la tecla N
 - Pausar el partido
 - Mutear y desmutear
-- Expulsar jugador d ela partida
+- Expulsar jugador de la partida
 - DMG automatico en consola
 - Empate disponible y configurable
 - Mantiene puntuaciones al cambio de bando
