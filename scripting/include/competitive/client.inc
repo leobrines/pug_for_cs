@@ -97,9 +97,10 @@ stock user_joined (id) {
 	#endif
 }
 
-public send_teaminfo (args[]) {
+#if AMXX_VERSION_NUM < 183
+public send_teaminfo (args[])
 	chatcolor_send_teaminfo(args[0]);
-}
+#endif
 
 static bool:valid_player_team (id, TeamName:team) {
 	if (team_is_full(team, true) && is_user_bot(id))
