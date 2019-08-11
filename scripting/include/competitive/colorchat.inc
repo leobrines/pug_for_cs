@@ -14,7 +14,7 @@ enum
 	print_team_blue
 }
 
-stock client_print_color(id, Colors:color, msg[], any:...)
+stock client_print_color(id, color, msg[], any:...)
 {
 	static szMsg[191], msgSayText;
 	#define teaminfo_sent(%0) (TeamInfoSent & (1<<%0))
@@ -29,7 +29,7 @@ stock client_print_color(id, Colors:color, msg[], any:...)
 	replace_all(szMsg, 190, "!t", "^3");
 
 	message_begin(id ? MSG_ONE_UNRELIABLE : MSG_BROADCAST, msgSayText, .player = id);
-	write_byte(color ? (_:color) : 33);
+	write_byte(color ? color : 33);
 	write_string(szMsg);
 	message_end();
 }
