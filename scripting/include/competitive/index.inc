@@ -9,9 +9,9 @@
 #include <amxmisc>
 
 #include <competitive/colorchat>
+#include <competitive/cvars>
 #include <competitive/utils>
 #include <competitive/menutils>
-#include <competitive/cvars>
 #include <competitive/client>
 
 // Modules

@@ -1,8 +1,8 @@
-#if defined _cvars_included
+#if defined _pugcvars_included
   #endinput
 #endif
 
-#define _cvars_included
+#define _pugcvars_included
 
 #include <amxmodx>
 
