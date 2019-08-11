@@ -7,15 +7,6 @@
 #include <amxmodx>
 #include <reapi>
 
-#if AMXX_VERSION_NUM >= 183
-	#define client_disconnect client_disconnected
-	#define strbreak argbreak
-#else
-	#define MAX_PLAYERS 32
-	#define MAX_NAME_LENGTH 32
-	#define MENU_TIMEOUT -4
-#endif
-
 #define PUG_CMD_LVL	ADMIN_LEVEL_A
 #define PUG_MOD_LVL	ADMIN_LEVEL_H
 

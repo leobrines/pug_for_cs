@@ -8,6 +8,7 @@
 #include <reapi>
 #include <amxmisc>
 
+#include <competitive/compatibility>
 #include <competitive/colorchat>
 #include <competitive/cvars>
 #include <competitive/utils>
