@@ -1,7 +1,7 @@
 #include <competitive/index>
 
 #define PLUGIN "Competitive"
-#define VERSION "0.10.0"
+#define VERSION "0.10.1"
 #define AUTHOR "Leopoldo Brines"
 
 #define TASK_HUD_VOTE    996541
@@ -743,13 +743,13 @@ public bool:fnCheckCommand (const id, szArgs[192])
 	return false;
 }
 
-public fnSendMessage(id, Colors:color, msg[192])
+public fnSendMessage(id, color, msg[192])
 {
 	if (is_msgsound_allowed())
 		client_cmd(id, "spk buttons/lightswitch2")
 
 	message_begin(MSG_ONE_UNRELIABLE, get_user_msgid("SayText"), _, id);
-	write_byte(color ? (_:color) : 33);
+	write_byte(color ? color : 33);
 	write_string(msg);
 	message_end();
 }

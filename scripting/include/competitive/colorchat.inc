@@ -6,20 +6,14 @@
 
 #include <amxmodx>
 
-enum Colors
+#if AMXX_VERSION_NUM < 183
+enum
 {
-		print_team_grey = 33, 
-		print_team_red, 
-		print_team_blue
+	print_team_grey = 33,
+	print_team_red,
+	print_team_blue
 }
 
-// Si ya tienes client_putinserver, solo agregas la linea
-//public client_putinserver(id)
-//{
-//    set_task(0.2, "chatcolor_send_teaminfo", id);
-//}
-
-#if AMXX_VERSION_NUM < 183
 stock client_print_color(id, Colors:color, msg[], any:...)
 {
 	static szMsg[191], msgSayText;
