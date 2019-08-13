@@ -8,7 +8,7 @@
 #define TASK_HUD_MONEY 3001
 
 #define MAX_BYTES 192
-#defina MAX_MAPS 25
+#define MAX_MAPS 25
 
 new g_iRound;
 
