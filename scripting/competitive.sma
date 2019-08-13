@@ -8,6 +8,7 @@
 #define TASK_HUD_MONEY 3001
 
 #define MAX_BYTES 192
+#defina MAX_MAPS 25
 
 new g_iRound;
 
@@ -18,8 +19,8 @@ new g_iVotesCount
 // VoteMap
 new g_mMap
 new g_iMapCount
-new g_sMapNames[15][32]
-new g_iMapVotes[15];
+new g_sMapNames[MAX_MAPS][32]
+new g_iMapVotes[MAX_MAPS];
 new g_sLastMaps[2][32]
 
 // VoteTeam
