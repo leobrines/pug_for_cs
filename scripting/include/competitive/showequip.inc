@@ -2,11 +2,11 @@
   #endinput
 #endif
 
-#define _showequip_included
+#if !defined _reapi_included
+  #endinput
+#endif
 
-#include <amxmodx>
-#include <fakemeta>
-#include <reapi>
+#define _showequip_included
 
 #define DISPLAY_ENTS_TASK 4563
 static bool:is_newround;

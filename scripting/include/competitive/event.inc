@@ -4,7 +4,6 @@
 
 #define _event_included
 
-new HookChain:g_hGiveC4;
 new HookChain:g_hPlayerPostThink;
 new HookChain:g_hRoundFreezeEnd;
 new HookChain:g_hHasRestrictItem;
@@ -16,9 +15,18 @@ new HookChain:g_hRoundEnd;
 stock event_init () {
 	register_message(get_user_msgid("TeamScore"), "event_team_score");
 	register_message(get_user_msgid("ScoreInfo"), "event_player_score");
-	register_logevent("event_joined_team", 3, "1=joined team");
+
 	RegisterHookChain(RG_HandleMenu_ChooseTeam, "event_choose_team");
 	RegisterHookChain(RG_CWeaponBox_SetModel, "event_drop_item");
+
+	register_forward(FM_GetGameDescription, "event_game_description");
+
+	register_event("Money", "event_money", "b")
+	register_event("Damage", "event_damage", "b", "2!0", "3=0", "4!0")
+	register_event("DeathMsg", "event_death_player", "a", "1!0", "2!0");
+
+	register_logevent("event_joined_team", 3, "1=joined team");
+	register_logevent("event_new_round", 3, "2=Spawned_With_The_Bomb");
 }
 
 public event_player_score (m, s, id) {
@@ -53,18 +61,15 @@ public event_choose_team (id, MenuChooseTeam:selected) {
 }
 
 public event_joined_team () {
-	static loguser[80], name[32], id, team[2];
+    new team[2], id;
+    
+    id = get_loguser_index();
+    read_logargv(2, team, 1);
 
-	read_logargv(0, loguser, 79);
-	parse_loguser(loguser, name, 31);
+    user_joined(id);
 
-	id = get_user_index(name);
-	read_logargv(2, team, 1);
-
-	user_joined(id);
-
-	if ((team[0] == 'T' || team[0] == 'C') && !game_is_started())
-		autoready_check();
+    if ((team[0] == 'T' || team[0] == 'C') && !game_is_started())
+        autoready_check();
 }
 
 public event_drop_item (ent, modelname[]) {
@@ -74,4 +79,94 @@ public event_drop_item (ent, modelname[]) {
 	set_entvar(ent, var_flags, FL_KILLME); 
 
 	return HC_BREAK;
+}
+
+public event_game_description() {
+    new description[32]
+    get_game_description(description, charsmax(description))
+
+    forward_return(FMV_STRING, description);
+
+    return FMRES_SUPERCEDE
+}
+
+public event_new_round () {
+	if (!game_is_started()) {
+		new id = get_loguser_index()
+		client_delete_c4(id);
+
+		return PLUGIN_CONTINUE;
+	}
+	if (!game_is_live())
+		return PLUGIN_CONTINUE;
+
+	round_start();
+
+	if (!g_iRound) {
+		teams_reset_scores();
+		clients_reset_scores();
+	}
+
+	new showMoneyMode = get_showmoney_mode();
+
+	switch (showMoneyMode) {
+		case 1: {
+			clients_print_money();
+		}
+		case 2: {
+			set_task(0.2, "fnHudMoney", TASK_DISPLAY_INFO, _, _, "b")
+			set_task(float(get_freezetime()), "fnRemoveHudMoney", _, _, _, "a", 1)
+		}
+		case 3: {
+			show_team_equipment();
+		}
+	}
+
+	return PLUGIN_HANDLED;
+}
+
+public event_money (id) {
+	if (game_is_started())
+		return PLUGIN_CONTINUE;
+
+	client_give_money(id, 16000);
+
+	return PLUGIN_HANDLED;
+}
+
+public event_damage (victim) {
+	new attacker, damage;
+	attacker = get_user_attacker(victim);
+	damage = read_data(2);
+
+	if (attacker != victim &&
+		is_player_id(attacker) &&
+		is_player_id(victim))
+	{
+		dmg_addattack(victim, attacker, damage);
+	}
+}
+
+public event_death_player () {
+	if (!game_is_live() || is_restarting())
+		return; 
+	
+	new const killer = read_data(1);
+	new const victim = read_data(2);
+
+	client_add_frag(killer);
+	client_add_death(victim);
+
+	new args[2];
+	args[0] = victim;
+	set_task(1.0, "printdmg_task", _, args, charsmax(args), "a", 1);
+}
+
+stock get_loguser_index() {
+	static loguser[80], name[32];
+
+	read_logargv(0, loguser, 79);
+	parse_loguser(loguser, name, 31);
+
+	return get_user_index(name);
 }

@@ -39,7 +39,7 @@ stock players_return_money () {
 
 	for (new i; i<count; i++) {
 		id = players[i];
-		rg_add_account(id, clients_money[id], AS_SET);
+		client_set_money(id, clients_money[id]);
 	}
 }
 
@@ -137,10 +137,10 @@ static teams_switch_side () {
 	get_players(playersCT, countCT, "eh", "CT");
 
 	for (new i; i < countTT; i++)
-		rg_set_user_team(playersTT[i], TEAM_CT);
+		client_set_team(playersTT[i], TEAM_CT);
 
 	for (new i; i < countCT; i++)
-		rg_set_user_team(playersCT[i], TEAM_TERRORIST);
+		client_set_team(playersCT[i], TEAM_TERRORIST);
 }
 
 static teams_switch_score () {
