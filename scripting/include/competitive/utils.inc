@@ -89,9 +89,9 @@ stock chat_print (const playerID, const message[], any:...)
 	vformat(msgFormated, charsmax(msgFormated), message, 3);
 	
 	if ( equali(TAG,"") )
-		client_print_color(playerID, print_team_grey, "%s", msgFormated);
+		chat_print_color(playerID, print_team_grey, "%s", msgFormated);
 	else
-		client_print_color(playerID, print_team_grey, "%s %s", TAG, msgFormated);
+		chat_print_color(playerID, print_team_grey, "%s %s", TAG, msgFormated);
 }
 
 stock team_print (TeamName:team, const msg[], any:...) {
