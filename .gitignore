@@ -1,11 +1,15 @@
 scripting/include/*.inc
 scripting/*.*
 scripting/testsuite/
+.vscode/
+
 !competitive/*.inc
 !competitive.sma
 !competitive.txt
 !competitive.cfg
 !cash-sprites.zip
+
+amxxpc*
 
 *.txt
 *.cfg
@@ -15,5 +19,12 @@ scripting/testsuite/
 *.mmdb
 *.ini
 *.log
-amxxpc*
-.vscode
+*.swp
+*.swo
+*.zip
+*.amxx	
+*.txt	
+*.tpl	
+*.sma	
+*.sh
+
