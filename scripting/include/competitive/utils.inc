@@ -4,9 +4,6 @@
 
 #define _utils_included
 
-#include <amxmodx>
-#include <reapi>
-
 #define PUG_CMD_LVL	ADMIN_LEVEL_A
 #define PUG_MOD_LVL	ADMIN_LEVEL_H
 

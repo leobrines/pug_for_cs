@@ -4,8 +4,6 @@
 
 #define _moneysave_included
 
-#include <amxmodx>
-
 static clients_money[MAX_PLAYERS+1];
 static frags[MAX_PLAYERS+1];
 static deaths[MAX_PLAYERS+1];

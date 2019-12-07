@@ -4,8 +4,6 @@
 
 #define _pugcvars_included
 
-#include <amxmodx>
-
 // Cfg files
 static g_pWarmup
 static g_pPugMode

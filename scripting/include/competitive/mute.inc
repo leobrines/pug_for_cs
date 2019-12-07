@@ -4,9 +4,6 @@
 
 #define _mute_included
 
-#include <amxmodx>
-#include <fakemeta>
-
 static clients_muted[MAX_PLAYERS+1][MAX_PLAYERS+1];
 
 stock client_mute_reset (id)

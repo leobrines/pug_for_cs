@@ -7,6 +7,7 @@
 #include <amxmodx>
 #include <reapi>
 #include <amxmisc>
+#include <fakemeta>
 
 #include <competitive/compatibility>
 #include <competitive/colorchat>

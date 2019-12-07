@@ -4,9 +4,6 @@
 
 #define _votepause_included
 
-#include <amxmodx>
-#include <competitive/utils>
-
 #define TASK_HUD_VOTEPAUSE 7000
 
 static pause_limiter[_:TeamName];
