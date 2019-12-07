@@ -204,3 +204,15 @@ stock server_changemap(sMap[])
 	server_cmd("changelevel %s", sMap);
 	#endif
 }
+
+stock client_delete_c4(id) {
+    new weaponID = get_weaponid("weapon_c4")
+    new iconstatus = get_user_msgid("StatusIcon");
+
+    user_has_weapon(id, weaponID, 0)
+
+    message_begin(MSG_ONE,iconstatus,{0,0,0},id);
+    write_byte(0); 
+    write_string("c4");
+    message_end();
+}

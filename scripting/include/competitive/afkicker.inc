@@ -79,7 +79,7 @@ stock afkicker_trykick (id) {
 	}
 
 	if (afktime[id] > DROPC4_AFK_TIME)
-		rg_drop_item(id, "weapon_c4");
+        client_drop_c4(id);
 
 	if (afktime[id] > maxafktime) {
 		new szName[32]
