@@ -1,14 +1,9 @@
-*~
-*.swp
-*.swo
-*.zip
-*.amxx
-*.txt
-*.tpl
-*.sma
-*.sh
-amxxpc*
-!competitive.sma
-!competitive.txt
+# Ignore all files
+*
+
+# Except
+!scripting/competitive.sma
+!scripting/include/competitive/*
+!data/lang/competitive.txt
+!configs/competitive.cfg
 !cash-sprites.zip
-scripting/include/*.inc
