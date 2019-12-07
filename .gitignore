@@ -1,9 +1,19 @@
-# Ignore all files
-*
-
-# Except
-!scripting/competitive.sma
-!scripting/include/competitive/*
-!data/lang/competitive.txt
-!configs/competitive.cfg
+scripting/include/*.inc
+scripting/*.*
+scripting/testsuite/
+!competitive/*.inc
+!competitive.sma
+!competitive.txt
+!competitive.cfg
 !cash-sprites.zip
+
+*.txt
+*.cfg
+*.amxx
+*.so
+*.dll
+*.mmdb
+*.ini
+*.log
+amxxpc*
+.vscode
