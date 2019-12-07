@@ -265,6 +265,7 @@ public fnNextVote()
 		}
 		default:
 		{
+			show_menu(0, 0, "^n", 1);
 			set_votemap_ready(false);
 			firsthalf();
 		}
