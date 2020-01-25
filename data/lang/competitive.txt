@@ -208,6 +208,9 @@ PUG_VOTING_CAPTAINS = Captains
 PUG_VOTING_RANDOM = Random
 PUG_NOVOTES = No votes
 
+PUG_FORCE_GAME = Admin %s force the game
+PUG_FORCE_CANCEL = Admin %s cancel the game
+
 PUG_AFKKICKER_CVAR = Cvar pug_afktime %i is too low. Minimum value is %i.
 PUG_AFKKICKER_WARN = You have %i seconds to move or you will be kicked for being AFK.
 PUG_AFKKICKER_KICK = %s was kicked for being AFK longer than %i seconds.

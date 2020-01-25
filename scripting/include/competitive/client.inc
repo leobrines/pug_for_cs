@@ -16,15 +16,6 @@ stock bool:client_is_terrorist (id)
 stock bool:client_is_ct (id)
 	return client_get_team(id) == TEAM_CT;
 
-stock TeamName:client_get_team (id)
-	return get_member(id, m_iTeam);
-
-stock client_give_money (id, amount)
-	set_member(id, m_iAccount, amount);
-
-stock client_get_money (id)
-	return get_member(id, m_iAccount);
-
 stock clients_print_money () {
 	static players[MAX_PLAYERS], count, id
 	get_players(players, count, "ah");

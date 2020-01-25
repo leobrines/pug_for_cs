@@ -1,39 +1,8 @@
 #include <competitive/index>
 
 #define PLUGIN "Competitive"
-#define VERSION "0.10.4"
+#define VERSION "0.10.5"
 #define AUTHOR "Leopoldo Brines"
-
-#define TASK_HUD_VOTE    996541
-#define TASK_HUD_MONEY 3001
-
-#define MAX_BYTES 192
-#define MAX_MAPS 25
-
-new g_iRound;
-
-// Votation System
-new g_iVoteId;
-new g_iVotesCount
-
-// VoteMap
-new g_mMap
-new g_iMapCount
-new g_sMapNames[MAX_MAPS][32]
-new g_iMapVotes[MAX_MAPS];
-new g_sLastMaps[2][32]
-
-// VoteTeam
-new g_mTeam
-new g_iTeamCount
-new g_sTeamNames[2][32]
-new g_iTeamVotes[32]
-
-// Team names
-new const g_szTeams[TeamName][MAX_NAME_LENGTH]
-new const g_szTeams2[TeamName][MAX_NAME_LENGTH]
-
-#define TASK_DISPLAY_INFO 4563
 
 public plugin_precache () {
 	showequip_precache();
@@ -68,20 +37,12 @@ public plugin_init()
 	register_clcmd("say_team", "fnHookSayTeam")
 
 	// Hooks
-	g_hGiveC4 = RegisterHookChain(RG_CSGameRules_GiveC4, "CSGameRules_GiveC4");
 	g_hRoundFreezeEnd = RegisterHookChain(RG_CSGameRules_OnRoundFreezeEnd, "CSGameRules_OnRoundFreezeEnd")
 	g_hPlayerPostThink = RegisterHookChain(RG_CBasePlayer_PostThink, "CBasePlayer_PostThink")
 	g_hHasRestrictItem = RegisterHookChain(RG_CBasePlayer_HasRestrictItem, "CBasePlayer_HasRestrictItem")
 	g_hRoundEnd = RegisterHookChain(RG_RoundEnd, "RoundEnd")
 
-	DisableHookChain(g_hGiveC4)
 	DisableHookChain(g_hPlayerPostThink)
-
-	// Events
-	register_event("Money", "event_money", "b")
-	register_event("Damage", "event_damage", "b", "2!0", "3=0", "4!0")
-	register_logevent("event_new_round", 3, "2=Spawned_With_The_Bomb");
-	register_event("DeathMsg", "event_death_player", "a", "1!0", "2!0");
 
 	set_task(5.0, "PugWarmup", _, _, _, "a", 1)
 	set_task(3.0, "fnPostConfig", _, _, _, "a", 1)
@@ -93,8 +54,6 @@ public plugin_cfg()
 
 	get_lastmaps(g_sLastMaps);
 	get_configfile(configfile, charsmax(configfile));
-
-	set_default_gamedesc();
 
 	server_cmd("exec %s", configfile);
 }
@@ -110,7 +69,6 @@ public plugin_pause()
 
 	autoready_hide();
 
-	DisableHookChain(g_hGiveC4)
 	DisableHookChain(g_hPlayerPostThink)
 	DisableHookChain(g_hRoundFreezeEnd)
 	DisableHookChain(g_hHasRestrictItem)
@@ -163,9 +121,6 @@ public CSGameRules_OnRoundFreezeEnd()
 
 	return HC_CONTINUE;
 }
-
-public CSGameRules_GiveC4()
-	return HC_SUPERCEDE;
 
 public CBasePlayer_HasRestrictItem(const id, const ItemID:item, const ItemRestType:type)
 {
@@ -257,8 +212,6 @@ public PugWarmup ()
 {
 	g_iStage = STAGE_WARMUP
 
-	set_default_gamedesc();
-
 	votekick_reset();
 	votepause_reset();
 
@@ -312,6 +265,7 @@ public fnNextVote()
 		}
 		default:
 		{
+			show_menu(0, 0, "^n", 1);
 			set_votemap_ready(false);
 			firsthalf();
 		}
@@ -816,83 +770,13 @@ public fnUpdateLastMaps()
 
 public fnPregameHooks()
 {
-	EnableHookChain(g_hGiveC4)
 	DisableHookChain(g_hRoundFreezeEnd)
 }
 
 public fnPugHooks()
 {
 	EnableHookChain(g_hRoundFreezeEnd)
-	DisableHookChain(g_hGiveC4)
-}
-
-// Events
-
-public event_money (id) {
-	if (game_is_started())
-		return PLUGIN_CONTINUE;
-
-	client_give_money(id, 16000);
-
-	return PLUGIN_HANDLED;
-}
-
-public event_damage (victim) {
-	new attacker, damage;
-	attacker = get_user_attacker(victim);
-	damage = read_data(2);
-
-	if (attacker != victim &&
-		is_player_id(attacker) &&
-		is_player_id(victim))
-	{
-		dmg_addattack(victim, attacker, damage);
-	}
-}
-
-public event_death_player () {
-	if (!game_is_live() || is_restarting())
-		return; 
-	
-	new const killer = read_data(1);
-	new const victim = read_data(2);
-
-	client_add_frag(killer);
-	client_add_death(victim);
-
-	new args[2];
-	args[0] = victim;
-	set_task(1.0, "printdmg_task", _, args, charsmax(args), "a", 1);
 }
 
 public printdmg_task (args[])
 	print_dmgrdmg(args[0]);
-
-public event_new_round () {
-	if (!game_is_live())
-		return PLUGIN_CONTINUE;
-
-	round_start();
-
-	if (!g_iRound) {
-		teams_reset_scores();
-		clients_reset_scores();
-	}
-
-	new showMoneyMode = get_showmoney_mode();
-
-	switch (showMoneyMode) {
-		case 1: {
-			clients_print_money();
-		}
-		case 2: {
-			set_task(0.2, "fnHudMoney", TASK_DISPLAY_INFO, _, _, "b")
-			set_task(float(get_freezetime()), "fnRemoveHudMoney", _, _, _, "a", 1)
-		}
-		case 3: {
-			show_team_equipment();
-		}
-	}
-
-	return PLUGIN_HANDLED;
-}

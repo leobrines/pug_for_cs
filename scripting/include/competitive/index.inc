@@ -5,10 +5,11 @@
 #define _index_included
 
 #include <amxmodx>
-#include <reapi>
 #include <amxmisc>
+#include <fakemeta>
 
 #include <competitive/compatibility>
+#include <competitive/globals>
 #include <competitive/colorchat>
 #include <competitive/cvars>
 #include <competitive/utils>
