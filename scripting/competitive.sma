@@ -127,23 +127,23 @@ public CBasePlayer_HasRestrictItem(const id, const ItemID:item, const ItemRestTy
 	if (item == ITEM_SHIELDGUN && type == ITEM_TYPE_BUYING && is_shield_blocked())
 	{
 		chat_print(id, "%L", LANG_SERVER, "PUG_WEAPON_NOTALLOWED")
-		SetHookChainReturn(ATYPE_INTEGER, 1);
+		SetHookChainReturn(ATYPE_BOOL, true);
 		return HC_SUPERCEDE;
 	}
 	else if (item == ITEM_NVG && type == ITEM_TYPE_BUYING  && is_nvg_blocked())
 	{
 		chat_print(id, "%L", LANG_SERVER, "PUG_WEAPON_NOTALLOWED")
-		SetHookChainReturn(ATYPE_INTEGER, 1);
+		SetHookChainReturn(ATYPE_BOOL, true);
 		return HC_SUPERCEDE;
 	}
 	else if ((item == ITEM_FLASHBANG || item == ITEM_HEGRENADE || item == ITEM_SMOKEGRENADE) && !game_is_live() && are_grenades_blocked())
 	{	
-		SetHookChainReturn(ATYPE_INTEGER, 1);
+		SetHookChainReturn(ATYPE_BOOL, true);
 		return HC_SUPERCEDE;
 	}
 	else if (item == ITEM_DEFUSEKIT && !game_is_live())
 	{
-		SetHookChainReturn(ATYPE_INTEGER, 1);
+		SetHookChainReturn(ATYPE_BOOL, true);
 		return HC_SUPERCEDE;
 	}
 
