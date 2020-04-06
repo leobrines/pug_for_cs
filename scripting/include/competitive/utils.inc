@@ -83,15 +83,16 @@ stock client_cprint (const id, Colors:color, message[192])
 }
 */
 
-stock chat_print (const playerID, const message[], any:...)
+stock chat_print (const id, const message[], any:...)
 {
 	new msgFormated[191];
+
 	vformat(msgFormated, charsmax(msgFormated), message, 3);
-	
+
 	if ( equali(TAG,"") )
-		chat_print_color(playerID, print_team_grey, "%s", msgFormated);
+		client_print_color2(id, print_team_grey, "%s", msgFormated);
 	else
-		chat_print_color(playerID, print_team_grey, "%s %s", TAG, msgFormated);
+		client_print_color2(id, print_team_grey, "%s %s", TAG, msgFormated);
 }
 
 stock team_print (TeamName:team, const msg[], any:...) {

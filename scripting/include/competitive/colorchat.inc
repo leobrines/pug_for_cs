@@ -6,23 +6,23 @@
 
 #include <amxmodx>
 
-stock replace_shorcuts(msg[], size) {
+stock client_print_color2(id, color, msg[], any:...)
+{
+	static msgfmt[191]
+	vformat(msgfmt, charsmax(msgfmt), msg, 4);
+
+	replace_color_abrv(msgfmt, charsmax(msgfmt))
+
+	client_print_color(id, color, msgfmt)
+}
+
+stock replace_color_abrv(msg[], size) {
 	replace_all(msg, size, "!g", "^4");
 	replace_all(msg, size, "!y", "^1");
 	replace_all(msg, size, "!t", "^3");
 }
 
-#if AMXX_VERSION_NUM >= 183
-
-stock chat_print_color(id, color, msg[], any:...) {
-	static szMsg[191];
-
-	vformat(szMsg, charsmax(szMsg), msg, 4);
-	replace_shorcuts(szMsg, charsmax(szMsg))
-	client_print_color(id, color, szMsg)
-}
-
-#else
+#if AMXX_VERSION_NUM < 183
 
 enum
 {
@@ -31,16 +31,14 @@ enum
 	print_team_blue
 }
 
-stock chat_print_color(id, color, msg[], any:...)
+stock client_print_color(id, color, msg[], any:...)
 {
 	static szMsg[191], msgSayText;
-	#define teaminfo_sent(%0) (TeamInfoSent & (1<<%0))
 
 	if (!msgSayText)
 		msgSayText = get_user_msgid("SayText");
 
 	vformat(szMsg, charsmax(szMsg), msg, 4);
-	replace_shorcuts(szMsg, charsmax(szMsg))
 
 	message_begin(id ? MSG_ONE_UNRELIABLE : MSG_BROADCAST, msgSayText, .player = id);
 	write_byte(color ? color : 33);
