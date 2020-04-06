@@ -1,7 +1,7 @@
 #include <competitive/index>
 
 #define PLUGIN "Competitive"
-#define VERSION "0.10.5"
+#define VERSION "0.10.6"
 #define AUTHOR "Leopoldo Brines"
 
 public plugin_precache () {
@@ -150,6 +150,8 @@ public CBasePlayer_HasRestrictItem(const id, const ItemID:item, const ItemRestTy
 	return HC_CONTINUE;
 }
 
+new Float:nextPlayerThink[MAX_PLAYERS+1]
+
 public CBasePlayer_PostThink(const id)
 {
 	if (!is_user_connected(id) || !client_is_player(id))
@@ -157,7 +159,12 @@ public CBasePlayer_PostThink(const id)
 
 	set_entvar(id, var_maxspeed, 0.1)
 
-	client_cmd(id, "+showscores")
+	// We wait a time to dont overflow client_cmd and lag player
+	if(nextPlayerThink[id] <= get_gametime())
+	{
+		client_cmd(id, "+showscores")
+		nextPlayerThink[id] = get_gametime() + 0.2
+	}
 }
 
 public RoundEnd (WinStatus:status, ScenarioEventEndRound:event, Float:tmDelay) {
