@@ -117,9 +117,6 @@ public event_new_round () {
 			set_task(0.2, "fnHudMoney", TASK_DISPLAY_INFO, _, _, "b")
 			set_task(float(get_freezetime()), "fnRemoveHudMoney", _, _, _, "a", 1)
 		}
-		case 3: {
-			show_team_equipment();
-		}
 	}
 
 	return PLUGIN_HANDLED;
