@@ -164,7 +164,7 @@ PUG_NOTREADY = %s is now ready.
 PUG_PLAYERS_READY = Players ready
 PUG_PLAYERS_NOTREADY = Players not ready
 PUG_PLAYERS_MISSING = Missing %d players
-PUG_PLAYERS_MISSING = Missing %d player
+PUG_PLAYERS_MISSING2 = Missing %d player
 
 PUG_ACTION_NOTALLOWED = Action not allowed at this time.
 PUG_ACTION_NOTACCESS = You don't have access to this command.
