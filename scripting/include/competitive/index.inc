@@ -17,7 +17,6 @@
 #include <competitive/client>
 
 // Modules
-#include <competitive/showequip>
 #include <competitive/votekick>
 #include <competitive/votepause>
 #include <competitive/mute>
