@@ -4,10 +4,6 @@
 #define VERSION "0.10.6"
 #define AUTHOR "Leopoldo Brines"
 
-public plugin_precache () {
-	showequip_precache();
-}
-
 public plugin_init()
 {
 	register_plugin(PLUGIN, VERSION, AUTHOR);
