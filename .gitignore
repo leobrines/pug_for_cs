@@ -1,6 +1,8 @@
 scripting/include/*.inc
 scripting/*.*
 scripting/testsuite/
+cstrike/
+
 .vscode/
 
 !competitive/*.inc
@@ -27,4 +29,5 @@ amxxpc*
 *.tpl	
 *.sma	
 *.sh
+*.zip
 
