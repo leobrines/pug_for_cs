@@ -34,7 +34,9 @@ public pugmenu_handler (id, menu, item) {
 			if (player_can_vote(id))
 				votepause_start(id);
 		case 1:
-			if (player_can_vote(id))
+			if (!is_votekick_enable())
+				chat_print(id, "%L", LANG_SERVER, "PUG_VOTEKICK_DISABLED");
+			else if (player_can_vote(id))
 				pugmenu_votekick(id);
 		case 2:
 			pugmenu_mute(id);

@@ -6,7 +6,7 @@
 
 #define TASK_HUD_VOTEKICK 7001
 
-static const MAX_VOTEKICKS = 3;
+new const MAX_VOTEKICKS = 3;
 
 static target[TeamName], target_name[TeamName][32];
 static votekick_limiter[33];
@@ -17,10 +17,15 @@ static bool:is_voting[TeamName];
 static players_kicked[10][32];
 
 static vote_delay;
+static vote_enable;
 
 stock votekick_init () {
+	vote_enable = register_cvar("pug_votekick_enable", "1");
 	vote_delay = register_cvar("pug_votekick_delay", "10.0");
 }
+
+stock is_votekick_enable ()
+	return get_pcvar_num(vote_enable) ? true : false;
 
 stock votekick_menucreate (name[]) {
 	static title[100];

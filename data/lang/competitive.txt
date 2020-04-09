@@ -76,6 +76,7 @@ PUG_ADMIN_SELECTED = %s ha sido seleccionado como el moderador para este equipo 
 PUG_VOTEKICK_MAXVOTES = Solo puedes iniciar 3 votaciones.
 PUG_VOTEKICK_KICKED = %s expulsado por votekick.
 PUG_VOTEKICK_TITLE = Expulsar a %s:
+PUG_VOTEKICK_DISABLED = El votekick esta deshabilitado.
 
 PUG_CMD_SPECIFY = Necesitas especificar un jugador.
 PUG_CMD_UNAVAILABLE = No es un objetivo disponible.
@@ -164,7 +165,7 @@ PUG_NOTREADY = %s is now ready.
 PUG_PLAYERS_READY = Players ready
 PUG_PLAYERS_NOTREADY = Players not ready
 PUG_PLAYERS_MISSING = Missing %d players
-PUG_PLAYERS_MISSING2 = Missing %d player
+PUG_PLAYERS_MISSING = Missing %d player
 
 PUG_ACTION_NOTALLOWED = Action not allowed at this time.
 PUG_ACTION_NOTACCESS = You don't have access to this command.
@@ -207,9 +208,6 @@ PUG_VOTING_NOTSORTED = Same teams
 PUG_VOTING_CAPTAINS = Captains
 PUG_VOTING_RANDOM = Random
 PUG_NOVOTES = No votes
-
-PUG_FORCE_GAME = Admin %s force the game
-PUG_FORCE_CANCEL = Admin %s cancel the game
 
 PUG_AFKKICKER_CVAR = Cvar pug_afktime %i is too low. Minimum value is %i.
 PUG_AFKKICKER_WARN = You have %i seconds to move or you will be kicked for being AFK.
