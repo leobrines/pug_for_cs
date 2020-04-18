@@ -1,6 +1,7 @@
 static maxrounds;
 static bool:firstround;
 static bool:restarting;
+static bool:gamebreak;
 
 stock firsthalf () {
 	g_iStage = STAGE_FIRSTHALF
@@ -77,24 +78,29 @@ static halfstart (bool:remove_break=false) {
 	restarting = true;
 
 	if (remove_break) {
+		gamebreak = false
 		client_cmd(0, "-showscores");
-		DisableHookChain(g_hPlayerPostThink);
 		teams_switch();
 	}
 }
 
-static gamebreak () {
-	EnableHookChain(g_hPlayerPostThink)
+bool:is_gamebreak() {
+	return gamebreak
+}
+
+static start_gamebreak () {
+	gamebreak = true
+
 	fnPregameHooks()
 
 	chat_print(0, "%L", LANG_SERVER, "PUG_GAME_INTERMISSION", get_halftime())
 
-	set_task(float(get_halftime()), "gamebreak_end", _, _, _, "a", 1);
+	set_task(float(get_halftime()), "finish_gamebreak", _, _, _, "a", 1);
 
 	exec_halftime();
 }
 
-public gamebreak_end () {
+public finish_gamebreak() {
 	switch (g_iStage) {
 		case STAGE_FIRSTHALF:
 			secondhalf();
@@ -122,7 +128,7 @@ static game_try_end () {
 	fnShowScore();
 	
 	if (is_score_tie() && !is_tie_allowed() && get_overtime_rounds())
-		gamebreak();
+		start_gamebreak();
 }
 
 stock check_halfend () {
@@ -133,7 +139,7 @@ stock check_halfend () {
 			fnShowScore();
 
 			if (is_half_end())
-				gamebreak();
+				start_gamebreak();
 		}
 		case STAGE_SECONDHALF, STAGE_SECONDOT: {
 			game_try_end();

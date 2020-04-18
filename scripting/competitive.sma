@@ -35,11 +35,10 @@ public plugin_init()
 
 	// Hooks
 	g_hRoundFreezeEnd = RegisterHookChain(RG_CSGameRules_OnRoundFreezeEnd, "CSGameRules_OnRoundFreezeEnd")
-	g_hPlayerPostThink = RegisterHookChain(RG_CBasePlayer_PostThink, "CBasePlayer_PostThink")
 	g_hHasRestrictItem = RegisterHookChain(RG_CBasePlayer_HasRestrictItem, "CBasePlayer_HasRestrictItem")
 	g_hRoundEnd = RegisterHookChain(RG_RoundEnd, "RoundEnd")
 
-	DisableHookChain(g_hPlayerPostThink)
+	register_forward(FM_PlayerPostThink,"PostThink");
 
 	set_task(5.0, "PugWarmup", _, _, _, "a", 1)
 	set_task(3.0, "fnPostConfig", _, _, _, "a", 1)
@@ -66,7 +65,6 @@ public plugin_pause()
 
 	autoready_hide();
 
-	DisableHookChain(g_hPlayerPostThink)
 	DisableHookChain(g_hRoundFreezeEnd)
 	DisableHookChain(g_hHasRestrictItem)
 	DisableHookChain(g_hRoundEnd)
@@ -149,10 +147,10 @@ public CBasePlayer_HasRestrictItem(const id, const ItemID:item, const ItemRestTy
 
 new Float:nextPlayerThink[MAX_PLAYERS+1]
 
-public CBasePlayer_PostThink(const id)
+public PostThink(const id)
 {
-	if (!is_user_connected(id) || !client_is_player(id))
-		return;
+	if (!is_gamebreak())
+		return FMRES_IGNORED;
 
 	set_entvar(id, var_maxspeed, 0.1)
 
@@ -162,6 +160,8 @@ public CBasePlayer_PostThink(const id)
 		client_cmd(id, "+showscores")
 		nextPlayerThink[id] = get_gametime() + 0.2
 	}
+
+	return FMRES_SUPERCEDE;
 }
 
 public RoundEnd (WinStatus:status, ScenarioEventEndRound:event, Float:tmDelay) {
@@ -226,10 +226,6 @@ public PugWarmup ()
 	autoready_check();
 
 	fnPregameHooks()
-
-	client_cmd(0, "-showscores")
-	DisableHookChain(g_hPlayerPostThink)
-
 	fnRemoveHudMoney()
 
 	exec_warmup();
