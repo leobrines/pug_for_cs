@@ -12,7 +12,7 @@ Tome lo mejor de varios plugins para hacerlo un poco mas automatico. Por ejemplo
 - Empate disponible y configurable
 - Mantiene puntuaciones al cambio de bando
 - Los vivos pueden leer a los muertos
-- Estadisticas con (CSstatsX SQL)[https://github.com/serfreeman1337/csstatsx-sql]
+- Estadisticas con [CSstatsX SQL](https://github.com/serfreeman1337/csstatsx-sql)
 
 ## Requisitos
 
