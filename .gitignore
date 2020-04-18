@@ -1,33 +1,9 @@
-scripting/include/*.inc
-scripting/*.*
-scripting/testsuite/
-cstrike/
-
-.vscode/
+*
 
 !competitive/*.inc
+!pug/*.rc
 !competitive.sma
 !competitive.txt
 !competitive.cfg
-!cash-sprites.zip
-
-amxxpc*
-
-*.txt
-*.cfg
-*.amxx
-*.so
-*.dll
-*.mmdb
-*.ini
-*.log
-*.swp
-*.swo
-*.zip
-*.amxx	
-*.txt	
-*.tpl	
-*.sma	
-*.sh
-*.zip
+!plugins-competitive.ini
 
