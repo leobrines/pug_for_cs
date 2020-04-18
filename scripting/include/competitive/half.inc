@@ -11,6 +11,7 @@ stock firsthalf () {
 
 	halfstart();
 	exec_pugmode();
+	enable_stats();
 }
 
 static secondhalf () {
@@ -52,6 +53,7 @@ stock game_finish (WinStatus:status) {
 	set_task(float(get_endtime()), "PugWarmup", _, _, _, "a", 1); 
 
 	exec_finished();
+	disable_stats();
 
 	EnableHookChain(g_hPlayerPostThink)
 	// fnUpdateLastMaps()
@@ -163,3 +165,4 @@ stock bool:is_restarting () {
 
 	return false;
 }
+

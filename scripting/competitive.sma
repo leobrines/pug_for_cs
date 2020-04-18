@@ -24,6 +24,7 @@ public plugin_init()
 	votepause_init();
 	mute_init();
 	afkicker_start();
+	stats_init();
 
 	cmd_init();
 	event_init();

@@ -8,6 +8,7 @@
 #include <amxmisc>
 #include <fakemeta>
 
+// Globals
 #include <competitive/compatibility>
 #include <competitive/globals>
 #include <competitive/colorchat>
@@ -24,6 +25,7 @@
 #include <competitive/autoready>
 #include <competitive/autodmg>
 #include <competitive/afkicker>
+#include <competitive/stats>
 
 // Core
 #include <competitive/pugmenu>
