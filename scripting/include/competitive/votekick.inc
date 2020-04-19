@@ -7,7 +7,7 @@
 #define TASK_HUD_VOTEKICK 7001
 #define MIN_VOTES 4
 
-new const MAX_VOTEKICKS = 3;
+new const MAX_VOTEKICKS = 2;
 
 static target[TeamName], target_name[TeamName][32];
 static votekick_limiter[33];
