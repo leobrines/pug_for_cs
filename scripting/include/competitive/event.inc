@@ -7,6 +7,7 @@
 #define HUD_HIDE_TIMER (1<<4)
 #define HUD_HIDE_MONEY (1<<5)
 
+static Float:nextPlayerThink[MAX_PLAYERS+1]
 static bool:restarting;
 
 stock event_init () {
@@ -17,6 +18,7 @@ stock event_init () {
 
 	register_forward(FM_SetModel, "event_drop_item") 
 	register_forward(FM_GetGameDescription, "event_game_description");
+	register_forward(FM_PlayerPostThink, "event_post_think");
 
 	register_event("Money", "event_money", "b")
 	register_event("Damage", "event_damage", "b", "2!0", "3=0", "4!0")
@@ -219,6 +221,23 @@ public event_freezetime_end() {
 	votepause_check(true);
 	dmg_reset();
 	set_task(0.8, "afkicker_newround_task");
+}
+
+// To show score when is gamebreak
+public event_post_think(const id) {
+	if (!is_gamebreak())
+		return FMRES_IGNORED;
+
+	set_entvar(id, var_maxspeed, 0.1)
+
+	// We wait a time to dont overflow client_cmd and lag player
+	if(nextPlayerThink[id] <= get_gametime())
+	{
+		client_cmd(id, "+showscores")
+		nextPlayerThink[id] = get_gametime() + 0.2
+	}
+
+	return FMRES_SUPERCEDE;
 }
 
 stock get_loguser_index() {

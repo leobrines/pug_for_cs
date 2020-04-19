@@ -33,8 +33,6 @@ public plugin_init()
 	register_clcmd("say", "fnHookSay")
 	register_clcmd("say_team", "fnHookSayTeam")
 
-	register_forward(FM_PlayerPostThink,"PostThink");
-
 	set_task(5.0, "PugWarmup", _, _, _, "a", 1)
 	set_task(3.0, "fnPostConfig", _, _, _, "a", 1)
 }
@@ -94,27 +92,6 @@ public client_disconnect (id) {
 		else
 			game_finish(WINSTATUS_DRAW)
 	}
-}
-
-// --------------------- HookChains ---------------------
-
-new Float:nextPlayerThink[MAX_PLAYERS+1]
-
-public PostThink(const id)
-{
-	if (!is_gamebreak())
-		return FMRES_IGNORED;
-
-	set_entvar(id, var_maxspeed, 0.1)
-
-	// We wait a time to dont overflow client_cmd and lag player
-	if(nextPlayerThink[id] <= get_gametime())
-	{
-		client_cmd(id, "+showscores")
-		nextPlayerThink[id] = get_gametime() + 0.2
-	}
-
-	return FMRES_SUPERCEDE;
 }
 
 // --------------------- Partes del PUG ---------------------
