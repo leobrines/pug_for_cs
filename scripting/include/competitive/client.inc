@@ -29,17 +29,7 @@ stock clients_print_money () {
 stock is_player_id (id)
 	return 1 <= id <= MAX_PLAYERS+1;
 
-stock check_team (id, selected) {
-	static TeamName:team;
-
-	switch (selected) {
-		case 1: team = TEAM_TERRORIST;
-		case 2: team = TEAM_CT;
-		case 6: team = TEAM_SPECTATOR;
-		case 5: team = TEAM_UNASSIGNED;
-		default: return PLUGIN_CONTINUE;
-	}
-
+stock check_team (id, TeamName:team) {
 	if (valid_jointeam(id, team))
 		return PLUGIN_CONTINUE;
 

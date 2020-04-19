@@ -1,7 +1,7 @@
 #include <competitive/index>
 
 #define PLUGIN "Competitive"
-#define VERSION "0.11.3"
+#define VERSION "0.11.4"
 #define AUTHOR "Leopoldo Brines"
 
 public plugin_init()
@@ -25,6 +25,7 @@ public plugin_init()
 	mute_init();
 	afkicker_start();
 	stats_init();
+	chooseteam_init();
 
 	cmd_init();
 	event_init();
