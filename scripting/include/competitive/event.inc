@@ -14,8 +14,8 @@ stock event_init () {
 	register_message(get_user_msgid("ScoreInfo"), "event_player_score");
 
 	RegisterHookChain(RG_HandleMenu_ChooseTeam, "event_choose_team");
-	RegisterHookChain(RG_CWeaponBox_SetModel, "event_drop_item");
 
+	register_forward(FM_SetModel, "event_drop_item") 
 	register_forward(FM_GetGameDescription, "event_game_description");
 
 	register_event("Money", "event_money", "b")
@@ -72,13 +72,18 @@ public event_joined_team () {
         autoready_check();
 }
 
-public event_drop_item (ent, modelname[]) {
+public event_drop_item(entity, const model[]) {
 	if (game_is_live())
-		return HC_CONTINUE;
+		return FMRES_IGNORED 
 
-	set_entvar(ent, var_flags, FL_KILLME); 
+	static class[10]
+	pev(entity, pev_classname, class, sizeof class - 1)
 
-	return HC_BREAK;
+	if (equal(class, "weaponbox")) {
+		set_pev(entity, pev_nextthink, get_gametime () + 0.5)
+	}
+
+	return FMRES_HANDLED
 }
 
 public event_game_description() {
