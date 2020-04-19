@@ -180,9 +180,10 @@ public event_round_win() {
 	new status[32];
 	read_data(2, status, charsmax(status));
 
-	if (containi(status,"MRAD_terwin"))
+	if (equal(status, "!MRAD_terwin"))
 		teamtt_add_score();
-	else
+
+	else if (equal(status, "!MRAD_ctwin"))
 		teamct_add_score();
 }
 
