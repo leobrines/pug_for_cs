@@ -48,6 +48,31 @@ stock menu_create_tplayers (id, handler[], bool:showself=false) {
 	return menu;
 }
 
+// Menu for player team and spectators 
+stock menu_create_tsplayers (id, handler[], bool:showself=false) {
+	new players[MAX_PLAYERS], num, TeamName:team;
+	new playersf[MAX_PLAYERS], pindex;
+
+	get_players(players, num, "ce");
+
+	team = client_get_team(id);
+
+	for (new i = 0; i < num; i++) {
+		new p = players[i]
+		new TeamName:pteam = client_get_team(id);
+
+		if (team == pteam || pteam == TEAM_SPECTATOR) {
+			playersf[pindex] = p
+			pindex++
+		}
+	}
+
+	new menu = menu_create_ptitle(handler);
+	menu_addplayers(menu, players, num, showself ? id : 0);
+
+	return menu;
+}
+
 stock menu_create_ptitle (handler[]) {
 	new title[32];
 	format(title, charsmax(title), "%L", LANG_SERVER, "PUG_MENU_SELECT")

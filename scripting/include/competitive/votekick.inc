@@ -5,6 +5,7 @@
 #define _votekick_included
 
 #define TASK_HUD_VOTEKICK 7001
+#define MIN_VOTES 4
 
 new const MAX_VOTEKICKS = 3;
 
@@ -26,6 +27,31 @@ stock votekick_init () {
 
 stock is_votekick_enable ()
 	return get_pcvar_num(vote_enable) ? true : false;
+
+stock votekick_select_player_menu (id) {
+	if (!is_votekick_enable()) {
+		chat_print(id, "%L", LANG_SERVER, "PUG_VOTEKICK_DISABLED");
+		return;
+	}
+
+	new menu = menu_create_tsplayers(id, "votekick_select_player_handler");
+	menu_display(id, menu);
+}
+
+public votekick_select_player_handler (id, menu, item) {
+	if (item == MENU_EXIT)
+		return PLUGIN_HANDLED;
+
+	new authid[32];
+	menu_iteminfo(menu, item, authid, charsmax(authid));
+
+	new target = find_player("c", authid);
+
+	if (target)
+		votekick_start(id, target);
+		
+	return PLUGIN_HANDLED;
+}
 
 stock votekick_menucreate (name[]) {
 	static title[100];
@@ -124,7 +150,7 @@ stock votekick_finish (TeamName:team, menu) {
 	menu_destroy(menu);
 	menu_cancel_team(team);
 
-	if (votes[team][0] < teammates_count[team] - 1 || !votes[team][0]) {
+	if (votes[team][0] < MIN_VOTES) {
 		team_print(team, "%L", LANG_SERVER, "PUG_VOTING_INSUFFICIENT");
 		return;
 	}

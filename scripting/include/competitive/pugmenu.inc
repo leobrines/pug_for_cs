@@ -34,36 +34,14 @@ public pugmenu_handler (id, menu, item) {
 			if (player_can_vote(id))
 				votepause_start(id);
 		case 1:
-			if (!is_votekick_enable())
-				chat_print(id, "%L", LANG_SERVER, "PUG_VOTEKICK_DISABLED");
-			else if (player_can_vote(id))
-				pugmenu_votekick(id);
+			if (player_can_vote(id))
+				votekick_select_player_menu(id);
 		case 2:
 			pugmenu_mute(id);
 		case 3:
 			pugmenu_unmute(id);
 	}
 
-	return PLUGIN_HANDLED;
-}
-
-stock pugmenu_votekick (id) {
-	new menu = menu_create_tplayers(id, "pugmenu_hvotekick");
-	menu_display(id, menu);
-}
-
-public pugmenu_hvotekick (id, menu, item) {
-	if (item == MENU_EXIT)
-		return PLUGIN_HANDLED;
-
-	new authid[32];
-	menu_iteminfo(menu, item, authid, charsmax(authid));
-
-	new target = find_player("c", authid);
-
-	if (target)
-		votekick_start(id, target);
-		
 	return PLUGIN_HANDLED;
 }
 
