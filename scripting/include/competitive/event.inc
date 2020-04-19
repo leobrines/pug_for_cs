@@ -217,7 +217,7 @@ public event_post_think(const id) {
 	if (!is_gamebreak())
 		return FMRES_IGNORED;
 
-	set_entvar(id, var_maxspeed, 0.1)
+	set_pev(id, pev_maxspeed, 0.1)
 
 	// We wait a time to dont overflow client_cmd and lag player
 	if(nextPlayerThink[id] <= get_gametime())

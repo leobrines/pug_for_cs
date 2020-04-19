@@ -349,42 +349,25 @@ public fnTeamsRandomize()
 	new playerCount, i, player
 	get_players(Players, playerCount, "ch")
 	
-	new type = 0;
 	for (i=0; i<playerCount; i++)
 	{
 		player = Players[i]
 		
 		switch ( client_get_team(player) )
 		{
-			case 1: 
+			case TEAM_TERRORIST, TEAM_CT: 
 			{
-				if (type == 0)
-				{
-					type = random_num(1, 2)
-					rg_set_user_team(player, _:type)
-					rg_join_team(player, TeamName:type)
+				new TeamName:random_team = TeamName:random_num(1, 2)
+
+				if (team_is_full(random_team, false)) {
+					if (random_team == TEAM_TERRORIST)
+						client_set_team(player, TEAM_TERRORIST)
+					else
+						client_set_team(player, TEAM_CT)
+				}else {
+					client_set_team(player, random_team)
 				}
-				else
-				{
-					rg_set_user_team(player, (type == 1) ? 2 : 1)
-					rg_join_team(player, (type == 1) ? (TeamName:2) : (TeamName:1) )
-					type = 0
-				}
-			}
-			case 2:
-			{
-				if (type == 0)
-				{
-					type = random_num(1, 2)
-					rg_set_user_team(player, _:type)
-					rg_join_team(player, TeamName:type)
-				}
-				else
-				{
-					rg_set_user_team(player, (type == 1) ? 2 : 1)
-					rg_join_team(player, (type == 1) ? (TeamName:2) : (TeamName:1) )
-					type = 0
-				}
+				
 			}
 		}
 	}

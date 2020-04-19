@@ -29,8 +29,6 @@ public chooseteam_select_vgui (id) {
 	new const selected = str_to_num(param);
 	new TeamName:team;
 
-	client_print(id, print_chat, "selected1: %d", selected)
-
 	switch (selected) {
 		case 1:
 			team = TEAM_TERRORIST;
@@ -47,8 +45,6 @@ public chooseteam_select_vgui (id) {
 
 public chooseteam_select_showmenu (id, selected) {
 	new TeamName:team;
-
-	client_print(id, print_chat, "selected2: %d", selected)
 
 	switch (selected) {
 		case 0:
