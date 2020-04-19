@@ -1,7 +1,8 @@
 *
 
-!competitive/*.inc
-!pug/*.rc
+!include/competitive/*
+!configs/pug/*
+
 !competitive.sma
 !competitive.txt
 !competitive.cfg
