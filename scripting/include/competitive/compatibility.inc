@@ -61,7 +61,7 @@
 		cs_set_user_team(id, CsTeams:team);
 
 	stock client_give_money (id, amount)
-		cs_set_user_money(id, client_get_money(id) + amount)
+		cs_set_user_money(id, amount)
 
 	stock client_get_money (id)
 		return cs_get_user_money(id)
