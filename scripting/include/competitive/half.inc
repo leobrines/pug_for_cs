@@ -1,12 +1,10 @@
 static maxrounds;
 static bool:firstround;
-static bool:restarting;
 static bool:gamebreak;
 
 stock firsthalf () {
 	g_iStage = STAGE_FIRSTHALF
 	autoready_hide();
-	maxrounds = get_maxrounds();
 
 	chat_print(0, "%L", LANG_SERVER, "PUG_STARTING_FIRSTHALF")
 
@@ -75,7 +73,6 @@ static halfstart (bool:remove_break=false) {
 	fnPugHooks();
 
 	firstround = true;
-	restarting = true;
 
 	if (remove_break) {
 		gamebreak = false
@@ -133,6 +130,7 @@ static game_try_end () {
 
 stock check_halfend () {
 	firstround = false;
+	maxrounds = get_maxrounds();
 
 	switch (g_iStage) {
 		case STAGE_FIRSTHALF, STAGE_FIRSTOT: {
@@ -162,13 +160,4 @@ static is_half_end () {
 
 stock bool:is_firstround ()
 	return firstround;
-
-stock bool:is_restarting () {
-	if (restarting) {
-		restarting = false;
-		return true;
-	}
-
-	return false;
-}
 

@@ -1,7 +1,7 @@
 #include <competitive/index>
 
 #define PLUGIN "Competitive"
-#define VERSION "0.10.7"
+#define VERSION "0.11.0"
 #define AUTHOR "Leopoldo Brines"
 
 public plugin_init()
@@ -36,7 +36,6 @@ public plugin_init()
 	// Hooks
 	g_hRoundFreezeEnd = RegisterHookChain(RG_CSGameRules_OnRoundFreezeEnd, "CSGameRules_OnRoundFreezeEnd")
 	g_hHasRestrictItem = RegisterHookChain(RG_CBasePlayer_HasRestrictItem, "CBasePlayer_HasRestrictItem")
-	g_hRoundEnd = RegisterHookChain(RG_RoundEnd, "RoundEnd")
 
 	register_forward(FM_PlayerPostThink,"PostThink");
 
@@ -162,52 +161,6 @@ public PostThink(const id)
 	}
 
 	return FMRES_SUPERCEDE;
-}
-
-public RoundEnd (WinStatus:status, ScenarioEventEndRound:event, Float:tmDelay) {
-	if (!game_is_live())
-		return HC_CONTINUE;
-
-	switch (event) {
-		case ROUND_GAME_RESTART: {
-			if (!is_firstround())
-				round_restarted();
-
-			return HC_CONTINUE;
-		}
-		case ROUND_GAME_COMMENCE: {
-			return HC_CONTINUE;
-		}
-	}
-
-	switch (status) {
-		case WINSTATUS_CTS:
-			teamct_add_score();
-		case WINSTATUS_TERRORISTS, WINSTATUS_DRAW:
-			teamtt_add_score();
-		default:
-			return HC_CONTINUE;
-	}
-
-	g_iRound++;
-
-	if (get_cvar_num("pug_dmgmode")) {
-		new iPlayers[MAX_PLAYERS], iNum;
-		get_players(iPlayers, iNum, "ach");
-		
-		for (new i;i < iNum;i++)  {
-			new args[2];
-			args[0] = iPlayers[i];
-			set_task(1.0, "printdmg_task", _, args, charsmax(args), "a", 1);
-		}
-	}
-
-	check_halfend();
-
-	if (game_is_live())
-		votepause_check(false);
-
-	return HC_CONTINUE;
 }
 
 // --------------------- Partes del PUG ---------------------

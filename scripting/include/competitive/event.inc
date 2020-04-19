@@ -12,6 +12,8 @@ new HookChain:g_hRoundEnd;
 #define HUD_HIDE_TIMER (1<<4)
 #define HUD_HIDE_MONEY (1<<5)
 
+static bool:restarting;
+
 stock event_init () {
 	register_message(get_user_msgid("TeamScore"), "event_team_score");
 	register_message(get_user_msgid("ScoreInfo"), "event_player_score");
@@ -27,6 +29,9 @@ stock event_init () {
 
 	register_logevent("event_joined_team", 3, "1=joined team");
 	register_logevent("event_new_round", 3, "2=Spawned_With_The_Bomb");
+	register_logevent("event_round_end", 2, "1=Round_End") 
+	register_event("SendAudio","event_round_win","a","2=%!MRAD_terwin","2=%!MRAD_ctwin","2=%!MRAD_rounddraw")
+	register_event("TextMsg","event_round_restart","a","2=#Game_will_restart_in")
 }
 
 public event_player_score (m, s, id) {
@@ -91,6 +96,8 @@ public event_game_description() {
 }
 
 public event_new_round () {
+	restarting = false;
+
 	if (!game_is_started()) {
 		new id = get_loguser_index()
 		client_delete_c4(id);
@@ -159,6 +166,49 @@ public event_death_player () {
 	set_task(1.0, "printdmg_task", _, args, charsmax(args), "a", 1);
 }
 
+public event_round_restart() {
+	restarting = true;
+
+	if (!game_is_live())
+		return;
+
+	if (!is_firstround())
+		round_restarted();
+}
+
+public event_round_win() {
+	if (!game_is_live())
+		return;
+
+	new status[32];
+	read_data(2, status, charsmax(status));
+
+	if (containi(status,"MRAD_terwin"))
+		teamtt_add_score();
+	else
+		teamct_add_score();
+}
+
+public event_round_end() {
+	g_iRound++;
+
+	if (get_cvar_num("pug_dmgmode")) {
+		new iPlayers[MAX_PLAYERS], iNum;
+		get_players(iPlayers, iNum, "ach");
+		
+		for (new i;i < iNum;i++)  {
+			new args[2];
+			args[0] = iPlayers[i];
+			set_task(1.0, "printdmg_task", _, args, charsmax(args), "a", 1);
+		}
+	}
+
+	check_halfend();
+
+	if (game_is_live())
+		votepause_check(false);
+}
+
 stock get_loguser_index() {
 	static loguser[80], name[32];
 
@@ -166,4 +216,8 @@ stock get_loguser_index() {
 	parse_loguser(loguser, name, 31);
 
 	return get_user_index(name);
+}
+
+stock bool:is_restarting () {
+	return restarting
 }
