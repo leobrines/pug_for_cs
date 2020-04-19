@@ -27,6 +27,7 @@
 #include <competitive/afkicker>
 #include <competitive/stats>
 #include <competitive/weaprest>
+#include <competitive/chooseteam>
 
 // Core
 #include <competitive/pugmenu>

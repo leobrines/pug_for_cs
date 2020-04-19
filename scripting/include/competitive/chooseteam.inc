@@ -23,52 +23,44 @@ public chooseteam_vgui (id) {
 }
 
 public chooseteam_select_vgui (id) {
-	if (!valid_player(id))
-		return PLUGIN_HANDLED;
-
 	new param[2];
 	read_argv(1, param, charsmax(param)); 
 
 	new const selected = str_to_num(param);
+	new TeamName:team;
+
+	client_print(id, print_chat, "selected1: %d", selected)
 
 	switch (selected) {
 		case 1:
-			client_set_team(id, TEAM_TERRORIST);
+			team = TEAM_TERRORIST;
 		case 2:
-			client_set_team(id, TEAM_CT);
+			team = TEAM_CT;
 		case 5:
-			client_set_team(id, TEAM_UNASSIGNED);
+			team = TEAM_UNASSIGNED;
 		case 6:
-			client_set_team(id, TEAM_SPECTATOR);
+			team = TEAM_SPECTATOR;
 	}
 
-	return PLUGIN_HANDLED;
+	return check_team(id, team)
 }
 
 public chooseteam_select_showmenu (id, selected) {
-	if (!valid_player(id))
-		return PLUGIN_HANDLED;
+	new TeamName:team;
+
+	client_print(id, print_chat, "selected2: %d", selected)
 
 	switch (selected) {
 		case 0:
-			client_set_team(id, TEAM_TERRORIST);
+			team = TEAM_TERRORIST;
 		case 1:
-			client_set_team(id, TEAM_CT);
+			team = TEAM_CT;
 		case 4:
-			client_set_team(id, TEAM_UNASSIGNED);
+			team = TEAM_UNASSIGNED;
 		case 5:
-			client_set_team(id, TEAM_SPECTATOR);
+			team = TEAM_SPECTATOR;
 	}
-
-	return PLUGIN_HANDLED;
-}
-
-static bool:valid_player (id) {
-	if (game_is_started() && client_is_player(id)) {
-		chat_print(id, "%L", LANG_SERVER, "PUG_TEAMS_NOT_CHANGE");
-		return false;
-	}
-
-	return true;
+	
+	return check_team(id, team)
 }
 
