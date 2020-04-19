@@ -1,7 +1,7 @@
 #include <competitive/index>
 
 #define PLUGIN "Competitive"
-#define VERSION "0.11.0"
+#define VERSION "0.11.2"
 #define AUTHOR "Leopoldo Brines"
 
 public plugin_init()
@@ -33,10 +33,6 @@ public plugin_init()
 	register_clcmd("say", "fnHookSay")
 	register_clcmd("say_team", "fnHookSayTeam")
 
-	// Hooks
-	g_hRoundFreezeEnd = RegisterHookChain(RG_CSGameRules_OnRoundFreezeEnd, "CSGameRules_OnRoundFreezeEnd")
-	g_hHasRestrictItem = RegisterHookChain(RG_CBasePlayer_HasRestrictItem, "CBasePlayer_HasRestrictItem")
-
 	register_forward(FM_PlayerPostThink,"PostThink");
 
 	set_task(5.0, "PugWarmup", _, _, _, "a", 1)
@@ -61,12 +57,7 @@ public plugin_unpause()
 public plugin_pause()
 {
 	remove_task();
-
 	autoready_hide();
-
-	DisableHookChain(g_hRoundFreezeEnd)
-	DisableHookChain(g_hHasRestrictItem)
-	DisableHookChain(g_hRoundEnd)
 }
 
 public client_connect (id) {
@@ -107,43 +98,6 @@ public client_disconnect (id) {
 
 // --------------------- HookChains ---------------------
 
-public CSGameRules_OnRoundFreezeEnd()
-{
-	votepause_check(true);
-	dmg_reset();
-	set_task(0.8, "afkicker_newround_task");
-
-	return HC_CONTINUE;
-}
-
-public CBasePlayer_HasRestrictItem(const id, const ItemID:item, const ItemRestType:type)
-{
-	if (item == ITEM_SHIELDGUN && type == ITEM_TYPE_BUYING && is_shield_blocked())
-	{
-		chat_print(id, "%L", LANG_SERVER, "PUG_WEAPON_NOTALLOWED")
-		SetHookChainReturn(ATYPE_BOOL, true);
-		return HC_SUPERCEDE;
-	}
-	else if (item == ITEM_NVG && type == ITEM_TYPE_BUYING  && is_nvg_blocked())
-	{
-		chat_print(id, "%L", LANG_SERVER, "PUG_WEAPON_NOTALLOWED")
-		SetHookChainReturn(ATYPE_BOOL, true);
-		return HC_SUPERCEDE;
-	}
-	else if ((item == ITEM_FLASHBANG || item == ITEM_HEGRENADE || item == ITEM_SMOKEGRENADE) && !game_is_live() && are_grenades_blocked())
-	{	
-		SetHookChainReturn(ATYPE_BOOL, true);
-		return HC_SUPERCEDE;
-	}
-	else if (item == ITEM_DEFUSEKIT && !game_is_live())
-	{
-		SetHookChainReturn(ATYPE_BOOL, true);
-		return HC_SUPERCEDE;
-	}
-
-	return HC_CONTINUE;
-}
-
 new Float:nextPlayerThink[MAX_PLAYERS+1]
 
 public PostThink(const id)
@@ -178,7 +132,6 @@ public PugWarmup ()
 	clients_reset_scores();
 	autoready_check();
 
-	fnPregameHooks()
 	fnRemoveHudMoney()
 
 	exec_warmup();
@@ -717,16 +670,6 @@ public fnUpdateLastMaps()
 
 	set_lastmaps(g_sLastMaps);
 }	
-
-public fnPregameHooks()
-{
-	DisableHookChain(g_hRoundFreezeEnd)
-}
-
-public fnPugHooks()
-{
-	EnableHookChain(g_hRoundFreezeEnd)
-}
 
 public printdmg_task (args[])
 	print_dmgrdmg(args[0]);

@@ -26,6 +26,7 @@
 #include <competitive/autodmg>
 #include <competitive/afkicker>
 #include <competitive/stats>
+#include <competitive/weaprest>
 
 // Core
 #include <competitive/pugmenu>

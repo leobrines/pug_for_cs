@@ -4,11 +4,6 @@
 
 #define _event_included
 
-new HookChain:g_hPlayerPostThink;
-new HookChain:g_hRoundFreezeEnd;
-new HookChain:g_hHasRestrictItem;
-new HookChain:g_hRoundEnd;
-
 #define HUD_HIDE_TIMER (1<<4)
 #define HUD_HIDE_MONEY (1<<5)
 
@@ -26,12 +21,12 @@ stock event_init () {
 	register_event("Money", "event_money", "b")
 	register_event("Damage", "event_damage", "b", "2!0", "3=0", "4!0")
 	register_event("DeathMsg", "event_death_player", "a", "1!0", "2!0");
-
-	register_logevent("event_joined_team", 3, "1=joined team");
-	register_logevent("event_new_round", 3, "2=Spawned_With_The_Bomb");
-	register_logevent("event_round_end", 2, "1=Round_End") 
 	register_event("SendAudio","event_round_win","a","2=%!MRAD_terwin","2=%!MRAD_ctwin","2=%!MRAD_rounddraw")
 	register_event("TextMsg","event_round_restart","a","2=#Game_will_restart_in")
+	register_logevent("event_joined_team", 3, "1=joined team");
+	register_logevent("event_new_round", 3, "2=Spawned_With_The_Bomb");
+	register_logevent("event_freezetime_end", 2, "1=Round_Start") 
+	register_logevent("event_round_end", 2, "1=Round_End") 
 }
 
 public event_player_score (m, s, id) {
@@ -169,11 +164,17 @@ public event_death_player () {
 public event_round_restart() {
 	restarting = true;
 
-	if (!game_is_live())
+	if (!game_is_live()) {
+		restrict_weapons_pregame()
 		return;
+	}
 
-	if (!is_firstround())
-		round_restarted();
+	if (is_firstround()) {
+		restrict_weapons_live();
+		return;
+	}
+
+	round_restarted();
 }
 
 public event_round_win() {
@@ -207,6 +208,12 @@ public event_round_end() {
 
 	if (game_is_live())
 		votepause_check(false);
+}
+
+public event_freezetime_end() {
+	votepause_check(true);
+	dmg_reset();
+	set_task(0.8, "afkicker_newround_task");
 }
 
 stock get_loguser_index() {

@@ -54,7 +54,6 @@ stock game_finish (WinStatus:status) {
 	exec_finished();
 	disable_stats();
 
-	EnableHookChain(g_hPlayerPostThink)
 	// fnUpdateLastMaps()
 
 	switch (status) {
@@ -70,8 +69,6 @@ stock game_finish (WinStatus:status) {
 // Round end checks
 
 static halfstart (bool:remove_break=false) {
-	fnPugHooks();
-
 	firstround = true;
 
 	if (remove_break) {
@@ -87,8 +84,6 @@ bool:is_gamebreak() {
 
 static start_gamebreak () {
 	gamebreak = true
-
-	fnPregameHooks()
 
 	chat_print(0, "%L", LANG_SERVER, "PUG_GAME_INTERMISSION", get_halftime())
 
