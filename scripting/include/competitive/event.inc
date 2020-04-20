@@ -22,7 +22,7 @@ stock event_init () {
 	register_event("Damage", "event_damage", "b", "2!0", "3=0", "4!0")
 	register_event("DeathMsg", "event_death_player", "a", "1!0", "2!0");
 	register_event("SendAudio","event_round_win","a","2=%!MRAD_terwin","2=%!MRAD_ctwin","2=%!MRAD_rounddraw")
-	register_event("TextMsg","event_round_restart","a","2=#Game_will_restart_in")
+	register_event("TextMsg", "event_round_restart","a","2=#Game_will_restart_in")
 	register_logevent("event_joined_team", 3, "1=joined team");
 	register_logevent("event_new_round", 3, "2=Spawned_With_The_Bomb");
 	register_logevent("event_freezetime_end", 2, "1=Round_Start") 
@@ -177,13 +177,12 @@ public event_round_win() {
 	if (!game_is_live())
 		return;
 
-	new status[32];
-	read_data(2, status, charsmax(status));
+	new winner[32];
+	read_data(2, winner, charsmax(winner))
 
-	if (equal(status, "!MRAD_terwin"))
+	if (equali(winner, "%!MRAD_terwin"))
 		teamtt_add_score();
-
-	else if (equal(status, "!MRAD_ctwin"))
+	else 
 		teamct_add_score();
 }
 
