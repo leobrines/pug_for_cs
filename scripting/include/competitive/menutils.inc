@@ -59,7 +59,7 @@ stock menu_create_tsplayers (id, handler[], bool:showself=false) {
 
 	for (new i = 0; i < num; i++) {
 		new p = players[i]
-		new TeamName:pteam = client_get_team(id);
+		new TeamName:pteam = client_get_team(p);
 
 		if (team == pteam || pteam == TEAM_SPECTATOR) {
 			playersf[pindex] = p
