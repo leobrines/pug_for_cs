@@ -1,7 +1,7 @@
 #include <competitive/index>
 
 #define PLUGIN "Competitive"
-#define VERSION "0.11.9"
+#define VERSION "0.11.10"
 #define AUTHOR "Leopoldo Brines"
 
 public plugin_init()
@@ -580,24 +580,6 @@ public print_dmgrdmg(const id) {
 	dmgprint(id, (mode > 1));
 	rdmgprint(id);
 	console_print(id, "---------------------------------");
-}
-
-public fnShowScore()
-{
-	if (!game_is_live())
-		return;
-	
-	static ttscore, ctscore;
-
-	ctscore = teamct_get_score();
-	ttscore = teamtt_get_score();
-
-	if (teamct_is_winning())
-		chat_print(0, "%L", LANG_SERVER, "PUG_SCORE_WINNING", g_szTeams[TEAM_CT], ctscore, ttscore)
-	else if (teamtt_is_winning())
-		chat_print(0, "%L", LANG_SERVER, "PUG_SCORE_WINNING", g_szTeams[TEAM_TERRORIST], ttscore, ctscore)
-	else
-		chat_print(0, "%L", LANG_SERVER, "PUG_SCORE_TIED", ctscore, ttscore)
 }
 
 public fnPostConfig()

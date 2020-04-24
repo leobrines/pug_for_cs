@@ -150,3 +150,17 @@ static teams_switch_score () {
 	winsCT = winsTT;
 	winsTT = tmp;
 }
+
+public print_team_scores() {
+	static ttscore, ctscore;
+
+	ctscore = teamct_get_score();
+	ttscore = teamtt_get_score();
+
+	if (teamct_is_winning())
+		chat_print(0, "%L", LANG_SERVER, "PUG_SCORE_WINNING", g_szTeams[TEAM_CT], ctscore, ttscore)
+	else if (teamtt_is_winning())
+		chat_print(0, "%L", LANG_SERVER, "PUG_SCORE_WINNING", g_szTeams[TEAM_TERRORIST], ttscore, ctscore)
+	else
+		chat_print(0, "%L", LANG_SERVER, "PUG_SCORE_TIED", ctscore, ttscore)
+}

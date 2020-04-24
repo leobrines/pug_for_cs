@@ -117,7 +117,7 @@ static game_try_end () {
 		return;
 	}
 
-	fnShowScore();
+	print_team_scores();
 	
 	if (is_score_tie() && !is_tie_allowed() && get_overtime_rounds())
 		start_gamebreak();
@@ -129,7 +129,7 @@ stock check_halfend () {
 
 	switch (g_iStage) {
 		case STAGE_FIRSTHALF, STAGE_FIRSTOT: {
-			fnShowScore();
+			print_team_scores();
 
 			if (is_half_end())
 				start_gamebreak();

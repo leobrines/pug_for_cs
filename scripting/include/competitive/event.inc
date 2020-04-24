@@ -21,8 +21,9 @@ stock event_init () {
 	register_event("Money", "event_money", "b")
 	register_event("Damage", "event_damage", "b", "2!0", "3=0", "4!0")
 	register_event("DeathMsg", "event_death_player", "a", "1!0", "2!0");
-	register_event("SendAudio","event_round_win","a","2=%!MRAD_terwin","2=%!MRAD_ctwin","2=%!MRAD_rounddraw")
 	register_event("TextMsg", "event_round_restart","a","2=#Game_will_restart_in")
+	register_logevent("event_ct_win", 6, "3=CTs_Win", "3=All_Hostages_Rescued")
+	register_logevent("event_tt_win" , 6, "3=Terrorists_Win", "3=Target_Bombed")
 	register_logevent("event_joined_team", 3, "1=joined team");
 	register_logevent("event_new_round", 3, "2=Spawned_With_The_Bomb");
 	register_logevent("event_freezetime_end", 2, "1=Round_Start") 
@@ -173,17 +174,18 @@ public event_round_restart() {
 	round_restarted();
 }
 
-public event_round_win() {
+public event_tt_win() {
 	if (!game_is_live())
 		return;
 
-	new winner[32];
-	read_data(2, winner, charsmax(winner))
+	teamtt_add_score();
+}
 
-	if (equali(winner, "%!MRAD_terwin"))
-		teamtt_add_score();
-	else 
-		teamct_add_score();
+public event_ct_win() {
+	if (!game_is_live())
+		return;
+
+	teamct_add_score();
 }
 
 public event_round_end() {
