@@ -1,10 +1,11 @@
-*
+/*
+!/scripting
+/scripting/*
+!/scripting/include
+/scripting/include/*
+!/scripting/include/competitive
 
-!include/competitive/*
-!configs/pug/*
-
-!competitive.sma
-!competitive.txt
-!competitive.cfg
-!plugins-competitive.ini
+!/config
+/config/*
+!/config/pug
 
