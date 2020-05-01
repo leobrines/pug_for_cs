@@ -189,6 +189,9 @@ public event_ct_win() {
 }
 
 public event_round_end() {
+	if (!game_is_live())
+		return;
+
 	g_iRound++;
 
 	if (get_cvar_num("pug_dmgmode")) {
@@ -203,9 +206,7 @@ public event_round_end() {
 	}
 
 	check_halfend();
-
-	if (game_is_live())
-		votepause_check(false);
+	votepause_check(false);
 }
 
 public event_freezetime_end() {
