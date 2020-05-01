@@ -61,18 +61,16 @@
 		cs_set_user_team(id, CsTeams:team);
 
 	stock client_give_money (id, amount) {
-		if (is_user_connected(id))
+		if (is_user_alive(id))
 			cs_set_user_money(id, amount)
 	}
 
 	stock client_get_money (id) {
-		if (is_user_connected(id))
-			return cs_get_user_money(id)
-		return 0
+		return cs_get_user_money(id)
 	}
 
 	stock client_set_money (id, amount) {
-		if (is_user_connected(id))
+		if (is_user_alive(id))
 			cs_set_user_money(id, amount)
 	}
 
