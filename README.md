@@ -55,8 +55,8 @@ Tome lo mejor de varios plugins para hacerlo un poco mas automatico. Por ejemplo
 [Sugisaki - Pugmod](https://amxmodx-es.com/Thread-Competitive-Face-it-Pick-Up-Game-PUG)<br>
 [PredatorFlys - Pugmod](https://amxmodx-es.com/Thread-Auto-Mix-YAP-Capitan-resubido)<br>
 [SmileYzn -Pugmod](https://github.com/SmileYzn/CS_PugMod)<br>
-[GordonFreeman - CsstatsX](https://forums.alliedmods.net/showthread.php?t=279483)
-[CheesyPeteza - Afkicker](https://forums.alliedmods.net/showthread.php?t=3009)
-[OsweRRR - Votekick](https://amxmodx-es.com/Thread-Votekick-Player)
-[S1lentq - RegameDLL](https://github.com/s1lentq/ReGameDLL_CS)
+[GordonFreeman - CsstatsX](https://forums.alliedmods.net/showthread.php?t=279483)<br>
+[CheesyPeteza - Afkicker](https://forums.alliedmods.net/showthread.php?t=3009)<br>
+[OsweRRR - Votekick](https://amxmodx-es.com/Thread-Votekick-Player)<br>
+[S1lentq - RegameDLL](https://github.com/s1lentq/ReGameDLL_CS)<br>
 
