@@ -150,7 +150,10 @@ stock votekick_finish (TeamName:team, menu) {
 	menu_destroy(menu);
 	menu_cancel_team(team);
 
-	if (votes[team][0] < MIN_VOTES) {
+	new minvotes = votekick_minvotes(team);
+	new votes_yes = votes[team][0]
+
+	if (votes_yes < minvotes) {
 		team_print(team, "%L", LANG_SERVER, "PUG_VOTING_INSUFFICIENT");
 		return;
 	}
@@ -159,6 +162,19 @@ stock votekick_finish (TeamName:team, menu) {
 	
 	chat_print(0, "%L", LANG_SERVER, "PUG_VOTEKICK_KICKED", target_name[team]);
 }
+
+stock votekick_minvotes(TeamName:team) {
+	new target_user = target[team]
+	new TeamName:target_team = client_get_team(target_user)
+
+	if (target_team == team) {
+		return MIN_VOTES;
+	}
+
+	// here, target is spectator
+	return teammates_count[team]-1;
+}
+
 
 stock user_iskicked (id) {
 	static steamid[32];
@@ -174,17 +190,22 @@ stock user_iskicked (id) {
 }
 
 static user_kick (id) {
+	// Prevent spectators from being banned from the game
+	if (client_is_player(id))
+		votekick_banuser(id)
+
+	server_cmd("kick #%i ^"Votekick^"", get_user_userid(id));
+}
+
+static votekick_banuser(id) {
 	static steamid[32];
 	get_user_authid(id, steamid, sizeof(steamid) -1);
 
 	for (new i; i<sizeof players_kicked; i++) {
-		if (!equali(players_kicked[i], ""))
-			continue;
-
-		server_cmd("kick #%i ^"Votekick^"", get_user_userid(id));
-
-		format(players_kicked[i], charsmax(players_kicked[]), "%s", steamid);
-		break;
+		if (equali(players_kicked[i], "")) {
+			format(players_kicked[i], charsmax(players_kicked[]), "%s", steamid);
+			break;
+		}
 	}
 }
 
