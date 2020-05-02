@@ -22,7 +22,7 @@ stock event_init () {
 	register_event("Damage", "event_damage", "b", "2!0", "3=0", "4!0")
 	register_event("DeathMsg", "event_death_player", "a", "1!0", "2!0");
 	register_event("TextMsg", "event_round_restart","a","2=#Game_will_restart_in")
-	register_logevent("event_ct_win", 6, "3=CTs_Win", "3=All_Hostages_Rescued")
+	register_logevent("event_ct_win", 6, "3=CTs_Win", "3=Target_Saved", "3=Bomb_Defused", "3=All_Hostages_Rescued")
 	register_logevent("event_tt_win" , 6, "3=Terrorists_Win", "3=Target_Bombed")
 	register_logevent("event_joined_team", 3, "1=joined team");
 	register_logevent("event_new_round", 3, "2=Spawned_With_The_Bomb");
