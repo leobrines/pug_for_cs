@@ -53,7 +53,7 @@ stock menu_create_tsplayers (id, handler[], bool:showself=false) {
 	new players[MAX_PLAYERS], num, TeamName:team;
 	new playersf[MAX_PLAYERS], pindex;
 
-	get_players(players, num, "ce");
+	get_players(players, num, "ch");
 
 	team = client_get_team(id);
 
@@ -68,7 +68,7 @@ stock menu_create_tsplayers (id, handler[], bool:showself=false) {
 	}
 
 	new menu = menu_create_ptitle(handler);
-	menu_addplayers(menu, players, num, showself ? id : 0);
+	menu_addplayers(menu, playersf, num, showself ? id : 0);
 
 	return menu;
 }

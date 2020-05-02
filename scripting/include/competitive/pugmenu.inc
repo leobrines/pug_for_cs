@@ -17,10 +17,6 @@ stock bool:player_can_vote (id) {
 		chat_print(id, "%L", LANG_SERVER, "PUG_VOTING_SPEC");
 		return false;
 	}
-	if (!game_is_live()) {
-		chat_print(id, "%L", LANG_SERVER, "PUG_GAME_NOTSTARTED");
-		return false;
-	}
 
 	return true;
 }
@@ -31,8 +27,12 @@ public pugmenu_handler (id, menu, item) {
 
 	switch (item) {
 		case 0:
-			if (player_can_vote(id))
-				votepause_start(id);
+			if (player_can_vote(id)) {
+			       	if (game_is_live())
+					votepause_start(id);
+				else
+					chat_print(id, "%L", LANG_SERVER, "PUG_GAME_NOTSTARTED");
+			}
 		case 1:
 			if (player_can_vote(id))
 				votekick_select_player_menu(id);
