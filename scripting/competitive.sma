@@ -1,7 +1,7 @@
 #include <competitive/index>
 
 #define PLUGIN "Competitive"
-#define VERSION "0.11.11"
+#define VERSION "0.11.12"
 #define AUTHOR "Leopoldo Brines"
 
 public plugin_init()
@@ -65,11 +65,17 @@ public client_connect (id) {
 }
 
 public client_putinserver (id) {
+	client_purge_data(id)
+}
+
+public client_purge_data (id) {
 	client_reset_score(id);
+	client_mute_reset(id);
+	dmg_reset_user(id);
 }
 
 public client_disconnect (id) {
-	client_mute_reset(id);
+	client_purge_data(id)
 
 	if (!client_is_player(id))
 		return;
@@ -573,15 +579,6 @@ public fnSendMessage(id, color, msg[192])
 	client_print_color2(id, color, msg);
 }
 
-public print_dmgrdmg(const id) {
-	new const mode = get_cvar_num("pug_dmgmode");
-
-	console_print(id, "---------------------------------");
-	dmgprint(id, (mode > 1));
-	rdmgprint(id);
-	console_print(id, "---------------------------------");
-}
-
 public fnPostConfig()
 {
 	// Format some string
@@ -613,6 +610,3 @@ public fnUpdateLastMaps()
 
 	set_lastmaps(g_sLastMaps);
 }	
-
-public printdmg_task (args[])
-	print_dmgrdmg(args[0]);

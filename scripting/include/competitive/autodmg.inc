@@ -8,9 +8,13 @@ stock dmg_addattack (victim, attacker, damage) {
 
 stock dmg_reset () {
 	for (new i; i < sizeof(user_dmg); i++) {
-		arrayset(user_dmg[i], 0, sizeof(user_dmg))
-		arrayset(user_hits[i], 0, sizeof(user_hits))
+		dmg_reset_user(i)
 	}
+}
+
+stock dmg_reset_user (id) {
+	arrayset(user_dmg[id], 0, sizeof(user_dmg))
+	arrayset(user_hits[id], 0, sizeof(user_hits))
 }
 
 stock dmgprint (id, bool:inchat=false) {
@@ -55,4 +59,16 @@ stock rdmgprint (id) {
 	
 	if (!name[0])
 		console_print(id, "%L", LANG_SERVER, "PUG_RDMG_DIDNTHURT")
+}
+
+public printdmg_task (args[])
+	print_dmgrdmg(args[0]);
+
+public print_dmgrdmg(const id) {
+	new const mode = get_cvar_num("pug_dmgmode");
+
+	console_print(id, "---------------------------------");
+	dmgprint(id, (mode > 1));
+	rdmgprint(id);
+	console_print(id, "---------------------------------");
 }
