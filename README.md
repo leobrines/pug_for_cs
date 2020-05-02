@@ -7,7 +7,7 @@ Tome lo mejor de varios plugins para hacerlo un poco mas automatico. Por ejemplo
 - Menu general en la tecla N
 - Pausar el partido
 - Mutear y desmutear
-- Expulsar jugador de la partida
+- Expulsar jugador de la partida (incluso espectadores que esten AFK)
 - DMG automatico en consola
 - Empate disponible y configurable
 - Mantiene puntuaciones al cambio de bando
@@ -17,8 +17,6 @@ Tome lo mejor de varios plugins para hacerlo un poco mas automatico. Por ejemplo
 ## Requisitos
 
 - [Amxmodx 1.8.x](https://www.amxmodx.org/downloads.php)
-- [Regamedll 5.x](https://github.com/s1lentq/ReGameDLL_CS)
-- [Reapi 5.6.x](https://github.com/s1lentq/reapi)
 
 ## Comandos de chat
 
@@ -49,14 +47,16 @@ Tome lo mejor de varios plugins para hacerlo un poco mas automatico. Por ejemplo
 | pug_afktime          | 60         | Tiempo (seg) en que sera kickeado un jugador por afk |
 
 ## Cosas por hacer
-- Añadir ronda a cuchillo y configurar por cvar
+- Añadir ronda a cuchillo y el ganador escoja su propio bando
 - Que los espectadores entren automaticamente por orden de llegada
-- Bloquear modo espectador, solo para admins
-- Refactorizar todo el codigo por modulos (includes)
 
-## Agradecimientos | Autores de otros pugmod 
+## Agradecimientos | Autores de otros plugins
 
-[Sugisaki](https://amxmodx-es.com/Thread-Competitive-Face-it-Pick-Up-Game-PUG)<br>
-[PredatorFlys](https://amxmodx-es.com/Thread-Auto-Mix-YAP-Capitan-resubido)<br>
-[SmileYzn](https://github.com/SmileYzn/CS_PugMod)<br>
+[Sugisaki - Pugmod](https://amxmodx-es.com/Thread-Competitive-Face-it-Pick-Up-Game-PUG)<br>
+[PredatorFlys - Pugmod](https://amxmodx-es.com/Thread-Auto-Mix-YAP-Capitan-resubido)<br>
+[SmileYzn -Pugmod](https://github.com/SmileYzn/CS_PugMod)<br>
+[GordonFreeman - CsstatsX](https://forums.alliedmods.net/showthread.php?t=279483)
+[CheesyPeteza - Afkicker](https://forums.alliedmods.net/showthread.php?t=3009)
+[OsweRRR - Votekick](https://amxmodx-es.com/Thread-Votekick-Player)
+[S1lentq - RegameDLL](https://github.com/s1lentq/ReGameDLL_CS)
 
