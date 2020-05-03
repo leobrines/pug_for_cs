@@ -48,29 +48,35 @@ stock registerCommand (const szCommand[], const szFunction[], iFlags = 0, const 
 stock get_readyplayers () {
 	new count[2];
 
-	count[0] = get_teamplayers(TEAM_TERRORIST, false);
-	count[1] = get_teamplayers(TEAM_CT, false);
+	count[0] = get_teamplayers_count(TEAM_TERRORIST);
+	count[1] = get_teamplayers_count(TEAM_CT);
 
 	return count[0] + count[1];
 }
 
-stock get_teamplayers (TeamName:team, bool:bots=true)
+stock get_teamplayers_count (TeamName:team) {
+	new players[MAX_PLAYERS], count;
+	get_teamplayers(players, count, team);
+
+	return count
+}
+
+stock get_teamplayers(team_players[MAX_PLAYERS], &c, TeamName:team)
 {
 	new players[MAX_PLAYERS], count;
-	new tmp_team_name[10];
+	get_players(players, count, "ch");
 
-	switch (team) {
-		case TEAM_CT:
-			copy(tmp_team_name, charsmax(tmp_team_name), "CT");
-		case TEAM_TERRORIST:
-			copy(tmp_team_name, charsmax(tmp_team_name), "TERRORIST");
-		default:
-			copy(tmp_team_name, charsmax(tmp_team_name), "SPECTATOR");
+	c = 0;
+
+	for (new i=0; i < sizeof(players); i++) {
+		new id = players[i]
+		new TeamName:pteam = client_get_team(id)
+
+		if (team == pteam) {
+			team_players[c] = id
+			c++
+		}
 	}
-
-	get_players(players, count, bots ? "eh" : "ceh", tmp_team_name);
-
-	return count;
 }
 
 /* Next version
@@ -135,11 +141,11 @@ stock bool:game_is_live () {
 	return (STAGE_FIRSTHALF <= g_iStage <= STAGE_SECONDOT);
 }
 
-stock bool:team_is_full(TeamName:team, bool:bots=true)
-	return (get_teamplayers(team, bots) >= get_pug_maxplayers()/2);
+stock bool:team_is_full(TeamName:team)
+	return (get_teamplayers_count(team) >= get_pug_maxplayers()/2);
 
 stock bool:team_can_vote(TeamName:team)
-	return (get_teamplayers(team, false) > 2);
+	return (get_teamplayers_count(team) > 2);
 
 stock team_count_players(TeamName:team) {
 	new players[MAX_PLAYERS], count, tmp_team[10];

@@ -37,8 +37,10 @@ stock check_team (id, TeamName:team) {
 }
 
 stock bool:valid_jointeam (const id, TeamName:team) {
-	if (!valid_player_team(id, team))
+	if (game_is_started() && client_is_player(id)) {
+		chat_print(id, "%L", LANG_SERVER, "PUG_TEAMS_NOT_CHANGE");
 		return false;
+	}
 
 	new TeamName:new_team;
 
@@ -59,7 +61,7 @@ stock bool:valid_jointeam (const id, TeamName:team) {
 		}
 	}
 
-	if (team_is_full(new_team, false)) {
+	if (team_is_full(new_team)) {
 		chat_print(id, "%L", LANG_SERVER, "PUG_TEAMS_FULL",
 					team_name[new_team]);
 		return false;
@@ -83,14 +85,3 @@ public send_teaminfo (args[])
 	chatcolor_send_teaminfo(args[0]);
 #endif
 
-static bool:valid_player_team (id, TeamName:team) {
-	if (team_is_full(team, true) && is_user_bot(id))
-		return false;
-
-	if (game_is_started() && client_is_player(id)) {
-		chat_print(id, "%L", LANG_SERVER, "PUG_TEAMS_NOT_CHANGE");
-		return false;
-	}
-
-	return true;
-}

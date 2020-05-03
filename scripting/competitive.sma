@@ -1,7 +1,7 @@
 #include <competitive/index>
 
 #define PLUGIN "Competitive"
-#define VERSION "0.11.15"
+#define VERSION "0.11.16"
 #define AUTHOR "Leopoldo Brines"
 
 public plugin_init()
@@ -86,7 +86,7 @@ public client_disconnect (id) {
 
 	new TeamName:iTeam = TeamName:get_user_team(id)
 
-	new iCount = get_teamplayers(iTeam, false) - 1
+	new iCount = get_teamplayers_count(iTeam) - 1
 	new iAbsencePlayers = get_max_absence_players();
 
 	if (iAbsencePlayers && iCount <= iAbsencePlayers) {
@@ -365,7 +365,7 @@ public fnTeamsRandomize()
 			{
 				new TeamName:random_team = TeamName:random_num(1, 2)
 
-				if (team_is_full(random_team, false)) {
+				if (team_is_full(random_team)) {
 					if (random_team == TEAM_TERRORIST)
 						client_set_team(player, TEAM_TERRORIST)
 					else
