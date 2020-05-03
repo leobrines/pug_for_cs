@@ -227,7 +227,7 @@ stock bool:votekick_validate (id, target_id, TeamName:team) {
 
 	if (!team_can_vote(team) ||
 		is_voting[team] ||
-	    team != target_team)
+	    (team != target_team && target_team != TEAM_SPECTATOR && target_team != TEAM_UNASSIGNED))
 	{
 		return false;
 	}
