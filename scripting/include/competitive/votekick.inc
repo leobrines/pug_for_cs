@@ -88,13 +88,18 @@ public votekick_menuhandler (const id, menu, item) {
 }
 
 stock votekick_start (id, target_id) {
-	new TeamName:team;
-	new name[32];
+	new steamid[32], TeamName:team, name[32];
 
+	get_user_authid(id, steamid, sizeof(steamid) -1);
+	get_user_name(id, name, charsmax(name[]));
 	team = client_get_team(id);
-	get_user_name(id, name, charsmax(name));
 
+	new steamid_target[32];
+
+	get_user_authid(id, steamid, sizeof(steamid) -1);
 	get_user_name(target_id, target_name[team], charsmax(target_name[]));
+
+	log_amx("Player %s - %s trying to votekick  %s - %s", name, steamid, target_name[team], steamid_target)
 
 	if (!votekick_validate(id, target_id, team))
 		return;
@@ -227,7 +232,8 @@ stock bool:votekick_validate (id, target_id, TeamName:team) {
 
 	if (!team_can_vote(team) ||
 		is_voting[team] ||
-	    (team != target_team && target_team != TEAM_SPECTATOR && target_team != TEAM_UNASSIGNED))
+		(team != target_team && target_team != TEAM_SPECTATOR && target_team != TEAM_UNASSIGNED) ||
+		get_user_flags(id) & ADMIN_IMMUNITY)
 	{
 		return false;
 	}

@@ -18,7 +18,9 @@ static secondhalf () {
 
 	chat_print(0, "%L", LANG_SERVER, "PUG_STARTING_SECONDHALF")
 
-	halfstart(true);
+	halfstart();
+	remove_break();
+	teams_switch();
 	exec_pugmode();
 }
 
@@ -28,7 +30,9 @@ static firsthalf_ot () {
 
 	chat_print(0, "%L", LANG_SERVER, "PUG_STARTING_OVERTIME")
 
-	halfstart(true);
+	halfstart();
+	remove_break();
+	teams_switch();
 	exec_overtime();
 }
 
@@ -37,7 +41,9 @@ static secondhalf_ot () {
 
 	chat_print(0, "%L", LANG_SERVER, "PUG_STARTING_OVERTIME")
 
-	halfstart(true);
+	halfstart();
+	remove_break();
+	teams_switch();
 	exec_overtime();
 }
 
@@ -68,14 +74,13 @@ stock game_finish (WinStatus:status) {
 
 // Round end checks
 
-static halfstart (bool:remove_break=false) {
+static halfstart () {
 	firstround = true;
+}
 
-	if (remove_break) {
-		gamebreak = false
-		client_cmd(0, "-showscores");
-		teams_switch();
-	}
+public remove_break() {
+	gamebreak = false
+	client_cmd(0, "-showscores");
 }
 
 bool:is_gamebreak() {

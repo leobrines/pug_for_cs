@@ -1,7 +1,7 @@
 #include <competitive/index>
 
 #define PLUGIN "Competitive"
-#define VERSION "0.11.16"
+#define VERSION "0.11.17"
 #define AUTHOR "Leopoldo Brines"
 
 public plugin_init()
@@ -38,7 +38,11 @@ public plugin_init()
 	set_task(3.0, "fnPostConfig", _, _, _, "a", 1)
 }
 
+#if AMXX_VERSION_NUM < 183
 public plugin_cfg()
+#else
+public OnConfigsExecuted()
+#endif
 {
 	static configfile[40];
 
@@ -74,7 +78,11 @@ public client_purge_data (id) {
 	dmg_reset_user(id);
 }
 
+#if AMXX_VERSION_NUM < 183
 public client_disconnect (id) {
+#else
+public client_disconnected (id) {
+#endif
 	client_purge_data(id)
 
 	if (!client_is_player(id))
@@ -115,6 +123,7 @@ public PugWarmup ()
 	teams_reset_scores();
 	clients_reset_scores();
 	autoready_check();
+	remove_break();
 
 	fnRemoveHudMoney()
 

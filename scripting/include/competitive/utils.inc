@@ -68,7 +68,7 @@ stock get_teamplayers(team_players[MAX_PLAYERS], &c, TeamName:team)
 
 	c = 0;
 
-	for (new i=0; i < sizeof(players); i++) {
+	for (new i=0; i < count; i++) {
 		new id = players[i]
 		new TeamName:pteam = client_get_team(id)
 
