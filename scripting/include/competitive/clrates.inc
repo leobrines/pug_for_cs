@@ -11,19 +11,19 @@ public clrates_init() {
 	cvar_minrate = register_cvar("pug_cl_minrate", "10000");
 	cvar_minupdaterate = register_cvar("pug_cl_minupdaterate", "30");
 
-	set_task(30.0, "check_players_rates", _, _, _, "b")
+	set_task(30.0, "check_rates", _, _, _, "b")
 }
 
-public check_players_rates() {
+public check_rates() {
 	new players[MAX_PLAYERS], count;
 	get_players(players, count, "ch");
 
 	for (new i=0; i < count; i++) {
-		check_player_rates(players[i])
+		client_check_rates(players[i])
 	}
 }
 
-public check_player_rates(id) {
+public client_check_rates(id) {
 	query_client_cvar(id, "rate", "check_rate") 
 	query_client_cvar(id, "cl_cmdrate", "check_rate") 
 	query_client_cvar(id, "cl_updaterate", "check_rate") 

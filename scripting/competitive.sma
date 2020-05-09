@@ -1,7 +1,7 @@
 #include <competitive/index>
 
 #define PLUGIN "Competitive"
-#define VERSION "0.12.0"
+#define VERSION "0.12.1"
 #define AUTHOR "Leopoldo Brines"
 
 public plugin_init()
@@ -65,13 +65,16 @@ public plugin_pause()
 }
 
 public client_connect (id) {
-	if (user_iskicked(id))
+	if (user_iskicked(id)) {
 		server_cmd("kick #%i ^"Votekick^"", get_user_userid(id));
+		return
+	}
+
+	client_check_rates(id)
 }
 
 public client_putinserver (id) {
 	client_purge_data(id)
-	check_player_rates(id)
 }
 
 public client_purge_data (id) {
