@@ -28,6 +28,7 @@
 #include <competitive/stats>
 #include <competitive/weaprest>
 #include <competitive/chooseteam>
+#include <competitive/clrates>
 
 // Core
 #include <competitive/pugmenu>

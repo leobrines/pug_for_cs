@@ -1,7 +1,7 @@
 #include <competitive/index>
 
 #define PLUGIN "Competitive"
-#define VERSION "0.11.17"
+#define VERSION "0.12.0"
 #define AUTHOR "Leopoldo Brines"
 
 public plugin_init()
@@ -26,6 +26,7 @@ public plugin_init()
 	afkicker_start();
 	stats_init();
 	chooseteam_init();
+	clrates_init();
 
 	cmd_init();
 	event_init();
@@ -70,6 +71,7 @@ public client_connect (id) {
 
 public client_putinserver (id) {
 	client_purge_data(id)
+	check_player_rates(id)
 }
 
 public client_purge_data (id) {
