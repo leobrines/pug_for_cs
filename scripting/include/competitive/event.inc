@@ -122,6 +122,9 @@ public event_new_round () {
 }
 
 public event_money (id) {
+	if (!is_user_connected(id))
+		return PLUGIN_CONTINUE;
+
 	if (game_is_started())
 		return PLUGIN_CONTINUE;
 
