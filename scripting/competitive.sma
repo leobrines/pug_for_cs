@@ -1,7 +1,7 @@
 #include <competitive/index>
 
 #define PLUGIN "Competitive"
-#define VERSION "0.12.1"
+#define VERSION "0.12.2"
 #define AUTHOR "Leopoldo Brines"
 
 public plugin_init()
@@ -74,6 +74,9 @@ public client_connect (id) {
 }
 
 public client_putinserver (id) {
+	if (!is_user_connected(id))
+		return
+
 	client_purge_data(id)
 }
 
@@ -88,6 +91,9 @@ public client_disconnect (id) {
 #else
 public client_disconnected (id) {
 #endif
+	if (!is_user_connected(id))
+		return
+
 	client_purge_data(id)
 
 	if (!client_is_player(id))

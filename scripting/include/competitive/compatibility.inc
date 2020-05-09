@@ -60,19 +60,14 @@
 	stock client_set_team (id, TeamName:team)
 		cs_set_user_team(id, CsTeams:team);
 
-	stock client_give_money (id, amount) {
-		if (is_user_alive(id))
-			cs_set_user_money(id, amount)
-	}
+	stock client_give_money (id, amount)
+		cs_set_user_money(id, amount)
 
-	stock client_get_money (id) {
+	stock client_get_money (id)
 		return cs_get_user_money(id)
-	}
 
-	stock client_set_money (id, amount) {
-		if (is_user_alive(id))
-			cs_set_user_money(id, amount)
-	}
+	stock client_set_money (id, amount)
+		cs_set_user_money(id, amount)
 
 	stock client_drop_c4(id)
 		engclient_cmd(id, "drop", "weapon_c4")
