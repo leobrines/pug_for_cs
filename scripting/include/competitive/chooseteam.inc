@@ -8,25 +8,30 @@
 
 #include <amxmodx>
 
-static const KEYSMENU = (1<<0)|(1<<1)|(1<<4)|(1<<5);
+static const KEYSMENU = MENU_KEY_1|MENU_KEY_2|MENU_KEY_5|MENU_KEY_6;
 
 stock chooseteam_init () {
-	register_clcmd("chooseteam", "chooseteam_vgui");
-	register_clcmd("jointeam", "chooseteam_select_vgui");
-	register_menucmd(register_menuid("Team_Select", 1), KEYSMENU,
-										"chooseteam_select_showmenu"); 
+	register_clcmd("chooseteam", "chooseteam");
+	register_clcmd("jointeam", "jointeam");
+	register_menucmd(register_menuid("Team_Select", 1), KEYSMENU, "teamselect"); 
+	register_menucmd(-2, KEYSMENU, "teamselect"); 
 }
 
-public chooseteam_vgui (id) {
+// Blocked  command
+public chooseteam (id) {
 	set_pdata_int(id, 125, get_pdata_int(id, 125, 5) & ~(1<<8), 5);
 	return PLUGIN_CONTINUE;
 }
 
-public chooseteam_select_vgui (id) {
-	new param[2];
-	read_argv(1, param, charsmax(param)); 
+public jointeam (id) {
+	return chooseteam_check(id, read_argv_int(1))
+}
 
-	new const selected = str_to_num(param);
+public teamselect (id, selected) {
+	return chooseteam_check(id, (selected+1))
+}
+
+public chooseteam_check (id, selected) {
 	new TeamName:team;
 
 	switch (selected) {
@@ -40,23 +45,6 @@ public chooseteam_select_vgui (id) {
 			team = TEAM_SPECTATOR;
 	}
 
-	return check_team(id, team)
-}
-
-public chooseteam_select_showmenu (id, selected) {
-	new TeamName:team;
-
-	switch (selected) {
-		case 0:
-			team = TEAM_TERRORIST;
-		case 1:
-			team = TEAM_CT;
-		case 4:
-			team = TEAM_UNASSIGNED;
-		case 5:
-			team = TEAM_SPECTATOR;
-	}
-	
 	return check_team(id, team)
 }
 
