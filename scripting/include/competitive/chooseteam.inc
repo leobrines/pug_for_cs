@@ -24,7 +24,17 @@ public chooseteam (id) {
 }
 
 public jointeam (id) {
-	return chooseteam_check(id, read_argv_int(1))
+	new selected;
+
+	#if AMXX_VERSION_NUM > 182
+	selected = read_argv_int(1);
+	#else
+	new param[2];
+	read_argv(1, param, charsmax(param)); 
+	selected = str_to_num(param);
+	#endif
+
+	return chooseteam_check(id, selected)
 }
 
 public teamselect (id, selected) {
