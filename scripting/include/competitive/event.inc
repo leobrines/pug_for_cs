@@ -164,15 +164,8 @@ public event_death_player () {
 public event_round_restart() {
 	restarting = true;
 
-	if (!game_is_live()) {
-		restrict_weapons_pregame()
+	if (!game_is_live() ||is_firstround())
 		return;
-	}
-
-	if (is_firstround()) {
-		restrict_weapons_live();
-		return;
-	}
 
 	round_restarted();
 }

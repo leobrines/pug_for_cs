@@ -5,7 +5,8 @@
 /scripting/include/*
 !/scripting/include/competitive
 
-!/config
-/config/*
-!/config/pug
+!/configs
+/configs/*
+!/configs/pug
+!/configs/weaprest.ini
 
