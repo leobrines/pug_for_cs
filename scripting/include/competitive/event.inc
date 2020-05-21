@@ -34,7 +34,7 @@ public event_player_score (m, s, id) {
 	static player_id;
 	player_id = get_msg_arg_int(1);
 
-	if (game_is_live()) {
+	if (game_is_live() && !is_restarting()) {
 		set_msg_arg_int(2, ARG_SHORT, client_get_frags(player_id));
 		set_msg_arg_int(3, ARG_SHORT, client_get_deaths(player_id));
 	}
@@ -164,28 +164,28 @@ public event_death_player () {
 public event_round_restart() {
 	restarting = true;
 
-	if (!game_is_live() ||is_firstround())
+	if (!game_is_live() || is_firstround())
 		return;
 
 	round_restarted();
 }
 
 public event_tt_win() {
-	if (!game_is_live())
+	if (!game_is_live() || is_restarting())
 		return;
 
 	teamtt_add_score();
 }
 
 public event_ct_win() {
-	if (!game_is_live())
+	if (!game_is_live() || is_restarting())
 		return;
 
 	teamct_add_score();
 }
 
 public event_round_end() {
-	if (!game_is_live())
+	if (!game_is_live() || is_restarting())
 		return;
 
 	g_iRound++;

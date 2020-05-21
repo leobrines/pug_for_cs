@@ -11,6 +11,7 @@ stock firsthalf () {
 	halfstart();
 	exec_pugmode();
 	enable_stats();
+	teams_reset_scores();
 }
 
 static secondhalf () {
