@@ -101,7 +101,7 @@ stock votekick_start (id, target_id) {
 
 	log_amx("Player %s - %s trying to votekick  %s - %s", name, steamid, target_name[team], steamid_target)
 
-	if (!votekick_validate(id, target_id, team))
+	if (!votekick_validate(id, target_id))
 		return;
 
 	target[team] = target_id;
@@ -227,13 +227,16 @@ stock votekick_unban () {
 static Float:get_votekick_delay ()
 	return get_pcvar_float(vote_delay);
 
-stock bool:votekick_validate (id, target_id, TeamName:team) {
+stock bool:votekick_validate (id, target_id) {
+	new TeamName:team = client_get_team(id);
 	new TeamName:target_team = client_get_team(target_id);
 
 	if (!team_can_vote(team) ||
 		is_voting[team] ||
+		team == TEAM_SPECTATOR ||
+	       	team == TEAM_UNASSIGNED ||
 		(team != target_team && target_team != TEAM_SPECTATOR && target_team != TEAM_UNASSIGNED) ||
-		get_user_flags(id) & ADMIN_IMMUNITY)
+		get_user_flags(target_id) & ADMIN_IMMUNITY)
 	{
 		return false;
 	}
