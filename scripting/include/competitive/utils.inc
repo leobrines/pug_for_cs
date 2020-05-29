@@ -102,22 +102,11 @@ stock chat_print (const id, const message[], any:...)
 }
 
 stock team_print (TeamName:team, const msg[], any:...) {
-	new players[MAX_PLAYERS], count;
-	new tmp_team[10];
-
 	new msgFormated[191];
 	vformat(msgFormated, charsmax(msgFormated), msg, 3);
 
-	switch (team) {
-		case TEAM_TERRORIST:
-			copy(tmp_team, charsmax(tmp_team), "TERRORIST")
-		case TEAM_CT:
-			copy(tmp_team, charsmax(tmp_team), "CT")
-		default:
-			copy(tmp_team, charsmax(tmp_team), "SPECTATOR")
-	}
-
-	get_players(players, count, "ceh", tmp_team);
+	new players[MAX_PLAYERS], count;
+	get_teamplayers(players, count, team)
 
 	for (new i; i<count; i++)
 		chat_print(players[i], msgFormated);
