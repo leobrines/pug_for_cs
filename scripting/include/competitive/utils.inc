@@ -147,24 +147,6 @@ stock bool:team_is_full(TeamName:team)
 stock bool:team_can_vote(TeamName:team)
 	return (get_teamplayers_count(team) > 2);
 
-stock team_count_players(TeamName:team) {
-	new players[MAX_PLAYERS], count, tmp_team[10];
-
-	switch (team) {
-		case TEAM_TERRORIST:
-			copy(tmp_team, charsmax(tmp_team), "TERRORIST")
-		case TEAM_CT:
-			copy(tmp_team, charsmax(tmp_team), "CT")
-		default:
-			copy(tmp_team, charsmax(tmp_team), "SPECTATOR")
-	}
-
-	count = 0;
-	get_players(players, count, "ceh", tmp_team);
-
-	return count;
-}
-
 stock showt_hudtitle(TeamName:team, msg[], any:...) {
 	new fmt[50]
 	vformat(fmt, charsmax(fmt), msg, 3)
