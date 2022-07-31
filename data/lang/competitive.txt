@@ -117,6 +117,9 @@ PUG_MODE_AUTO = Modo del servidor: automatico
 
 PUG_SPEC_DONT_SAY = Solo los admins pueden escribir en el say de espectador.
 
+PUG_GLOBALSAY_ENABLE = Chat global habiltado
+PUG_GLOBALSAY_DISABLED = Chat global deshabiltado
+
 [en]
 
 UNASSIGNED = Unassigned
@@ -213,3 +216,6 @@ PUG_AFKKICKER_CVAR = Cvar pug_afktime %i is too low. Minimum value is %i.
 PUG_AFKKICKER_WARN = You have %i seconds to move or you will be kicked for being AFK.
 PUG_AFKKICKER_KICK = %s was kicked for being AFK longer than %i seconds.
 PUG_AFKKICKER_KICK2 = You were kicked for being AFK longer than %i seconds.
+
+PUG_GLOBALSAY_ENABLED = Global chat enabled
+PUG_GLOBALSAY_DISABLED = Global chat disabled

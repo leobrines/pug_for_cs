@@ -31,7 +31,6 @@
 
 // Core
 #include <competitive/pugmenu>
-#include <competitive/cmd>
 #include <competitive/event>
 #include <competitive/half>
 
