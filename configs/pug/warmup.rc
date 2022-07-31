@@ -18,7 +18,7 @@ mp_playerid 0
 mp_refill_bpammo_weapons 3
 mp_respawn_immunitytime 3
 mp_round_infinite acdefg
-mp_roundtime 0
+mp_roundtime 9
 mp_startmoney 16000
 mp_timelimit 0
 sv_alltalk 1
