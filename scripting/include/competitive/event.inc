@@ -22,6 +22,7 @@ stock event_init () {
 	register_event("Damage", "event_damage", "b", "2!0", "3=0", "4!0")
 	register_event("DeathMsg", "event_death_player", "a", "1!0", "2!0");
 	register_event("TextMsg", "event_round_restart","a","2=#Game_will_restart_in")
+	register_event("StatusIcon", "event_got_bomb", "be", "1=1", "1=2", "2=c4") 
 	register_logevent("event_ct_win", 6, "3=CTs_Win", "3=Target_Saved", "3=Bomb_Defused", "3=All_Hostages_Rescued")
 	register_logevent("event_tt_win" , 6, "3=Terrorists_Win", "3=Target_Bombed")
 	register_logevent("event_joined_team", 3, "1=joined team");
@@ -226,6 +227,11 @@ public event_post_think(const id) {
 	}
 
 	return FMRES_SUPERCEDE;
+}
+
+public event_got_bomb(id) {
+	if (!game_is_live())
+	    cs_set_user_bpammo(id, CSW_C4, 0)
 }
 
 stock get_loguser_index() {
