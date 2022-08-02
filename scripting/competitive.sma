@@ -1,7 +1,7 @@
 #include <competitive/index>
 
 #define PLUGIN "Competitive"
-#define VERSION "0.12.7"
+#define VERSION "0.13.0"
 #define AUTHOR "Leopoldo Brines"
 
 public plugin_init()
