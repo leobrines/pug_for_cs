@@ -1,7 +1,7 @@
 #include <competitive/index>
 
 #define PLUGIN "Competitive"
-#define VERSION "0.12.4"
+#define VERSION "0.12.5"
 #define AUTHOR "Leopoldo Brines"
 
 public plugin_init()
@@ -667,8 +667,8 @@ public cmd_chooseteam (id) {
 }
 
 public cmd_restart (id, level, cid) {
-	if (!cmd_access(id, level, cid, 1))
-		return PLUGIN_CONTINUE;
+	if (!has_cmd_access(id, level, cid))
+		return PLUGIN_HANDLED;
 
 	server_cmd("sv_restart 3");
 
@@ -676,8 +676,8 @@ public cmd_restart (id, level, cid) {
 }
 
 public cmd_start (id, level, cid) {
-	if (!cmd_access(id, level, cid, 1))
-		return PLUGIN_CONTINUE;
+	if (!has_cmd_access(id, level, cid))
+		return PLUGIN_HANDLED;
 
 	if (game_is_started()) {
 		chat_print(id, "%L", LANG_SERVER, "PUG_ACTION_NOTALLOWED")
@@ -694,8 +694,8 @@ public cmd_start (id, level, cid) {
 }
 
 public cmd_cancel (id, level, cid) {
-	if (!cmd_access(id, level, cid, 1))
-		return PLUGIN_CONTINUE;
+	if (!has_cmd_access(id, level, cid))
+		return PLUGIN_HANDLED;
 
 	if (!game_is_live()) {
 		chat_print(id, "%L", LANG_SERVER, "PUG_ACTION_NOTALLOWED");
@@ -712,8 +712,8 @@ public cmd_cancel (id, level, cid) {
 }
 
 public cmd_manual (id, level, cid) {
-	if (!cmd_access(id, level, cid, 1))
-		return PLUGIN_CONTINUE;
+	if (!has_cmd_access(id, level, cid))
+		return PLUGIN_HANDLED;
 
 	new sName[MAX_NAME_LENGTH]
 	get_user_name(id, sName, charsmax(sName))
@@ -725,8 +725,8 @@ public cmd_manual (id, level, cid) {
 }
 
 public cmd_auto (id, level, cid) {
-	if (!cmd_access(id, level, cid, 1))
-		return PLUGIN_CONTINUE;
+	if (!has_cmd_access(id, level, cid))
+		return PLUGIN_HANDLED;
 
 	new sName[MAX_NAME_LENGTH]
 	get_user_name(id, sName, charsmax(sName))
@@ -738,8 +738,8 @@ public cmd_auto (id, level, cid) {
 }
 
 public cmd_test (id, level, cid) {
-	if (!cmd_access(id, level, cid, 1))
-		return PLUGIN_CONTINUE;
+	if (!has_cmd_access(id, level, cid))
+		return PLUGIN_HANDLED;
 
 	if (!game_is_started())
 		firsthalf();
@@ -747,12 +747,19 @@ public cmd_test (id, level, cid) {
 	return PLUGIN_HANDLED;
 }
 
-public cmd_menu (id) {
+public cmd_menu (id, level, cid) {
+	if (!has_cmd_access(id, level, cid))
+		return PLUGIN_HANDLED;
+	
 	pugmenu_start(id);
-	return PLUGIN_HANDLED
+	
+	return PLUGIN_HANDLED;
 }
 
 public cmd_mute (const id, level, cid) {
+	if (!has_cmd_access(id, level, cid))
+		return PLUGIN_HANDLED;
+
 	new const target = find_target(id, level, cid);
 
 	if (target)
@@ -762,6 +769,9 @@ public cmd_mute (const id, level, cid) {
 }
 
 public cmd_unmute (const id, level, cid) {
+	if (!has_cmd_access(id, level, cid))
+		return PLUGIN_HANDLED;
+
 	new const target = find_target(id, level, cid);
 
 	if (target)
@@ -771,8 +781,11 @@ public cmd_unmute (const id, level, cid) {
 }
 
 public cmd_votekick (id, level, cid) {
+	if (!has_cmd_access(id, level, cid))
+		return PLUGIN_HANDLED;
+
 	if (!client_is_player(id) || !game_is_live())
-		return PLUGIN_CONTINUE;
+		return PLUGIN_HANDLED;
 		
 	new const target = find_target(id, level, cid);
 
@@ -783,23 +796,49 @@ public cmd_votekick (id, level, cid) {
 }
 
 public cmd_votepause (id, level, cid) {
+	if (!has_cmd_access(id, level, cid))
+		return PLUGIN_HANDLED;
+
 	if (!client_is_player(id) || !game_is_live())
-		return PLUGIN_CONTINUE;
+		return PLUGIN_HANDLED;
 
 	votepause_start(id);
 
 	return PLUGIN_HANDLED
 }
 
-public cmd_globalsay(id) {
+public cmd_globalsay(id, level, cid) {
+	if (!has_cmd_access(id, level, cid))
+		return PLUGIN_HANDLED;
+
 	switch_globalsay()
 
 	if (is_globalsay_allowed()) {
 		chat_print(id, "%L", LANG_SERVER, "PUG_GLOBALSAY_ENABLED");
-		return
+		return PLUGIN_HANDLED;
 	}
 
 	chat_print(id, "%L", LANG_SERVER, "PUG_GLOBALSAY_DISABLED");
+
+	return PLUGIN_HANDLED;
+}
+
+public bool:has_cmd_access(id, level, cid) {
+	if (!cmd_access(id, level, cid, 1))
+		return false;
+
+	new entry[MAX_NAME_LENGTH];
+	read_argv(0, entry, charsmax(entry));
+
+	new sName[MAX_NAME_LENGTH];
+	get_user_name(id, sName, charsmax(sName));
+
+	new sAuthid[64];
+	get_user_authid(id, sAuthid, charsmax(sAuthid));
+
+	log_amx("%L", LANG_SERVER, "PUG_ADMIN_COMMAND_USED", sName, sAuthid, entry);
+	
+	return true;
 }
 
 public block_kill () {

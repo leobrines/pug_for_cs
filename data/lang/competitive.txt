@@ -72,6 +72,7 @@ PUG_CAPTAIN_AUTOCHOOSE = %s escogio %s automaticamente
 PUG_CAPTAIN_SIDE = %s empezara en el bando %s
 
 PUG_ADMIN_SELECTED = %s ha sido seleccionado como el moderador para este equipo y tiene la habilidad de .votekick
+PUG_ADMIN_COMMAND_USED = %s [%s] uso el comando "%s"
 
 PUG_VOTEKICK_MAXVOTES = Solo puedes iniciar 3 votaciones.
 PUG_VOTEKICK_KICKED = %s expulsado por votekick.
@@ -189,6 +190,7 @@ PUG_CAPTAIN_CHOOSE = %s chose %s
 PUG_CAPTAIN_AUTOCHOOSE = %s chose %s automatically.
 
 PUG_ADMIN_SELECTED = %s has been selected as the pug moderator for this team and has the ability to .votekick players.
+PUG_ADMIN_COMMAND_USED = %s [%s] used command "%s"
 
 PUG_VOTEKICK_SPECTATORS = The spectators cant kick
 PUG_VOTEKICK_SPECIFY = You must specify a player
