@@ -26,6 +26,7 @@ Tome lo mejor de varios plugins para hacerlo un poco mas automatico. Por ejemplo
 	.cancel		- Forza el final del pug<br>
 	.manual		- El modo iniciara manualmente<br>
 	.auto		- El modo iniciara automaticamente<br>
+	.globalsay	- Habilita/deshabilita el chat global<br>
 
 - Jugador<br>
 	.menu				- Menu de funcionalidades (tecla N)<br>
