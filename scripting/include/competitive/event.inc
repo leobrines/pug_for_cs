@@ -91,13 +91,7 @@ public event_game_description() {
 public event_new_round () {
 	restarting = false;
 
-	if (!game_is_started()) {
-		new id = get_loguser_index()
-		client_delete_c4(id);
-
-		return PLUGIN_CONTINUE;
-	}
-	if (!game_is_live())
+	if (!game_is_started() || !game_is_live())
 		return PLUGIN_CONTINUE;
 
 	round_start();
@@ -231,7 +225,7 @@ public event_post_think(const id) {
 
 public event_got_bomb(id) {
 	if (!game_is_live())
-	    cs_set_user_bpammo(id, CSW_C4, 0)
+		client_delete_c4(id);
 }
 
 stock get_loguser_index() {

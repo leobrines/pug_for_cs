@@ -184,13 +184,12 @@ stock server_changemap(sMap[])
 }
 
 stock client_delete_c4(id) {
-    new weaponID = get_weaponid("weapon_c4")
-    new iconstatus = get_user_msgid("StatusIcon");
+	cs_set_user_bpammo(id, CSW_C4, 0);
 
-    user_has_weapon(id, weaponID, 0)
+	new iconstatus = get_user_msgid("StatusIcon");
 
-    message_begin(MSG_ONE,iconstatus,{0,0,0},id);
-    write_byte(0); 
-    write_string("c4");
-    message_end();
+	message_begin(MSG_ONE,iconstatus,{0,0,0},id);
+	write_byte(0); 
+	write_string("c4");
+	message_end();
 }
