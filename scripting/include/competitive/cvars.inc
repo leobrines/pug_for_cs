@@ -35,7 +35,8 @@ static g_pAbsencePlayers
 static g_pManual
 static g_pShowMoney
 static g_pAllowSoundMsg
-stock g_pAllowGlobalSay
+static g_pAllowGlobalSay
+static g_pAllowNonSteam
 
 static g_pAllowSpec
 static g_pMapCycle
@@ -72,6 +73,7 @@ stock cvars_init () {
 	g_pShowMoney = register_cvar("pug_show_money", "2");
 	g_pAllowSoundMsg = register_cvar("pug_allow_soundmsg", "0");
 	g_pAllowGlobalSay = register_cvar("pug_allow_global_say", "1");
+	g_pAllowNonSteam = register_cvar("pug_allow_nonsteam", "0");
 	register_cvar("pug_dmgmode", "2");
 
 	g_pAllowSpec = get_cvar_pointer("allow_spectators")
@@ -148,6 +150,9 @@ stock is_msgsound_allowed ()
 
 stock is_globalsay_allowed ()
 	return get_pcvar_num(g_pAllowGlobalSay) ? true : false;
+
+stock is_nonsteam_allowed ()
+	return get_pcvar_num(g_pAllowNonSteam) ? true : false;
 
 stock switch_globalsay() {
 	new const value = is_globalsay_allowed() ? 0 : 1;

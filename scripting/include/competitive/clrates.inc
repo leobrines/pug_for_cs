@@ -15,6 +15,11 @@ public clrates_init() {
 }
 
 public check_rates() {
+	// Updating rates dont work on non steam clients
+	if (is_nonsteam_allowed()) {
+		return;
+	}
+
 	new players[MAX_PLAYERS], count;
 	get_players(players, count, "ch");
 
